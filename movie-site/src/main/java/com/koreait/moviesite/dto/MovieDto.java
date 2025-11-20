@@ -5,5 +5,6 @@ public record MovieDto(
         String title,
         String director,
         int year,
-        String genre
+        String genre,
+        Long boxOfficeGross
 ) {}

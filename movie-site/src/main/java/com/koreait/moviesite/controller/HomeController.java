@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     @GetMapping("/")
-    public String home() {
-        // localhost:9090 접속 시 /api/movies 로 이동
-        return "redirect:/api/movies";
+    public String home() {      // 루트 접속 시 index.html
+        return "index";
+    }
+
+    @GetMapping("/board")
+    public String board() {     // /board 접속 시 board.html
+        return "board";
     }
 }

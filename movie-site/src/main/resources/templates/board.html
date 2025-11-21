@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>게시판 - Movie Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link th:href="@{/css/app.css}" rel="stylesheet" />
+</head>
+<body>
+<header class="container">
+  <h1>📝 게시판</h1>
+  <nav class="tabs">
+    <a class="link" href="/">← 홈</a>
+  </nav>
+</header>
+
+<main class="container">
+  <section>
+    <form id="postForm" onsubmit="return createPost();">
+      <input id="title" placeholder="제목" required />
+      <input id="author" placeholder="작성자" required />
+      <textarea id="content" placeholder="내용" required></textarea>
+      <button type="submit">등록</button>
+    </form>
+  </section>
+
+  <section>
+    <table class="table">
+      <thead><tr><th>ID</th><th>제목</th><th>작성자</th><th>조회수</th></tr></thead>
+      <tbody id="postTbody"></tbody>
+    </table>
+  </section>
+
+  <section id="postDetail" class="hidden">
+    <h2 id="dTitle"></h2>
+    <div class="meta"><span id="dAuthor"></span> · <span id="dDate"></span> · 👁 <span id="dViews"></span></div>
+    <pre id="dContent"></pre>
+
+    <h3>댓글</h3>
+    <ul id="commentList"></ul>
+
+    <form id="commentForm" onsubmit="return addComment();">
+      <input id="cAuthor" placeholder="작성자" required />
+      <input id="cContent" placeholder="댓글" required />
+      <button type="submit">댓글 등록</button>
+    </form>
+  </section>
+</main>
+
+<script th:src="@{/js/board.js}"></script>
+</body>
+</html>

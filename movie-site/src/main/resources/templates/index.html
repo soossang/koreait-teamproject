@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Movie Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link th:href="@{/css/app.css}" rel="stylesheet" />
+</head>
+<body>
+<header class="container">
+  <h1>🎬 Movie Site</h1>
+  <nav class="tabs">
+    <button id="tab-top" class="active" onclick="showTab('top')">흥행 순위</button>
+    <button id="tab-genre" onclick="showTab('genre')">장르별</button>
+    <a class="link" href="/board">게시판</a>
+  </nav>
+</header>
+
+<main class="container">
+  <!-- 흥행 순위 -->
+  <section id="panel-top">
+    <div class="toolbar">
+      <label>Top</label>
+      <select id="limitSelect" onchange="loadTopBoxOffice()">
+        <option>5</option><option selected>10</option><option>20</option>
+      </select>
+    </div>
+    <div id="topGrid" class="grid"></div>
+  </section>
+
+  <!-- 장르별 -->
+  <section id="panel-genre" class="hidden">
+    <div class="toolbar">
+      <select id="genreSelect"></select>
+      <button onclick="loadMoviesByGenre()">조회</button>
+    </div>
+    <div id="genreGrid" class="grid"></div>
+
+    <div class="pager">
+      <button onclick="prevPage()">이전</button>
+      <span id="pageInfo"></span>
+      <button onclick="nextPage()">다음</button>
+    </div>
+  </section>
+</main>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

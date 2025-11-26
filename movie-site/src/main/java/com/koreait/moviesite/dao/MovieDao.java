@@ -17,3 +17,4 @@ public interface MovieDao extends JpaRepository<MovieEntity, Long> {
     @Query("select distinct m.genre from MovieEntity m where m.genre is not null")
     List<String> findDistinctGenres();
 }
+ss

@@ -1,4 +1,4 @@
-package com.koreait.moviesite.dto;
+package com.koreait.moviesite.RankingGenreboard.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

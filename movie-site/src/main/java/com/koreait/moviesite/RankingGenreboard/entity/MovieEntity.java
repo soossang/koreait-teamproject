@@ -1,4 +1,4 @@
-package com.koreait.moviesite.entity;
+package com.koreait.moviesite.RankingGenreboard.entity;
 
 import jakarta.persistence.*;
 

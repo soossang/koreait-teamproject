@@ -1,4 +1,4 @@
-package com.koreait.moviesite.controller;
+package com.koreait.moviesite.RankingGenreboard.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

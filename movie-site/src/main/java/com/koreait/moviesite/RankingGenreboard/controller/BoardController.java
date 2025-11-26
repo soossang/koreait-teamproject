@@ -1,7 +1,7 @@
-package com.koreait.moviesite.controller;
+package com.koreait.moviesite.RankingGenreboard.controller;
 
-import com.koreait.moviesite.dto.BoardDtos;
-import com.koreait.moviesite.service.BoardService;
+import com.koreait.moviesite.RankingGenreboard.dto.BoardDtos;
+import com.koreait.moviesite.RankingGenreboard.service.BoardService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

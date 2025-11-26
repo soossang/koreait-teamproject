@@ -1,6 +1,6 @@
-package com.koreait.moviesite.service;
+package com.koreait.moviesite.RankingGenreboard.service;
 
-import com.koreait.moviesite.dto.MovieDto;
+import com.koreait.moviesite.RankingGenreboard.dto.MovieDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

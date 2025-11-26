@@ -1,7 +1,7 @@
-package com.koreait.moviesite.controller;
+package com.koreait.moviesite.RankingGenreboard.controller;
 
-import com.koreait.moviesite.dto.MovieDto;
-import com.koreait.moviesite.service.MovieService;
+import com.koreait.moviesite.RankingGenreboard.dto.MovieDto;
+import com.koreait.moviesite.RankingGenreboard.service.MovieService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;

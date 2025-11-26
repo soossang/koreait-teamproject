@@ -1,51 +1,59 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>Movie Site</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- 경로 수정 -->
-  <link th:href="@{/RankingGenreboard/css/app.css}" rel="stylesheet" />
+  <title>Movie Site</title>
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
 </head>
 <body>
-<header class="container">
-  <h1>🎬 Movie Site</h1>
-  <nav class="tabs">
-    <button id="tab-top" class="active" onclick="showTab('top')">흥행 순위</button>
-    <button id="tab-genre" onclick="showTab('genre')">장르별</button>
-    <a class="link" th:href="@{/board}">게시판</a>
-  </nav>
-</header>
+  <div class="container">
+    <h1>🎬 Movie Site</h1>
 
-<main class="container">
-  <!-- 흥행 순위 -->
-  <section id="panel-top">
-    <div class="toolbar">
-      <label>Top</label>
-      <select id="limitSelect" onchange="loadTopBoxOffice()">
-        <option>5</option><option selected>10</option><option>20</option>
+    <!-- 탭 -->
+    <div class="tabs">
+      <a class="link active" href="/">흥행 순위</a>
+      <a class="link" href="/genre">장르별</a>
+      <a class="link" href="/board/list">게시판</a>
+    </div>
+
+    <!-- 툴바 -->
+    <div class="toolbar" style="margin-top:12px;">
+      <label for="limitSelect" class="muted">Top</label>
+      <select id="limitSelect">
+        <option>5</option>
+        <option selected>10</option>
+        <option>20</option>
+        <option>50</option>
+        <option>100</option>
       </select>
+
+      <label for="sortSelect" class="muted" style="margin-left:10px;">정렬</label>
+      <select id="sortSelect">
+        <option value="audi" selected>관객수</option>
+        <option value="sales">매출액</option>
+        <option value="open">개봉일</option>
+        <option value="movie">영화명</option>
+        <option value="screen">스크린수</option>
+      </select>
+
+      <label for="dirSelect" class="muted" style="margin-left:10px;">순서</label>
+      <select id="dirSelect">
+        <option value="desc" selected>내림차순</option>
+        <option value="asc">오름차순</option>
+      </select>
+
+      <span id="status" class="muted" style="margin-left:8px;"></span>
     </div>
+
+    <!-- 카드 그리드 -->
     <div id="topGrid" class="grid"></div>
-  </section>
 
-  <!-- 장르별 -->
-  <section id="panel-genre" class="hidden">
-    <div class="toolbar">
-      <select id="genreSelect"></select>
-      <button onclick="loadMoviesByGenre()">조회</button>
-    </div>
-    <div id="genreGrid" class="grid"></div>
+    <!-- 빈 상태 -->
+    <div id="emptyBox" class="empty hidden">데이터가 없습니다</div>
+  </div>
 
-    <div class="pager">
-      <button onclick="prevPage()">이전</button>
-      <span id="pageInfo"></span>
-      <button onclick="nextPage()">다음</button>
-    </div>
-  </section>
-</main>
-
-<!-- 경로 수정 -->
-<script th:src="@{/RankingGenreboard/js/app.js}"></script>
+  <!-- 반드시 defer로 로딩 -->
+  <script defer src="/RankingGenreboard/js/app.js"></script>
 </body>
 </html>

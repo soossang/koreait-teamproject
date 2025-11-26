@@ -1,11 +1,12 @@
-package com.koreait.moviesite.RankingGenreboard.dao;
+package com.koreait.moviesite.RankingGenreBoard.dao;
 
-import com.koreait.moviesite.RankingGenreboard.entity.MovieEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import com.koreait.moviesite.RankingGenreBoard.entity.MovieEntity;
 
 import java.util.List;
 

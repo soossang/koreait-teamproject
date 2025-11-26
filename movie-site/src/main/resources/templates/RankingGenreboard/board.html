@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <title>게시판 - Movie Site</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link th:href="@{/css/app.css}" rel="stylesheet" />
+  <!-- 경로 수정 -->
+  <link th:href="@{/RankingGenreboard/css/app.css}" rel="stylesheet" />
 </head>
 <body>
 <header class="container">
   <h1>📝 게시판</h1>
   <nav class="tabs">
-    <a class="link" href="/">← 홈</a>
+    <a class="link" th:href="@{/}">← 홈</a>
   </nav>
 </header>
 
@@ -47,6 +48,7 @@
   </section>
 </main>
 
-<script th:src="@{/js/board.js}"></script>
+<!-- 경로 수정 -->
+<script th:src="@{/RankingGenreboard/js/board.js}"></script>
 </body>
 </html>

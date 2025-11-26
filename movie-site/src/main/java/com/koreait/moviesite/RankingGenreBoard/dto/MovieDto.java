@@ -1,4 +1,4 @@
-package com.koreait.moviesite.RankingGenreboard.dto;
+package com.koreait.moviesite.RankingGenreBoard.dto;
 
 public record MovieDto(
         Long id,

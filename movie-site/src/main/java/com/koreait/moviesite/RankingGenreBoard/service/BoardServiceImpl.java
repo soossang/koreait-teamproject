@@ -1,14 +1,15 @@
-package com.koreait.moviesite.RankingGenreboard.service;
+package com.koreait.moviesite.RankingGenreBoard.service;
 
-import com.koreait.moviesite.RankingGenreboard.dao.BoardCommentRepository;
-import com.koreait.moviesite.RankingGenreboard.dao.BoardPostRepository;
-import com.koreait.moviesite.RankingGenreboard.dto.BoardDtos;
-import com.koreait.moviesite.RankingGenreboard.entity.BoardComment;
-import com.koreait.moviesite.RankingGenreboard.entity.BoardPost;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.koreait.moviesite.RankingGenreBoard.dao.BoardCommentRepository;
+import com.koreait.moviesite.RankingGenreBoard.dao.BoardPostRepository;
+import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
+import com.koreait.moviesite.RankingGenreBoard.entity.BoardComment;
+import com.koreait.moviesite.RankingGenreBoard.entity.BoardPost;
 
 import java.util.List;
 

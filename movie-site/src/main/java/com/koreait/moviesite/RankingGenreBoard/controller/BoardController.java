@@ -1,11 +1,12 @@
-package com.koreait.moviesite.RankingGenreboard.controller;
+package com.koreait.moviesite.RankingGenreBoard.controller;
 
-import com.koreait.moviesite.RankingGenreboard.dto.BoardDtos;
-import com.koreait.moviesite.RankingGenreboard.service.BoardService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+
+import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
+import com.koreait.moviesite.RankingGenreBoard.service.BoardService;
 
 @RestController
 @RequestMapping("/api/board")

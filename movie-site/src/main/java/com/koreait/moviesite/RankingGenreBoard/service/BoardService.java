@@ -1,8 +1,9 @@
-package com.koreait.moviesite.RankingGenreboard.service;
+package com.koreait.moviesite.RankingGenreBoard.service;
 
-import com.koreait.moviesite.RankingGenreboard.dto.BoardDtos;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
 
 public interface BoardService {
     Page<BoardDtos.PostResponse> list(Pageable pageable);

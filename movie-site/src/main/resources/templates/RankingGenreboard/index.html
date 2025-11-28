@@ -3,28 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-<<<<<<< HEAD
   <title>Movie Site</title>
   <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
-=======
-  <!-- 경로 수정 -->
-  <link th:href="@{/RankingGenreboard/css/app.css}" rel="stylesheet" />
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 </head>
 <body>
-<<<<<<< HEAD
   <div class="container">
     <h1>🎬 Movie Site</h1>
-=======
-<header class="container">
-  <h1>🎬 Movie Site</h1>
-  <nav class="tabs">
-    <button id="tab-top" class="active" onclick="showTab('top')">흥행 순위</button>
-    <button id="tab-genre" onclick="showTab('genre')">장르별</button>
-    <a class="link" th:href="@{/board}">게시판</a>
-  </nav>
-</header>
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 
     <!-- 탭 -->
     <div class="tabs">
@@ -69,20 +53,6 @@
     <div id="emptyBox" class="empty hidden">데이터가 없습니다</div>
   </div>
 
-<<<<<<< HEAD
-  <!-- 반드시 defer로 로딩 -->
   <script defer src="/RankingGenreboard/js/app.js"></script>
-=======
-    <div class="pager">
-      <button onclick="prevPage()">이전</button>
-      <span id="pageInfo"></span>
-      <button onclick="nextPage()">다음</button>
-    </div>
-  </section>
-</main>
-
-<!-- 경로 수정 -->
-<script th:src="@{/RankingGenreboard/js/app.js}"></script>
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 </body>
 </html>

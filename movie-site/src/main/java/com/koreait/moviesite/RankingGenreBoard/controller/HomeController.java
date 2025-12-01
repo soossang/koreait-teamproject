@@ -11,10 +11,4 @@ public class HomeController {
         // templates/RankingGenreboard/index.html
         return "RankingGenreboard/index";
     }
-
-    @GetMapping("/board")
-    public String board() {
-        // templates/RankingGenreboard/board.html
-        return "RankingGenreboard/board";
-    }
 }

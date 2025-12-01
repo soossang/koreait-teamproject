@@ -1,54 +1,43 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>게시판 - Movie Site</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- 경로 수정 -->
-  <link th:href="@{/RankingGenreboard/css/app.css}" rel="stylesheet" />
+  <title>게시판 | Movie Site</title>
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
 </head>
 <body>
-<header class="container">
-  <h1>📝 게시판</h1>
-  <nav class="tabs">
-    <a class="link" th:href="@{/}">← 홈</a>
-  </nav>
-</header>
+  <div class="container">
+    <h1>🎬 Movie Site</h1>
 
-<main class="container">
-  <section>
-    <form id="postForm" onsubmit="return createPost();">
-      <input id="title" placeholder="제목" required />
-      <input id="author" placeholder="작성자" required />
-      <textarea id="content" placeholder="내용" required></textarea>
-      <button type="submit">등록</button>
-    </form>
-  </section>
+    <div class="tabs">
+      <a class="link" href="/">흥행 순위</a>
+      <a class="link" href="/genre">장르별</a>
+      <a class="link active" href="/board/list">게시판</a>
+    </div>
 
-  <section>
-    <table class="table">
-      <thead><tr><th>ID</th><th>제목</th><th>작성자</th><th>조회수</th></tr></thead>
-      <tbody id="postTbody"></tbody>
+    <div class="toolbar" style="margin-top:12px;">
+      <button id="writeBtn">글쓰기</button>
+      <span id="status" class="muted" style="margin-left:8px;"></span>
+    </div>
+
+    <table class="table" id="postTable" aria-label="게시글 목록">
+      <thead>
+        <tr>
+          <th style="width:80px;">번호</th>
+          <th>제목</th>
+          <th style="width:160px;">작성자</th>
+          <th style="width:120px;">조회수</th>
+          <th style="width:180px;">작성일</th>
+        </tr>
+      </thead>
+      <tbody id="postTbody">
+      </tbody>
     </table>
-  </section>
 
-  <section id="postDetail" class="hidden">
-    <h2 id="dTitle"></h2>
-    <div class="meta"><span id="dAuthor"></span> · <span id="dDate"></span> · 👁 <span id="dViews"></span></div>
-    <pre id="dContent"></pre>
+    <div id="emptyBox" class="empty hidden">게시글이 없습니다</div>
+  </div>
 
-    <h3>댓글</h3>
-    <ul id="commentList"></ul>
-
-    <form id="commentForm" onsubmit="return addComment();">
-      <input id="cAuthor" placeholder="작성자" required />
-      <input id="cContent" placeholder="댓글" required />
-      <button type="submit">댓글 등록</button>
-    </form>
-  </section>
-</main>
-
-<!-- 경로 수정 -->
-<script th:src="@{/RankingGenreboard/js/board.js}"></script>
+  <script defer src="/RankingGenreboard/js/board.js"></script>
 </body>
 </html>

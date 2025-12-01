@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>장르별 | Movie Site</title>
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🎬 Movie Site</h1>
+
+    <div class="tabs">
+      <a class="link" href="/">흥행 순위</a>
+      <a class="link active" href="/genre">장르별</a>
+      <a class="link" href="/board/list">게시판</a>
+    </div>
+
+    <div class="toolbar" style="margin-top:12px;">
+      <label class="muted" for="genreSelect">장르</label>
+      <select id="genreSelect">
+        <option value="액션">액션</option>
+        <option value="드라마">드라마</option>
+        <option value="코미디">코미디</option>
+        <option value="로맨스">로맨스</option>
+        <option value="스릴러">스릴러</option>
+        <option value="공포">공포</option>
+        <option value="애니메이션">애니메이션</option>
+        <option value="범죄">범죄</option>
+        <option value="SF">SF</option>
+        <option value="판타지">판타지</option>
+        <option value="전쟁">전쟁</option>
+        <option value="사극">사극</option>
+        <option value="다큐">다큐</option>
+        <option value="가족">가족</option>
+        <option value="모험">모험</option>
+        <option value="음악">음악</option>
+        <option value="미스터리">미스터리</option>
+      </select>
+
+      <label class="muted" for="sizeSelect" style="margin-left:10px;">개수</label>
+      <select id="sizeSelect">
+        <option>10</option>
+        <option selected>20</option>
+        <option>50</option>
+      </select>
+
+      <label class="muted" for="sortSelect" style="margin-left:10px;">정렬</label>
+      <select id="sortSelect">
+        <option value="audi" selected>관객수</option>
+        <option value="sales">매출액</option>
+        <option value="open">개봉일</option>
+        <option value="movie">영화명</option>
+        <option value="screen">스크린수</option>
+      </select>
+
+      <label class="muted" for="dirSelect" style="margin-left:10px;">순서</label>
+      <select id="dirSelect">
+        <option value="desc" selected>내림차순</option>
+        <option value="asc">오름차순</option>
+      </select>
+
+      <button id="searchBtn" style="margin-left:10px;">검색</button>
+      <span id="status" class="muted" style="margin-left:8px;"></span>
+    </div>
+
+    <div id="grid" class="grid"></div>
+    <div id="emptyBox" class="empty hidden">데이터가 없습니다</div>
+  </div>
+
+  <script defer src="/RankingGenreboard/js/genre.js"></script>
+</body>
+</html>

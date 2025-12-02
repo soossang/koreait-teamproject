@@ -2,70 +2,59 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>장르별 | Movie Site</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>장르별 영화 제목</title>
   <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <style>
+    /* 제목만 리스트로 깔끔하게 */
+    .toolbar { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap:wrap; }
+    .title-list { list-style: none; padding: 0; margin: 12px 0; }
+    .title-list li {
+      padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; gap:8px;
+    }
+    .title-list li .dot {
+      width:7px; height:7px; border-radius:50%; background:#6b7280; display:inline-block;
+    }
+    .muted { color:#9aa2b2; font-size:.9rem; }
+    .count { margin-left:6px; }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>🎬 Movie Site</h1>
+    <h1>🎭 장르별 영화 제목</h1>
 
     <div class="tabs">
       <a class="link" href="/">흥행 순위</a>
       <a class="link active" href="/genre">장르별</a>
-      <a class="link" href="/board/list">게시판</a>
+      <a class="link" href="/board">게시판</a>
     </div>
 
-    <div class="toolbar" style="margin-top:12px;">
-      <label class="muted" for="genreSelect">장르</label>
+    <div class="toolbar">
+      <label for="genreSelect" class="muted">장르</label>
       <select id="genreSelect">
-        <option value="액션">액션</option>
-        <option value="드라마">드라마</option>
-        <option value="코미디">코미디</option>
-        <option value="로맨스">로맨스</option>
-        <option value="스릴러">스릴러</option>
-        <option value="공포">공포</option>
-        <option value="애니메이션">애니메이션</option>
-        <option value="범죄">범죄</option>
-        <option value="SF">SF</option>
-        <option value="판타지">판타지</option>
-        <option value="전쟁">전쟁</option>
-        <option value="사극">사극</option>
-        <option value="다큐">다큐</option>
-        <option value="가족">가족</option>
-        <option value="모험">모험</option>
-        <option value="음악">음악</option>
-        <option value="미스터리">미스터리</option>
+        <option>액션</option><option>드라마</option><option>코미디</option><option>로맨스</option>
+        <option>스릴러</option><option>공포</option><option>애니메이션</option><option>범죄</option>
+        <option>SF</option><option>판타지</option><option>전쟁</option><option>사극</option>
+        <option>다큐</option><option>가족</option><option>모험</option><option>음악</option>
+        <option>미스터리</option>
       </select>
 
-      <label class="muted" for="sizeSelect" style="margin-left:10px;">개수</label>
-      <select id="sizeSelect">
-        <option>10</option>
-        <option selected>20</option>
-        <option>50</option>
-      </select>
-
-      <label class="muted" for="sortSelect" style="margin-left:10px;">정렬</label>
-      <select id="sortSelect">
-        <option value="audi" selected>관객수</option>
-        <option value="sales">매출액</option>
-        <option value="open">개봉일</option>
-        <option value="movie">영화명</option>
-        <option value="screen">스크린수</option>
-      </select>
-
-      <label class="muted" for="dirSelect" style="margin-left:10px;">순서</label>
+      <label for="dirSelect" class="muted">정렬</label>
       <select id="dirSelect">
-        <option value="desc" selected>내림차순</option>
-        <option value="asc">오름차순</option>
+        <option value="asc" selected>제목 오름차순</option>
+        <option value="desc">제목 내림차순</option>
       </select>
 
-      <button id="searchBtn" style="margin-left:10px;">검색</button>
-      <span id="status" class="muted" style="margin-left:8px;"></span>
+      <label for="limitInput" class="muted">개수</label>
+      <input id="limitInput" type="number" min="1" max="200" value="100" style="width:90px" />
+
+      <button id="loadBtn" class="btn">불러오기</button>
+      <span id="status" class="muted count"></span>
     </div>
 
-    <div id="grid" class="grid"></div>
-    <div id="emptyBox" class="empty hidden">데이터가 없습니다</div>
+    <ul id="titleList" class="title-list"></ul>
+    <div id="emptyBox" class="empty hidden">해당 장르의 제목이 없습니다</div>
   </div>
 
   <script defer src="/RankingGenreboard/js/genre.js"></script>

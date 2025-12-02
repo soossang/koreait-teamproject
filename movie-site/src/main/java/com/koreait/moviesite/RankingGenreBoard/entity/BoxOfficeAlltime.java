@@ -2,13 +2,11 @@ package com.koreait.moviesite.RankingGenreBoard.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-@Builder @ToString @EqualsAndHashCode(of = "rankNo")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @Entity
 @Table(name = "box_office_alltime")
 public class BoxOfficeAlltime {
@@ -26,13 +24,19 @@ public class BoxOfficeAlltime {
     @Column(name = "sales_acc")
     private Long salesAcc;
 
-    @Column(name = "audi_acc", nullable = false)
+    @Column(name = "audi_acc")
     private Long audiAcc;
 
     @Column(name = "screen_cnt")
     private Integer screenCnt;
 
-    // DB DEFAULT CURRENT_TIMESTAMP 사용
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    // 장르 매핑 (N:M)
+    @ManyToMany
+    @JoinTable(
+        name = "box_office_genre",
+        joinColumns = @JoinColumn(name = "rank_no"),
+        inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    @Builder.Default
+    private Set<Genre> genres = new LinkedHashSet<>();
 }

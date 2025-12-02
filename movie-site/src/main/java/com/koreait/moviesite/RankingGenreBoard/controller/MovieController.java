@@ -1,26 +1,30 @@
 package com.koreait.moviesite.RankingGenreBoard.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.koreait.moviesite.RankingGenreBoard.service.GenreService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.koreait.moviesite.RankingGenreBoard.dto.MovieDto;
-import com.koreait.moviesite.RankingGenreBoard.service.MovieService;
+import java.util.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class MovieController {
-    private final MovieService movieService;
-    public MovieController(MovieService movieService){ this.movieService = movieService; }
 
+    private final GenreService genreService;
+
+    // 예: /api/movies?genre=액션&limit=100&dir=asc
     @GetMapping("/movies")
-    public Page<MovieDto> movies(@RequestParam(name = "genre", required = false) String genre,
-                                 @RequestParam(name = "page", defaultValue = "0") int page,
-                                 @RequestParam(name = "size", defaultValue = "20") int size) {
-        var pageable = PageRequest.of(page, size);
-        if (genre == null || genre.isBlank()) {
-            return movieService.all(pageable);       // ★ 장르 없으면 전체
-        }
-        return movieService.byGenre(genre, pageable);
+    public ResponseEntity<List<Map<String, String>>> movies(
+            @RequestParam(name = "genre") String genre,
+            @RequestParam(name = "limit", defaultValue = "100") int limit,
+            @RequestParam(name = "dir",   defaultValue = "asc") String dir
+    ) {
+        var titles = genreService.titles(genre, limit, dir);
+        var body = titles.stream()
+                .map(t -> Collections.singletonMap("movieNm", t))
+                .toList();
+        return ResponseEntity.ok(body);
     }
 }

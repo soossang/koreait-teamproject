@@ -124,3 +124,9 @@ button:hover, input:hover, select:hover, textarea:hover { border-color:#3b4456; 
   .grid { grid-template-columns: 1fr; }
   .tabs { gap:6px; }
 }
+/* === sort highlight === */
+
+.hot {
+  color:#ef4444;               /* 정렬 대상 항목 빨강 강조 */
+  font-weight:600;
+}

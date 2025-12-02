@@ -10,25 +10,14 @@
   <div class="container">
     <h1>🎬 Movie Site</h1>
 
-    <!-- 탭 -->
     <div class="tabs">
       <a class="link active" href="/">흥행 순위</a>
       <a class="link" href="/genre">장르별</a>
       <a class="link" href="/board">게시판</a>
     </div>
 
-    <!-- 툴바 -->
     <div class="toolbar" style="margin-top:12px;">
-      <label for="limitSelect" class="muted">Top</label>
-      <select id="limitSelect">
-        <option>5</option>
-        <option selected>10</option>
-        <option>20</option>
-        <option>50</option>
-        <option>100</option>
-      </select>
-
-      <label for="sortSelect" class="muted" style="margin-left:10px;">정렬</label>
+      <label for="sortSelect" class="muted">정렬</label>
       <select id="sortSelect">
         <option value="audi" selected>관객수</option>
         <option value="sales">매출액</option>
@@ -46,10 +35,11 @@
       <span id="status" class="muted" style="margin-left:8px;"></span>
     </div>
 
-    <!-- 카드 그리드 -->
     <div id="topGrid" class="grid"></div>
 
-    <!-- 빈 상태 -->
+    <!-- 페이지네이션 -->
+    <div class="pager" id="pager" aria-label="페이지네이션"></div>
+
     <div id="emptyBox" class="empty hidden">데이터가 없습니다</div>
   </div>
 

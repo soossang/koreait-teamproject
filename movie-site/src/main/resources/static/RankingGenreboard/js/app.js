@@ -5,86 +5,120 @@ function fmt(n){ return Number(n||0).toLocaleString(); }
 function show(el){ el.classList.remove('hidden'); }
 function hide(el){ el.classList.add('hidden'); }
 
-// ========= elements =========
-const limitSel = $('#limitSelect');
-const sortSel  = $('#sortSelect');   // audi | sales | open | movie | screen
-const dirSel   = $('#dirSelect');    // asc | desc
+// ========= elements/state =========
+const sortSel  = $('#sortSelect');  // audi | sales | open | movie | screen
+const dirSel   = $('#dirSelect');   // asc | desc
 const grid     = $('#topGrid');
 const emptyBox = $('#emptyBox');
 const statusEl = $('#status');
+const pagerEl  = $('#pager');
 
-let reqToken = 0; // 요청 경합 방지
-
-// 정렬 라벨(선택)
-const sortLabel = {
-  audi:   '관객수',
-  sales:  '매출액',
-  open:   '개봉일',
-  movie:  '영화명',
-  screen: '스크린수'
-};
+const PAGE_SIZE = 30;
+let currentPage = 1; // 1-based
+let reqToken = 0;
 
 // ========= render =========
-// 현재 정렬(sortBy/dir)에 맞춘 "순위(배지)"를 index+1로 표시
-function render(list, sortBy, dir){
+function renderCards(list, sortBy, dir, page, pageSize){
   if(!Array.isArray(list)) list = [];
   if(list.length === 0){
     grid.innerHTML = '';
     show(emptyBox);
-    statusEl.textContent = '(0건)';
     return;
   }
-
   hide(emptyBox);
+
+  const key = (sortBy||'audi').toLowerCase();
+  const isAudi   = key === 'audi';
+  const isSales  = key === 'sales';
+  const isOpen   = key === 'open';
+  const isMovie  = key === 'movie';
+  const isScreen = key === 'screen';
+
+  const rankStart = (Math.max(page,1) - 1) * pageSize + 1; // 전역 순번 시작
+
   grid.innerHTML = list.map((it, idx) => {
-    const rank = idx + 1; // 현재 정렬 결과의 순위
+    const rank = rankStart + idx;
+
+    // 라인 구성 (정렬 키만 .hot 적용)
+    const titleCls = `title title-ellipsis${isMovie?' hot':''}`;
+    const openLine = it.openDt
+      ? `<div class="muted${isOpen?' hot':''}">개봉: ${it.openDt}</div>`
+      : `<div class="muted${isOpen?' hot':''}">개봉: -</div>`;
+    const audiLine  = `<div class="muted${isAudi?' hot':''}">누적관객: ${fmt(it.audiAcc)}</div>`;
+    const salesLine = `<div class="muted${isSales?' hot':''}">누적매출: ${fmt(it.salesAcc)}</div>`;
+    const scrLine   = `<div class="muted${isScreen?' hot':''}">스크린수: ${it.screenCnt ?? '-'}</div>`;
+
     return `
       <div class="card">
         <div class="muted">
-          <span class="badge" title="${sortLabel[sortBy]||'정렬'} ${dir==='asc'?'오름차순':'내림차순'} 순위">#${rank}</span>
+          <!-- 배지는 항상 빨강 -->
+          <span class="badge badge--active" title="${key.toUpperCase()} ${dir==='asc'?'오름':'내림'}차순 전역순위">#${rank}</span>
         </div>
-        <div class="title title-ellipsis">${escapeHtml(it.movieNm)}</div>
-        <div class="muted">${it.openDt ? '개봉: ' + it.openDt : ''}</div>
-        <div class="muted">누적관객: ${fmt(it.audiAcc)}</div>
-        <div class="muted">누적매출: ${fmt(it.salesAcc)}</div>
-        <div class="muted">스크린수: ${it.screenCnt ?? '-'}</div>
-        <!-- 필요하면 원래(관객수 기준) 순위도 참고용으로 표시 가능:
-        <div class="muted">관객순위: #${it.rankNo}</div>
-        -->
+        <div class="${titleCls}">${escapeHtml(it.movieNm)}</div>
+        ${openLine}
+        ${audiLine}
+        ${salesLine}
+        ${scrLine}
       </div>
     `;
   }).join('');
-
-  statusEl.textContent = `(${list.length}건)`;
 }
 
-// ========= load from API =========
-async function load(){
+function renderPager(totalPages){
+  const tp = Math.max(totalPages, 1);
+  const cp = Math.min(Math.max(currentPage, 1), tp);
+
+  let html = '';
+  html += `<button ${cp===1?'disabled':''} data-page="${cp-1}">이전</button>`;
+  for(let p=1; p<=tp; p++){
+    html += `<button ${p===cp?'class="active"':''} data-page="${p}">${p}</button>`;
+  }
+  html += `<button ${cp===tp?'disabled':''} data-page="${cp+1}">다음</button>`;
+  pagerEl.innerHTML = html;
+
+  pagerEl.querySelectorAll('button[data-page]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const p = parseInt(e.currentTarget.getAttribute('data-page'), 10);
+      if(!isNaN(p)) gotoPage(p);
+    });
+  });
+}
+
+// ========= load =========
+async function load(page){
   const myToken = ++reqToken;
-  const limit  = limitSel?.value || 10;
-  const sortBy = sortSel?.value  || 'audi';
-  const dir    = dirSel?.value   || 'desc';
+  const sortBy = sortSel?.value || 'audi';
+  const dir    = dirSel?.value  || 'desc';
+  const size   = PAGE_SIZE;
+  const p      = Math.max(page ?? currentPage, 1);
 
   statusEl.textContent = '로딩중…';
   grid.innerHTML = '<div class="loader"></div>';
   hide(emptyBox);
 
   try{
-    const url = `/api/boxoffice/alltime?limit=${encodeURIComponent(limit)}&sortBy=${encodeURIComponent(sortBy)}&dir=${encodeURIComponent(dir)}`;
+    const url = `/api/boxoffice/alltime-page?page=${encodeURIComponent(p)}&size=${encodeURIComponent(size)}&sortBy=${encodeURIComponent(sortBy)}&dir=${encodeURIComponent(dir)}`;
     const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-
-    if(myToken !== reqToken) return; // 이전 응답 무시
+    if(myToken !== reqToken) return;
 
     if(!res.ok){
-      const text = await res.text();
-      console.error('API 오류', res.status, text);
+      const t = await res.text();
+      console.error('API 오류', res.status, t);
       grid.innerHTML = '';
       show(emptyBox);
       statusEl.textContent = `오류 ${res.status}`;
       return;
     }
-    const data = await res.json();
-    render(data, sortBy, dir);
+
+    const pageData   = await res.json(); // Spring Page
+    const list       = pageData.content || [];
+    const total      = pageData.totalElements ?? list.length;
+    const totalPages = pageData.totalPages ?? 1;
+    currentPage      = (pageData.number ?? (p-1)) + 1; // 0-based → 1-based
+
+    renderCards(list, sortBy, dir, currentPage, size);
+    renderPager(totalPages);
+    statusEl.textContent = `총 ${fmt(total)}건 · ${currentPage}/${totalPages}페이지 · 페이지당 ${PAGE_SIZE}개`;
   }catch(err){
     if(myToken !== reqToken) return;
     console.error(err);
@@ -94,8 +128,12 @@ async function load(){
   }
 }
 
+function gotoPage(p){
+  currentPage = Math.max(p, 1);
+  load(currentPage);
+}
+
 // ========= events =========
-limitSel.addEventListener('change', load);
-sortSel.addEventListener('change', load);
-dirSel.addEventListener('change', load);
-window.addEventListener('DOMContentLoaded', load);
+sortSel.addEventListener('change', ()=>gotoPage(1));
+dirSel.addEventListener('change',  ()=>gotoPage(1));
+window.addEventListener('DOMContentLoaded', ()=>gotoPage(1));

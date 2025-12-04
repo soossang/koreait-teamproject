@@ -1,0 +1,235 @@
+/* 공통 배경 & 기본 폰트 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #050509;
+    color: #f9fafb;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ===== 헤더 (index.css와 거의 동일, 약간 요약해도 됨) ===== */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(5, 5, 9, 0.95);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    backdrop-filter: blur(12px);
+}
+
+.header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 20px;
+}
+
+.logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #e11d48;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
+
+.main-nav,
+.auth-nav {
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+}
+
+.auth-nav {
+    font-size: 13px;
+    gap: 14px;
+}
+
+.main-nav a,
+.auth-nav a {
+    position: relative;
+    color: #e5e7eb;
+    padding: 4px 0;
+    font-weight: 400;
+    transition: color 0.18s ease;
+}
+
+.main-nav a::after,
+.auth-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0;
+    height: 2px;
+    background: #f97316;
+    transition: width 0.18s ease;
+}
+
+.main-nav a:hover,
+.auth-nav a:hover {
+    color: #f97316;
+}
+
+.main-nav a:hover::after,
+.auth-nav a:hover::after {
+    width: 100%;
+}
+
+.main-nav a.active,
+.auth-nav a.active {
+    color: #f97316;
+}
+
+.main-nav a.active::after,
+.auth-nav a.active::after {
+    width: 100%;
+}
+
+/* ===== 인증 페이지 레이아웃 ===== */
+
+.auth-page {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: radial-gradient(circle at top, #111827 0%, #020617 70%);
+    border-radius: 24px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 24px 40px rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.auth-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.auth-sub {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 22px;
+}
+
+/* 폼 */
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.auth-field span {
+    color: #e5e7eb;
+}
+
+.auth-field input {
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    background: rgba(15, 23, 42, 0.85);
+    color: #f9fafb;
+    padding: 9px 11px;
+    font-size: 13px;
+    outline: none;
+}
+
+.auth-field input:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.6);
+}
+
+/* 메시지 */
+
+.auth-message {
+    min-height: 18px;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.auth-message.error {
+    color: #f97373;
+}
+
+.auth-message.success {
+    color: #4ade80;
+}
+
+/* 버튼 */
+
+.auth-submit {
+    margin-top: 6px;
+    width: 100%;
+    border-radius: 999px;
+    border: none;
+    padding: 9px 0;
+    font-size: 14px;
+    font-weight: 600;
+    background: #e11d48;
+    color: #f9fafb;
+    cursor: pointer;
+}
+
+.auth-submit:hover {
+    background: #be123c;
+}
+
+/* 푸터 */
+
+.auth-footer {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+}
+
+.auth-footer a {
+    color: #f97316;
+}
+
+/* 반응형 살짝 줄이기 */
+@media (max-width: 480px) {
+    .header-inner {
+        padding: 8px 16px;
+    }
+
+    .auth-card {
+        padding: 24px 18px;
+    }
+}

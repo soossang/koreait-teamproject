@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Film Box</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="/Member/css/auth.css" />
+</head>
+
+<body>
+    <!-- 공통 헤더 -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="/Member/index.html" class="logo">
+                <div class="logo-mark">FB</div>
+                Film Box
+            </a>
+
+            <nav class="main-nav">
+                <a href="/Member/index.html" class="active">영화</a>
+                <a href="#">예매</a>
+                <a href="#">극장</a>
+                <a href="#">이벤트</a>
+                <a href="#">스토어</a>
+            </nav>
+
+            <div class="auth-nav">
+                <a href="/Member/login.html" data-role="login">로그인</a>
+                <a href="/Member/signup.html" data-role="signup" class="active">회원가입</a>
+                <a href="/Member/mypage.html" data-role="mypage" style="display:none;">마이페이지</a>
+                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-page">
+        <section class="auth-card">
+            <h1 class="auth-title">회원가입</h1>
+            <p class="auth-sub">간단한 정보 입력 후 Film Box를 시작해 보세요.</p>
+
+            <form id="signupForm" class="auth-form">
+                <label class="auth-field">
+                    <span>아이디</span>
+                    <input type="text" id="signupLoginId" autocomplete="username" />
+                </label>
+
+                <label class="auth-field">
+                    <span>비밀번호</span>
+                    <input type="password" id="signupPassword" autocomplete="new-password" />
+                </label>
+
+                <label class="auth-field">
+                    <span>비밀번호 확인</span>
+                    <input type="password" id="signupPasswordConfirm" autocomplete="new-password" />
+                </label>
+
+                <label class="auth-field">
+                    <span>이메일 (선택)</span>
+                    <input type="email" id="signupEmail" />
+                </label>
+
+                <label class="auth-field">
+                    <span>휴대폰 번호 (선택)</span>
+                    <input type="tel" id="signupPhone" placeholder="010-0000-0000" />
+                </label>
+
+                <p id="signupMessage" class="auth-message"></p>
+
+                <button type="submit" class="auth-submit">회원가입</button>
+            </form>
+
+            <div class="auth-footer">
+                이미 계정이 있으신가요?
+                <a href="/Member/login.html">로그인</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="/Member/js/auth.js"></script>
+</body>
+
+</html>

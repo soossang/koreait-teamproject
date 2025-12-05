@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>영화 목록</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<h1>영화 목록</h1>
+
+<div th:if="${#lists.isEmpty(movies)}">
+    등록된 영화가 없습니다.
+</div>
+
+<div th:each="movie : ${movies}">
+    <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+        <img th:src="${movie.posterUrl}" alt="포스터" style="height:150px;">
+        <h2 th:text="${movie.title}"></h2>
+        <p>
+            장르: <span th:text="${movie.genre}"></span> /
+            상영시간: <span th:text="${movie.runningTime}"></span> /
+            등급: <span th:text="${movie.rating}"></span>
+        </p>
+        <a th:href="@{|/movies/${movie.id}|}">상세 보기</a>
+    </div>
+</div>
+
+</body>
+</html>

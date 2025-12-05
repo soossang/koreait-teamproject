@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>예매 완료</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<h1>예매가 완료되었습니다 🎉</h1>
+
+<p>예매 번호: <span th:text="${reservation.id}"></span></p>
+
+<p>영화: <span th:text="${reservation.screening.movie.title}"></span></p>
+<p>극장: <span th:text="${reservation.screening.theaterName}"></span></p>
+<p>상영 시간:
+    <span th:text="${#temporals.format(reservation.screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></span>
+</p>
+<p>예매자: <span th:text="${reservation.name}"></span></p>
+<p>연락처: <span th:text="${reservation.phone}"></span></p>
+<p>예매 인원: <span th:text="${reservation.reservedCount}"></span>명</p>
+<p>좌석: <span th:text="${reservation.seats}"></span></p>
+<p>예매 시각:
+    <span th:text="${#temporals.format(reservation.reservedAt, 'yyyy-MM-dd HH:mm')}"></span>
+</p>
+
+<a href="/movies">영화 목록으로</a>
+
+</body>
+</html>

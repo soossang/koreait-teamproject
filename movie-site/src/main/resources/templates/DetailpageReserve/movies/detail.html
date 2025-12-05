@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${movie.title}">영화 상세</title>
+    <meta charset="UTF-8"/>
+
+    <!-- 공통 스타일 -->
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<a href="/movies" class="back-link">&lt; 영화 목록으로</a>
+
+<h1 th:text="${movie.title}" class="movie-title">영화 제목</h1>
+
+<div class="movie-container">
+    <!-- 포스터 -->
+    <div class="poster-wrapper">
+        <img th:src="${movie.posterUrl}" alt="포스터" class="movie-poster">
+    </div>
+
+    <!-- 영화 기본 정보 + 줄거리 -->
+    <div class="movie-info">
+        <p class="movie-meta">
+            장르: <span th:text="${movie.genre}"></span><br/>
+            상영시간: <span th:text="${movie.runningTime}"></span><br/>
+            등급: <span th:text="${movie.rating}"></span>
+        </p>
+
+        <h3 class="section-title">줄거리</h3>
+        <p th:text="${movie.description}" class="movie-description"></p>
+
+        <!-- ===== 예고편 / 관련 영상 ===== -->
+        <section class="trailer-section" th:if="${#lists.size(trailerIds) > 0}">
+            <h3 class="section-title">예고편 / 관련 영상</h3>
+
+            <div class="trailer-list">
+                <!-- trailerIds 리스트를 돌면서 iframe 여러 개 출력 -->
+                <div class="trailer-item" th:each="id : ${trailerIds}">
+                    <iframe
+                            th:src="'https://www.youtube.com/embed/' + ${id}"
+                            title="예고편"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<hr/>
+
+<!-- ** 여기부터 상영 정보 + 예매 영역 ** -->
+<section class="screening-section">
+    <h3 class="section-title">상영 정보</h3>
+
+    <!-- 상영 정보가 없을 때 -->
+    <div th:if="${#lists.isEmpty(screenings)}" class="no-screening">
+        상영 예정 정보가 없습니다.
+    </div>
+
+    <!-- 상영 정보가 있을 때 -->
+    <div th:unless="${#lists.isEmpty(screenings)}">
+
+        <!-- 브랜드 / 지점 선택 영역 -->
+        <div class="screening-filter">
+            <h4 class="filter-title">영화관 선택</h4>
+
+            <!-- 브랜드 버튼 -->
+            <div id="brandButtons" class="brand-buttons">
+                <button type="button" class="brand-btn active" data-brand="ALL">전체</button>
+                <button type="button" class="brand-btn" data-brand="CGV">CGV</button>
+                <button type="button" class="brand-btn" data-brand="롯데시네마">롯데시네마</button>
+                <button type="button" class="brand-btn" data-brand="메가박스">메가박스</button>
+            </div>
+
+            <!-- 지점(위치) 선택 -->
+            <div class="theater-select-wrapper">
+                <label for="theaterSelect"><b>지점 / 위치 선택</b></label>
+                <select id="theaterSelect" class="theater-select">
+                    <option value="">전체 지점</option>
+                    <!-- 옵션은 screening-filter.js에서 자동으로 채워줌 -->
+                </select>
+            </div>
+        </div>
+
+        <!-- 상영 정보 테이블 -->
+        <table id="screeningTable" class="screening-table">
+            <thead>
+            <tr>
+                <th>극장</th>
+                <th>상영 시간</th>
+                <th>잔여 좌석</th>
+                <th>예매</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="screening : ${screenings}"
+                th:attr="data-theater=${screening.theaterName}">
+                <td th:text="${screening.theaterName}"></td>
+                <td th:text="${#temporals.format(screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${availableSeatsMap[screening.id]}"></td>
+                <td>
+                    <a th:href="@{|/reserve/${screening.id}|}"
+                       th:if="${availableSeatsMap[screening.id] > 0}"
+                       class="reserve-link">
+                        예매하기
+                    </a>
+                    <span th:if="${availableSeatsMap[screening.id] <= 0}" class="soldout-text">매진</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- 외부 JS 파일 (src/main/resources/static/js/screening-filter.js) -->
+<script th:src="@{/js/screening-filter.js}"></script>
+
+</body>
+</html>

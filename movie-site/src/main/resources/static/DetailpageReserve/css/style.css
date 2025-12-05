@@ -1,0 +1,410 @@
+/* 기본 레이아웃 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 20px;
+    line-height: 1.5;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 상단 영화 정보 영역 */
+.back-link {
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.movie-title {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.movie-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.poster-wrapper {
+    flex: 0 0 auto;
+}
+
+.movie-poster {
+    height: 300px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.movie-info {
+    flex: 1 1 auto;
+}
+
+.movie-meta {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.section-title {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.movie-description {
+    white-space: pre-line;
+}
+
+/* 상영 정보 영역 */
+.screening-section {
+    margin-top: 24px;
+}
+
+.no-screening {
+    padding: 8px 0;
+}
+
+/* 필터 영역 */
+.screening-filter {
+    margin-bottom: 12px;
+}
+
+.filter-title {
+    margin: 0 0 6px 0;
+}
+
+.brand-buttons {
+    margin-bottom: 8px;
+}
+
+/* 브랜드 버튼 스타일 */
+.brand-btn {
+    padding: 4px 10px;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.brand-btn.active {
+    font-weight: bold;
+    border-color: #000;
+    background-color: #e9e9e9;
+}
+
+.theater-select-wrapper {
+    margin-top: 4px;
+}
+
+.theater-select {
+    margin-left: 6px;
+    padding: 2px 4px;
+}
+
+/* 상영 정보 테이블 */
+.screening-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.screening-table th,
+.screening-table td {
+    border: 1px solid #ddd;
+    padding: 6px 8px;
+    text-align: center;
+}
+
+.screening-table th {
+    background-color: #f2f2f2;
+}
+
+.reserve-link {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 13px;
+}
+
+.reserve-link:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+}
+
+.soldout-text {
+    color: #888;
+    font-size: 13px;
+}
+
+/* ===== 좌석 선택 / 예매 페이지 공통 스타일 ===== */
+
+body {
+    font-family: "Noto Sans KR", sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+}
+
+/* 페이지 전체 박스 */
+.reserve-page {
+    max-width: 960px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 24px 32px 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+
+.reserve-page h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+
+/* 상단 정보 영역 */
+.reserve-info {
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 16px;
+}
+
+.reserve-info p {
+    margin: 4px 0;
+}
+
+.info-label {
+    display: inline-block;
+    width: 80px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* 폼 필드 */
+.form-row {
+    margin-bottom: 12px;
+}
+
+.form-row label {
+    display: inline-block;
+    width: 80px;
+    font-weight: 600;
+}
+
+.form-row input[type="text"],
+.form-row input[type="number"] {
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 220px;
+}
+
+/* 좌석 영역 */
+.seat-wrapper {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+}
+
+.screen-box {
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 20px 24px 26px;
+    border: 1px solid #e0e0e0;
+}
+
+/* 상단 SCREEN 바 */
+.screen {
+    width: 80%;
+    margin: 0 auto 18px;
+    height: 18px;
+    border-radius: 40px;
+    background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+    border: 1px solid #cccccc;
+    text-align: center;
+    line-height: 18px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #555;
+}
+
+/* 좌석 그리드 */
+.seat-grid {
+    margin-top: 6px;
+}
+
+.seat-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.row-label {
+    width: 24px;
+    margin-right: 8px;
+    text-align: right;
+    font-weight: 600;
+    color: #666;
+}
+
+.row-seats {
+    display: flex;
+    gap: 4px;
+}
+
+/* 좌석 버튼 */
+.seat {
+    position: relative;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    border: 1px solid #b0bec5;
+    background-color: #ffffff;
+    cursor: pointer;
+    font-size: 11px;
+    text-align: center;
+    line-height: 24px;
+    box-sizing: border-box;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.seat:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* 선택한 좌석 */
+.seat.selected {
+    background-color: #43a047;
+    border-color: #2e7d32;
+    color: #ffffff;
+}
+
+/* 예약 완료 좌석 */
+.seat.reserved {
+    background-color: #b0bec5;
+    border-color: #90a4ae;
+    color: #ffffff;
+    cursor: not-allowed;
+}
+
+/* 예약 완료 좌석 X 표시 */
+.seat.reserved::after {
+    content: "X";
+    font-weight: 700;
+    font-size: 13px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+}
+
+/* 범례(legend) */
+.legend {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.legend-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid #b0bec5;
+}
+
+.legend-box.available {
+    background-color: #ffffff;
+}
+
+.legend-box.selected {
+    background-color: #43a047;
+    border-color: #2e7d32;
+}
+
+.legend-box.reserved {
+    background-color: #b0bec5;
+    border-color: #90a4ae;
+    position: relative;
+}
+
+.legend-box.reserved::after {
+    content: "X";
+    font-size: 11px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -52%);
+}
+
+/* 버튼 / 링크 */
+.actions {
+    margin-top: 24px;
+}
+
+.btn-primary {
+    background-color: #1976d2;
+    color: #ffffff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-primary:hover {
+    background-color: #1565c0;
+}
+
+.back-link {
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.back-link a {
+    color: #1976d2;
+    text-decoration: none;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+
+/* ===== 예고편(YouTube) 영역 ===== */
+.trailer-section {
+    margin-top: 24px;
+}
+
+.trailer-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.trailer-item iframe {
+    width: 360px;
+    height: 203px;  /* 16:9 비율 */
+    border: none;
+    border-radius: 4px;
+}
+
+

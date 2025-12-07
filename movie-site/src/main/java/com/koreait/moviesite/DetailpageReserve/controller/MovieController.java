@@ -1,10 +1,10 @@
 package com.koreait.moviesite.DetailpageReserve.controller;
 
-import com.koreait.movie_project.domain.Movie;
-import com.koreait.movie_project.domain.Screening;
-import com.koreait.movie_project.repository.ScreeningRepository;
-import com.koreait.movie_project.service.MovieService;
-import com.koreait.movie_project.service.ReservationService;
+import com.koreait.moviesite.DetailpageReserve.domain.Movie;
+import com.koreait.moviesite.DetailpageReserve.domain.Screening;
+import com.koreait.moviesite.DetailpageReserve.repository.ScreeningRepository;
+import com.koreait.moviesite.DetailpageReserve.service.MovieService;
+import com.koreait.moviesite.DetailpageReserve.service.ReservationService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

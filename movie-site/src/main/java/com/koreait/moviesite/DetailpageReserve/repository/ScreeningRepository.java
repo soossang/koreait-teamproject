@@ -1,6 +1,6 @@
 package com.koreait.moviesite.DetailpageReserve.repository;
 
-import com.koreait.movie_project.domain.Screening;
+import com.koreait.moviesite.DetailpageReserve.domain.Screening;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

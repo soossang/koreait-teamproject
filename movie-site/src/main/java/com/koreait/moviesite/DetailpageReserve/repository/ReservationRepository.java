@@ -1,6 +1,6 @@
 package com.koreait.moviesite.DetailpageReserve.repository;
 
-import com.koreait.movie_project.domain.Reservation;
+import com.koreait.moviesite.DetailpageReserve.domain.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

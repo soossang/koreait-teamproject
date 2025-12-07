@@ -1,9 +1,9 @@
 package com.koreait.moviesite.DetailpageReserve.service;
 
-import com.koreait.movie_project.domain.Reservation;
-import com.koreait.movie_project.domain.Screening;
-import com.koreait.movie_project.repository.ReservationRepository;
-import com.koreait.movie_project.repository.ScreeningRepository;
+import com.koreait.moviesite.DetailpageReserve.domain.Reservation;
+import com.koreait.moviesite.DetailpageReserve.domain.Screening;
+import com.koreait.moviesite.DetailpageReserve.repository.ReservationRepository;
+import com.koreait.moviesite.DetailpageReserve.repository.ScreeningRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

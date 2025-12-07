@@ -25,28 +25,40 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    // Web / MVC
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-web-services'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
 
+    // Thymeleaf 템플릿
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Bean Validation (회원가입 검증 등)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    implementation 'org.springframework.security:spring-security-crypto'
+    // JPA (엔티티, 리포지토리)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // (프로젝트에 따라 쓸 수도 있는) MyBatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+
+    // 🔐 Spring Security (HttpSecurity, SecurityFilterChain, PasswordEncoder 등)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // Devtools (자동 재시작)
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // MySQL 드라이버
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // 테스트
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

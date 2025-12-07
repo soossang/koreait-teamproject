@@ -20,9 +20,6 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * 프로필 수정
-     */
     public MemberProfileResponse updateProfile(Long memberId, MemberUpdateRequest request) {
         MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
@@ -37,26 +34,18 @@ public class MemberService {
         return toProfileResponse(saved);
     }
 
-    /**
-     * 비밀번호 변경 (현재 비밀번호 검증 포함)
-     */
     public void changePassword(Long memberId, PasswordChangeRequest request) {
         MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
 
-        // 현재 비밀번호 확인
         if (!passwordEncoder.matches(request.currentPassword(), member.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        // 새 비밀번호로 변경
         member.setPassword(passwordEncoder.encode(request.newPassword()));
         memberRepository.save(member);
     }
 
-    /**
-     * 엔티티 -> 프로필 응답 DTO 변환
-     */
     private MemberProfileResponse toProfileResponse(MemberEntity member) {
         return new MemberProfileResponse(
                 member.getId(),

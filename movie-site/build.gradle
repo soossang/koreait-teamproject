@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.koreait'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'Movie Site Project'
 
 java {
     toolchain {
@@ -31,19 +31,19 @@ dependencies {
     // Thymeleaf 템플릿
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    // Bean Validation (회원가입 검증 등)
+    // Bean Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // JPA (엔티티, 리포지토리)
+    // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // (프로젝트에 따라 쓸 수도 있는) MyBatis
+    // MyBatis (프로젝트에서 사용)
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
 
     // 🔐 Spring Security (HttpSecurity, SecurityFilterChain, PasswordEncoder 등)
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // JWT
+    // 🔐 JWT (JJWT 0.12.5)
     implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
@@ -52,13 +52,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // Devtools (자동 재시작)
+    // Devtools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // MySQL 드라이버
     runtimeOnly 'com.mysql:mysql-connector-j'
 
-    // 테스트
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

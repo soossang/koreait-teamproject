@@ -1,4 +1,4 @@
-package com.koreait.moviesite.Member.config;
+package com.koreait.moviesite.DetailpageReserve.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

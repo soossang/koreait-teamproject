@@ -20,6 +20,14 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ✅ 프로필 조회 메서드 추가
+    public MemberProfileResponse getProfile(Long memberId) {
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+        return toProfileResponse(member);
+    }
+
     public MemberProfileResponse updateProfile(Long memberId, MemberUpdateRequest request) {
         MemberEntity member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));

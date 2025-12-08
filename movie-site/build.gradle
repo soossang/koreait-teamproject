@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.koreait'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'Movie Site Project'
 
 java {
     toolchain {
@@ -25,28 +25,40 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    // Web / MVC
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-web-services'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
 
+    // Thymeleaf 템플릿
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Bean Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    implementation 'org.springframework.security:spring-security-crypto'
+    // JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // MyBatis (프로젝트에서 사용)
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+
+    // 🔐 Spring Security (HttpSecurity, SecurityFilterChain, PasswordEncoder 등)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 🔐 JWT (JJWT 0.12.5)
     implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // Devtools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // MySQL 드라이버
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

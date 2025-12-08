@@ -1,7 +1,7 @@
 package com.koreait.moviesite.DetailpageReserve.service;
 
-import com.koreait.movie_project.domain.Movie;
-import com.koreait.movie_project.repository.MovieRepository;
+import com.koreait.moviesite.DetailpageReserve.domain.Movie;
+import com.koreait.moviesite.DetailpageReserve.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

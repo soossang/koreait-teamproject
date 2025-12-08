@@ -55,7 +55,7 @@ public class ReservationController {
         model.addAttribute("reservedSeats", reservedSeats);
         model.addAttribute("availableSeats", availableSeats);
 
-        return "reservation/form";
+        return "DetailpageReserve/reservation/form";
     }
 
 
@@ -74,6 +74,6 @@ public class ReservationController {
                 reservationService.reserve(screeningId, name, phone, count, selectedSeats);
 
         model.addAttribute("reservation", reservation);
-        return "reservation/complete";
+        return "DetailpageReserve/reservation/complete";
     }
 }

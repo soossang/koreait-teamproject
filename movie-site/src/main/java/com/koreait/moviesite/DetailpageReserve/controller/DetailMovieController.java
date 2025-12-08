@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/movies")
-public class MovieController {
+public class DetailMovieController {
 
     private final MovieService movieService;
     private final ScreeningRepository screeningRepository;
     private final ReservationService reservationService;
 
-    public MovieController(MovieService movieService,
+    public DetailMovieController(MovieService movieService,
                            ScreeningRepository screeningRepository,
                            ReservationService reservationService) {
         this.movieService = movieService;
@@ -35,7 +35,7 @@ public class MovieController {
     public String list(Model model) {
         List<Movie> movies = movieService.findAll();
         model.addAttribute("movies", movies);
-        return "movies/list";   // templates/movies/list.html
+        return "DetailpageReserve/movies/list";    // templates/movies/list.html
     }
 
     // ★ 상세 화면: GET /movies/{id}
@@ -61,6 +61,6 @@ public class MovieController {
         model.addAttribute("availableSeatsMap", availableSeatsMap);
         model.addAttribute("trailerIds", trailerIds);
 
-        return "movies/detail";
+        return "DetailpageReserve/movies/detail";
     }
 }

@@ -16,7 +16,7 @@
 <div class="movie-container">
     <!-- 포스터 -->
     <div class="poster-wrapper">
-        <img th:src="${movie.posterUrl}" alt="포스터" class="movie-poster">
+        <img th:src="@{/DetailpageReserve/img/{file}(file=${movie.posterUrl})}" alt="포스터" class="movie-poster">
     </div>
 
     <!-- 영화 기본 정보 + 줄거리 -->

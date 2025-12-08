@@ -9,8 +9,8 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
-public class MovieController {
+@RequestMapping("/api")	
+public class RankingMovieController {
 
     private final GenreService genreService;
 

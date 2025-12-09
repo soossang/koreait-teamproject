@@ -4,8 +4,8 @@
     <meta charset="UTF-8"/>
     <title>좌석 선택 및 예매</title>
 
-    <!-- static/css/style.css -->
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <!-- DetailpageReserve 전용 CSS -->
+    <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
 </head>
 <body>
 
@@ -26,11 +26,10 @@
             <span class="info-label">상영 시간</span>
             <span th:text="${#temporals.format(screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></span>
         </p>
-	     <p>
-	    <span class="info-label">잔여 좌석</span>
-	    <span th:text="${availableSeats}"></span>
-		</p>
-
+        <p>
+            <span class="info-label">잔여 좌석</span>
+            <span th:text="${availableSeats}"></span>
+        </p>
     </div>
 
     <!-- 예매 폼 -->
@@ -111,7 +110,7 @@
 <script>
     const selected = new Set();
 
-    // 예약된 좌석(reserved)이 아닌 버튼들만 클릭 가능
+    // 예약되지 않은 좌석만 클릭 가능
     document.querySelectorAll('.seat:not(.reserved)').forEach(btn => {
         btn.addEventListener('click', () => {
             const seat = btn.dataset.seat;
@@ -133,8 +132,13 @@
         const count = parseInt(document.getElementById('count').value || '0', 10);
         const seats = Array.from(selected);
 
+        if (!count || count <= 0) {
+            alert('인원 수를 입력하세요.');
+            return false;
+        }
+
         if (seats.length === 0) {
-            alert('좌석을 선택해 주세요.');
+            alert('좌석을 선택하세요.');
             return false;
         }
 

@@ -1,11 +1,106 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${movie.title}">영화 상세</title>
     <meta charset="UTF-8"/>
+    <title th:text="${movie.title}">영화 상세</title>
 
-    <!-- 공통 스타일 -->
-    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
+
+    <!-- 상영 정보 필터 전용 간단 스타일 -->
+    <style>
+        .screening-section {
+            margin-top: 30px;
+        }
+
+        .screening-filters {
+            border: 1px solid #ddd;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            background: #fafafa;
+        }
+
+        .screening-filters .filter-row {
+            margin-bottom: 8px;
+        }
+
+        .screening-filters .filter-label {
+            display: inline-block;
+            width: 90px;
+            font-weight: bold;
+        }
+
+        .screening-filters .brand-filter {
+            margin-right: 6px;
+            padding: 4px 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .screening-filters .brand-filter.active {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+        .screening-filters select {
+            padding: 3px 6px;
+            font-size: 13px;
+        }
+
+        .screening-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .screening-table th, .screening-table td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            font-size: 13px;
+        }
+
+        .screening-table th {
+            background: #f4f4f4;
+        }
+
+        .reserve-link {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #0080ff;
+            color: #fff;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .soldout-text {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .movie-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .poster-wrapper img.movie-poster {
+            width: 250px;
+        }
+
+        .back-link {
+            font-size: 12px;
+            color: #555;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
@@ -13,81 +108,81 @@
 
 <h1 th:text="${movie.title}" class="movie-title">영화 제목</h1>
 
+<!-- 영화 기본 정보 -->
 <div class="movie-container">
+
     <!-- 포스터 -->
     <div class="poster-wrapper">
-        <img th:src="@{/DetailpageReserve/img/{file}(file=${movie.posterUrl})}" alt="포스터" class="movie-poster">
+        <!-- DB 값: /DetailpageReserve/img/xxx.webp -->
+        <img th:src="${movie.posterUrl}"
+             alt="포스터"
+             class="movie-poster">
     </div>
 
-    <!-- 영화 기본 정보 + 줄거리 -->
+    <!-- 정보/줄거리 -->
     <div class="movie-info">
         <p class="movie-meta">
-            장르: <span th:text="${movie.genre}"></span><br/>
-            상영시간: <span th:text="${movie.runningTime}"></span><br/>
-            등급: <span th:text="${movie.rating}"></span>
+            장르:
+            <span th:text="${movie.genre}">액션</span><br/>
+            상영시간:
+            <span th:text="${movie.runningTime}">120분</span><br/>
+            등급:
+            <span th:text="${movie.rating}">15세이상</span>
         </p>
 
-        <h3 class="section-title">줄거리</h3>
-        <p th:text="${movie.description}" class="movie-description"></p>
-
-        <!-- ===== 예고편 / 관련 영상 ===== -->
-        <section class="trailer-section" th:if="${#lists.size(trailerIds) > 0}">
-            <h3 class="section-title">예고편 / 관련 영상</h3>
-
-            <div class="trailer-list">
-                <!-- trailerIds 리스트를 돌면서 iframe 여러 개 출력 -->
-                <div class="trailer-item" th:each="id : ${trailerIds}">
-                    <iframe
-                            th:src="'https://www.youtube.com/embed/' + ${id}"
-                            title="예고편"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-        </section>
+        <p class="movie-description"
+           th:text="${movie.description}">
+            영화 줄거리 텍스트
+        </p>
     </div>
 </div>
 
-<hr/>
+<!-- 예고편 / 관련 영상 -->
+<section class="trailer-section"
+         th:if="${trailerIds != null and !#lists.isEmpty(trailerIds)}">
+    <h2>예고편 / 관련 영상</h2>
+    <div class="trailer-list">
+        <div th:each="tid : ${trailerIds}" class="trailer-item" style="display:inline-block;margin-right:10px;">
+            <iframe th:src="'https://www.youtube.com/embed/' + ${tid}"
+                    width="260"
+                    height="160"
+                    frameborder="0"
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</section>
 
-<!-- ** 여기부터 상영 정보 + 예매 영역 ** -->
+<!-- ======================= 상영 정보 + 필터 영역 ======================= -->
 <section class="screening-section">
-    <h3 class="section-title">상영 정보</h3>
+    <h2>상영 정보</h2>
 
-    <!-- 상영 정보가 없을 때 -->
-    <div th:if="${#lists.isEmpty(screenings)}" class="no-screening">
-        상영 예정 정보가 없습니다.
+    <div class="screening-filters" th:if="${!#lists.isEmpty(screenings)}">
+        <div class="filter-row">
+            <span class="filter-label">영화관 선택</span>
+            <button type="button" class="brand-filter active" data-brand="ALL">전체</button>
+            <button type="button" class="brand-filter" data-brand="CGV">CGV</button>
+            <button type="button" class="brand-filter" data-brand="롯데시네마">롯데시네마</button>
+            <button type="button" class="brand-filter" data-brand="메가박스">메가박스</button>
+        </div>
+        <div class="filter-row">
+            <span class="filter-label">지점 / 위치 선택</span>
+            <select id="branchSelect">
+                <option value="ALL">전체 지점</option>
+                <!-- 옵션들은 아래 JS가 상영관 목록에서 자동으로 채워 넣음 -->
+            </select>
+        </div>
     </div>
 
-    <!-- 상영 정보가 있을 때 -->
+    <!-- 상영 일정이 없을 때 -->
+    <div class="no-screening" th:if="${#lists.isEmpty(screenings)}">
+        등록된 상영 일정이 없습니다.
+    </div>
+
+    <!-- 상영 일정 테이블 -->
     <div th:unless="${#lists.isEmpty(screenings)}">
 
-        <!-- 브랜드 / 지점 선택 영역 -->
-        <div class="screening-filter">
-            <h4 class="filter-title">영화관 선택</h4>
-
-            <!-- 브랜드 버튼 -->
-            <div id="brandButtons" class="brand-buttons">
-                <button type="button" class="brand-btn active" data-brand="ALL">전체</button>
-                <button type="button" class="brand-btn" data-brand="CGV">CGV</button>
-                <button type="button" class="brand-btn" data-brand="롯데시네마">롯데시네마</button>
-                <button type="button" class="brand-btn" data-brand="메가박스">메가박스</button>
-            </div>
-
-            <!-- 지점(위치) 선택 -->
-            <div class="theater-select-wrapper">
-                <label for="theaterSelect"><b>지점 / 위치 선택</b></label>
-                <select id="theaterSelect" class="theater-select">
-                    <option value="">전체 지점</option>
-                    <!-- 옵션은 screening-filter.js에서 자동으로 채워줌 -->
-                </select>
-            </div>
-        </div>
-
-        <!-- 상영 정보 테이블 -->
-        <table id="screeningTable" class="screening-table">
+        <table class="screening-table">
             <thead>
             <tr>
                 <th>극장</th>
@@ -96,19 +191,28 @@
                 <th>예매</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="screeningTableBody">
             <tr th:each="screening : ${screenings}"
                 th:attr="data-theater=${screening.theaterName}">
-                <td th:text="${screening.theaterName}"></td>
-                <td th:text="${#temporals.format(screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></td>
-                <td th:text="${availableSeatsMap[screening.id]}"></td>
+                <td th:text="${screening.theaterName}">CGV 강남점</td>
+                <td th:text="${#temporals.format(screening.screeningTime, 'yyyy-MM-dd HH:mm')}">
+                    2026-01-01 12:00
+                </td>
                 <td>
-                    <a th:href="@{|/reserve/${screening.id}|}"
-                       th:if="${availableSeatsMap[screening.id] > 0}"
+                    <span th:text="${availableSeatsMap[screening.id]}">0</span>
+                    /
+                    <span th:text="${screening.totalSeats}">100</span>
+                </td>
+                <td>
+                    <a th:if="${availableSeatsMap[screening.id] > 0}"
+                       th:href="@{|/reserve/${screening.id}|}"
                        class="reserve-link">
                         예매하기
                     </a>
-                    <span th:if="${availableSeatsMap[screening.id] <= 0}" class="soldout-text">매진</span>
+                    <span th:if="${availableSeatsMap[screening.id] <= 0}"
+                          class="soldout-text">
+                        매진
+                    </span>
                 </td>
             </tr>
             </tbody>
@@ -116,8 +220,69 @@
     </div>
 </section>
 
-<!-- 외부 JS 파일 (src/main/resources/static/js/screening-filter.js) -->
-<script th:src="@{/js/screening-filter.js}"></script>
+<!-- 간단한 필터 기능 JS -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const rows = Array.from(document.querySelectorAll('#screeningTableBody tr'));
+        const branchSelect = document.getElementById('branchSelect');
+        const brandButtons = Array.from(document.querySelectorAll('.brand-filter'));
 
+        if (!rows.length) {
+            return;
+        }
+
+        // 지점 옵션 자동 생성 (중복 제거)
+        const branchSet = new Set();
+        rows.forEach(row => {
+            const theater = row.dataset.theater || '';
+            if (theater) {
+                branchSet.add(theater);
+            }
+        });
+        branchSet.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            branchSelect.appendChild(opt);
+        });
+
+        let currentBrand = 'ALL';
+        let currentBranch = 'ALL';
+
+        function applyFilter() {
+            rows.forEach(row => {
+                const theater = row.dataset.theater || '';
+
+                // 영화관 브랜드(체인)는 단순히 이름에 포함되는지로 판별 (CGV, 롯데시네마, 메가박스)
+                const brandMatch =
+                    currentBrand === 'ALL' ||
+                    theater.indexOf(currentBrand) !== -1;
+
+                const branchMatch =
+                    currentBranch === 'ALL' ||
+                    theater === currentBranch;
+
+                row.style.display = (brandMatch && branchMatch) ? '' : 'none';
+            });
+        }
+
+        brandButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                brandButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentBrand = btn.dataset.brand;
+                applyFilter();
+            });
+        });
+
+        branchSelect.addEventListener('change', () => {
+            currentBranch = branchSelect.value;
+            applyFilter();
+        });
+    });
+    
+</script>
+
+	<div style="height: 80px;"></div>
 </body>
 </html>

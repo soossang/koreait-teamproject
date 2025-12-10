@@ -4,10 +4,33 @@
     <meta charset="UTF-8"/>
     <title th:text="${movie.title}">영화 상세</title>
 
+    <!-- 기존 CSS -->
     <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
 
-    <!-- 상영 정보 필터 전용 간단 스타일 -->
-    <style>
+    <!-- detail.html 전용 스타일 -->
+    <style>  
+	    /* 페이지 전체 여백용 컨테이너 */
+	    .detail-layout {
+	        max-width: 1200px;   /* 내용 최대 너비 */
+	        margin: 0 auto;      /* 좌우 가운데 정렬 (브라우저 양 옆 여백 생김) */
+	        padding: 0 40px;     /* 내용과 컨테이너 사이의 좌우 여백 */
+	    }
+        /* 상단 '영화 목록으로' 링크 */
+        a.back-to-list {
+            display: inline-block;
+            margin: 10px 0 20px;
+            font-size: 24px;      /* 글자 크게 */
+            font-weight: 700;     /* 굵게 */
+            color: #333;
+            text-decoration: none;
+        }
+
+        a.back-to-list:hover {
+            text-decoration: underline;
+        }
+
+        /* 이하 기존 스타일들 */
+
         .screening-section {
             margin-top: 30px;
         }
@@ -56,7 +79,8 @@
             margin-top: 8px;
         }
 
-        .screening-table th, .screening-table td {
+        .screening-table th,
+        .screening-table td {
             border: 1px solid #ddd;
             padding: 6px 8px;
             font-size: 13px;
@@ -90,36 +114,28 @@
         .poster-wrapper img.movie-poster {
             width: 250px;
         }
-
-        .back-link {
-            font-size: 12px;
-            color: #555;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
 
-<a href="/movies" class="back-link">&lt; 영화 목록으로</a>
+<div class="detail-layout">
+<!-- 상단 뒤로가기 링크 -->
+<a th:href="@{/movies}" class="back-to-list">&lt; 영화 목록으로</a>
 
 <h1 th:text="${movie.title}" class="movie-title">영화 제목</h1>
 
-<!-- 영화 기본 정보 -->
+<!-- ===== 영화 기본 정보 ===== -->
 <div class="movie-container">
 
-    <!-- 포스터 -->
+    <!-- 포스터 영역 -->
     <div class="poster-wrapper">
         <!-- DB 값: /DetailpageReserve/img/xxx.webp -->
         <img th:src="${movie.posterUrl}"
              alt="포스터"
-             class="movie-poster">
+             class="movie-poster"/>
     </div>
 
-    <!-- 정보/줄거리 -->
+    <!-- 정보/줄거리 영역 -->
     <div class="movie-info">
         <p class="movie-meta">
             장르:
@@ -137,12 +153,14 @@
     </div>
 </div>
 
-<!-- 예고편 / 관련 영상 -->
+<!-- ===== 예고편 / 관련 영상 ===== -->
 <section class="trailer-section"
          th:if="${trailerIds != null and !#lists.isEmpty(trailerIds)}">
     <h2>예고편 / 관련 영상</h2>
     <div class="trailer-list">
-        <div th:each="tid : ${trailerIds}" class="trailer-item" style="display:inline-block;margin-right:10px;">
+        <div th:each="tid : ${trailerIds}"
+             class="trailer-item"
+             style="display:inline-block;margin-right:10px;">
             <iframe th:src="'https://www.youtube.com/embed/' + ${tid}"
                     width="260"
                     height="160"
@@ -153,10 +171,11 @@
     </div>
 </section>
 
-<!-- ======================= 상영 정보 + 필터 영역 ======================= -->
+<!-- ===== 상영 정보 + 필터 ===== -->
 <section class="screening-section">
     <h2>상영 정보</h2>
 
+    <!-- 필터 박스 (상영 일정 있을 때만) -->
     <div class="screening-filters" th:if="${!#lists.isEmpty(screenings)}">
         <div class="filter-row">
             <span class="filter-label">영화관 선택</span>
@@ -169,19 +188,18 @@
             <span class="filter-label">지점 / 위치 선택</span>
             <select id="branchSelect">
                 <option value="ALL">전체 지점</option>
-                <!-- 옵션들은 아래 JS가 상영관 목록에서 자동으로 채워 넣음 -->
+                <!-- 옵션은 아래 JS가 상영관 목록에서 자동 생성 -->
             </select>
         </div>
     </div>
 
-    <!-- 상영 일정이 없을 때 -->
+    <!-- 상영 일정 없을 때 -->
     <div class="no-screening" th:if="${#lists.isEmpty(screenings)}">
         등록된 상영 일정이 없습니다.
     </div>
 
-    <!-- 상영 일정 테이블 -->
+    <!-- 상영 일정 테이블 (있을 때) -->
     <div th:unless="${#lists.isEmpty(screenings)}">
-
         <table class="screening-table">
             <thead>
             <tr>
@@ -217,10 +235,12 @@
             </tr>
             </tbody>
         </table>
-    </div>
+        <!-- 여백 -->
+	    <div style="height: 80px;"></div>
+		</div> <!-- .detail-layout 끝 -->
 </section>
 
-<!-- 간단한 필터 기능 JS -->
+<!-- ===== 상영 정보 필터 JS ===== -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const rows = Array.from(document.querySelectorAll('#screeningTableBody tr'));
@@ -231,7 +251,7 @@
             return;
         }
 
-        // 지점 옵션 자동 생성 (중복 제거)
+        // 지점 목록 중복 제거해서 select option 만들기
         const branchSet = new Set();
         rows.forEach(row => {
             const theater = row.dataset.theater || '';
@@ -253,7 +273,7 @@
             rows.forEach(row => {
                 const theater = row.dataset.theater || '';
 
-                // 영화관 브랜드(체인)는 단순히 이름에 포함되는지로 판별 (CGV, 롯데시네마, 메가박스)
+                // 브랜드는 극장 이름에 포함되는지만 체크 (CGV / 롯데시네마 / 메가박스)
                 const brandMatch =
                     currentBrand === 'ALL' ||
                     theater.indexOf(currentBrand) !== -1;
@@ -275,14 +295,15 @@
             });
         });
 
-        branchSelect.addEventListener('change', () => {
+        branchSelect.addEventListener('change', () => {	
             currentBranch = branchSelect.value;
             applyFilter();
         });
     });
-    
 </script>
 
-	<div style="height: 80px;"></div>
+<!-- 아래 여백 -->
+<div style="height: 80px;"></div>
+
 </body>
 </html>

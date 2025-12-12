@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig {1
 
     // ★ 모든 요청 허용 + CSRF 끔 (개발 단계용)
     @Bean

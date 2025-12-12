@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>장르별 영화 제목</title>
   <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <link rel="stylesheet" href="/Member/css/index.css">
   <style>
     /* 제목만 리스트로 깔끔하게 */
     .toolbar { display:flex; gap:10px; align-items:center; margin:12px 0; flex-wrap:wrap; }
@@ -19,17 +20,40 @@
     .muted { color:#9aa2b2; font-size:.9rem; }
     .count { margin-left:6px; }
   </style>
+<script th:src="@{/Member/js/index.js}" defer></script>  
 </head>
 <body>
+	<header class="header">
+        <div class="header-inner">
+            <!-- 로고 전체를 홈 링크로 (Member 메인으로 이동) -->
+            <a href="/Member/index.html" class="logo">
+                <div class="logo-mark">FB</div>
+                Film Box
+            </a>
+
+            <!-- 상단 메뉴 -->
+            <nav class="main-nav">
+                <a href="/Member/index.html">홈</a>
+                <a href="/movies">영화/예매</a>
+                <a href="/Member/index.html">극장</a>
+                <a href="/">흥행영화순위</a>
+                <a href="/genre" class="active">장르</a>
+                <a href="/board">게시판</a>
+            </nav>
+
+            <!-- 로그인 / 회원가입 영역 -->
+            <div class="auth-nav">
+                <a href="/Member/login.html" data-role="login">로그인</a>
+                <a href="/Member/signup.html" data-role="signup">회원가입</a>
+                <a href="/Member/mypage.html" data-role="mypage" style="display:none;">마이페이지</a>
+                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+            </div>
+        </div>
+    </header>
+	<div class="kobis-note">
+	  KOBIS 싸이트를 참고했습니다. 역대 박스오피스(공식통계 기준) 관객수 100위까지의 기록들을 기준으로 합니다.
+	</div>
   <div class="container">
-    <h1>🎭 장르별 영화 제목</h1>
-
-    <div class="tabs">
-      <a class="link" href="/">흥행 순위</a>
-      <a class="link active" href="/genre">장르별</a>
-      <a class="link" href="/board">게시판</a>
-    </div>
-
     <div class="toolbar">
       <label for="genreSelect" class="muted">장르</label>
       <select id="genreSelect">
@@ -58,5 +82,6 @@
   </div>
 
   <script defer src="/RankingGenreboard/js/genre.js"></script>
+<script th:src="@{/Member/js/index.js}"></script>  
 </body>
 </html>

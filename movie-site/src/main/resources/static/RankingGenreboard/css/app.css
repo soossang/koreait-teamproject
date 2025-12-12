@@ -130,3 +130,12 @@ button:hover, input:hover, select:hover, textarea:hover { border-color:#3b4456; 
   color:#ef4444;               /* 정렬 대상 항목 빨강 강조 */
   font-weight:600;
 }
+.kobis-note{
+  max-width: 1100px;
+  margin: 14px auto 0;
+  padding: 0 24px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.75);
+  text-align: center;
+}

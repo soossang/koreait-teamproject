@@ -8,7 +8,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        // templates/RankingGenreboard/index.html
-        return "RankingGenreboard/index";
+        // templates/RankingGenreboard/ranking.html
+        return "RankingGenreboard/ranking";
     }
 }

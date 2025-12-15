@@ -8,7 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        // templates/RankingGenreboard/ranking.html
-        return "RankingGenreboard/ranking";
+        return "redirect:/movies";
     }
 }

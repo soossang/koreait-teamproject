@@ -4,7 +4,11 @@
     <meta charset="UTF-8"/>
     <title th:text="${movie.title}">영화 상세</title>
 
-    <!-- 기존 CSS -->
+    <!-- Film Box 공통 헤더 스타일/동작 -->
+    <link rel="stylesheet" href="/Member/css/index.css">
+    <script th:src="@{/Member/js/index.js}" defer></script>
+
+    <!-- DetailpageReserve 전용 CSS (index.css보다 나중에 로드해서 화면 충돌 최소화) -->
     <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
 
     <!-- detail.html 전용 스타일 -->
@@ -118,9 +122,12 @@
 </head>
 <body>
 
-<div class="detail-layout">
-<!-- 상단 뒤로가기 링크 -->
-<a th:href="@{/movies}" class="back-to-list">&lt; 영화 목록으로</a>
+<!-- Film Box 공통 헤더 -->
+<div th:replace="fragments/header :: header('movies')"></div>
+
+<main class="detail-layout">
+    <!-- 상단 뒤로가기 링크 -->
+    <a th:href="@{/movies}" class="back-to-list">&lt; 영화 목록으로</a>
 
 <h1 th:text="${movie.title}" class="movie-title">영화 제목</h1>
 
@@ -151,7 +158,7 @@
             영화 줄거리 텍스트
         </p>
     </div>
-</div>
+    </div>
 
 <!-- ===== 예고편 / 관련 영상 ===== -->
 <section class="trailer-section"
@@ -235,10 +242,12 @@
             </tr>
             </tbody>
         </table>
-        <!-- 여백 -->
-	    <div style="height: 80px;"></div>
-		</div> <!-- .detail-layout 끝 -->
+    </div>
 </section>
+
+    <!-- 아래 여백 -->
+    <div style="height: 80px;"></div>
+</main>
 
 <!-- ===== 상영 정보 필터 JS ===== -->
 <script>
@@ -301,9 +310,6 @@
         });
     });
 </script>
-
-<!-- 아래 여백 -->
-<div style="height: 80px;"></div>
 
 </body>
 </html>

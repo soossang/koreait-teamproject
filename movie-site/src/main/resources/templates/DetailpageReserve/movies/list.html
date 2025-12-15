@@ -20,9 +20,10 @@
             color: #63b3ff;          /* 마우스 올렸을 때 조금 더 밝은 파랑 */
         }
     </style>
-<script th:src="@{/Member/js/index.js}" defer></script>    
+    <script th:src="@{/Member/js/index.js}" defer></script>
 </head>
 <body>
+<<<<<<< HEAD
 	<header class="header">
 	        <div class="header-inner">
 	            <!-- 로고 전체를 홈 링크로 (Member 메인으로 이동) -->
@@ -49,6 +50,10 @@
 	            </div>
 	        </div>
 	</header>
+=======
+	<!-- Film Box 공통 헤더 -->
+	<div th:replace="fragments/header :: header('movies')"></div>
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 <h1>영화 목록</h1>
 
 <div th:if="${#lists.isEmpty(movies)}">
@@ -76,6 +81,5 @@
         <a th:href="@{|/movies/${movie.id}|}" class="detail-link">상세 보기</a>
     </div>
 </div>
-<script th:src="@{/Member/js/index.js}"></script>
 </body>
 </html>

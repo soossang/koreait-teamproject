@@ -13,6 +13,10 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class GenreService {
     private final BoxOfficeAlltimeRepository repo;
+    
+    public GenreService(BoxOfficeAlltimeRepository repo) {
+        this.repo = repo;
+    }
 
     public List<String> titles(String genre, int limit, String dir) {
         int size = Math.min(Math.max(limit, 1), 200);

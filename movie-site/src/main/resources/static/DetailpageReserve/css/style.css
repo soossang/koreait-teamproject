@@ -151,7 +151,6 @@ body {
     font-family: "Noto Sans KR", sans-serif;
     background-color: #f5f5f5;
     margin: 0;
-    color: #111827; /* index.css(공통 헤더) 로드 시 글자색이 흰색으로 바뀌는 문제 방지 */
 }
 
 /* 페이지 전체 박스 */

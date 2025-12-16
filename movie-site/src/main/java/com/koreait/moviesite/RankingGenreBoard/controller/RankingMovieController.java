@@ -13,10 +13,6 @@ import java.util.*;
 public class RankingMovieController {
 
     private final GenreService genreService;
-    
-    public RankingMovieController(GenreService genreService) {
-    	this.genreService = genreService;
-    }
 
     // 예: /api/movies?genre=액션&limit=100&dir=asc
     @GetMapping("/movies")

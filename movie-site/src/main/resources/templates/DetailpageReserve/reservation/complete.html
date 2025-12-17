@@ -1,28 +1,59 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>예매 완료</title>
     <meta charset="UTF-8"/>
+    <title>예매 완료</title>
+
+    <!-- Film Box 공통 헤더 스타일/동작 -->
+    <link rel="stylesheet" href="/Member/css/index.css">
+    <script th:src="@{/Member/js/index.js}" defer></script>
+
+    <!-- DetailpageReserve 전용 CSS (index.css보다 나중에 로드) -->
+    <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
+
+    <style>
+        /* 완료 페이지 전용 소소한 정리 */
+        .complete-title {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 26px;
+        }
+        .complete-info p {
+            margin: 6px 0;
+        }
+        .complete-actions {
+            margin-top: 18px;
+        }
+    </style>
 </head>
 <body>
-<h1>예매가 완료되었습니다 🎉</h1>
 
-<p>예매 번호: <span th:text="${reservation.id}"></span></p>
+<!-- Film Box 공통 헤더 -->
+<div th:replace="fragments/header :: header('movies')"></div>
 
-<p>영화: <span th:text="${reservation.screening.movie.title}"></span></p>
-<p>극장: <span th:text="${reservation.screening.theaterName}"></span></p>
-<p>상영 시간:
-    <span th:text="${#temporals.format(reservation.screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></span>
-</p>
-<p>예매자: <span th:text="${reservation.name}"></span></p>
-<p>연락처: <span th:text="${reservation.phone}"></span></p>
-<p>예매 인원: <span th:text="${reservation.reservedCount}"></span>명</p>
-<p>좌석: <span th:text="${reservation.seats}"></span></p>
-<p>예매 시각:
-    <span th:text="${#temporals.format(reservation.reservedAt, 'yyyy-MM-dd HH:mm')}"></span>
-</p>
+<div class="reserve-page">
+    <h1 class="complete-title">예매가 완료되었습니다 🎉</h1>
 
-<a href="/movies">영화 목록으로</a>
+    <div class="complete-info">
+        <p>예매 번호: <span th:text="${reservation.id}"></span></p>
+        <p>영화: <span th:text="${reservation.screening.movie.title}"></span></p>
+        <p>극장: <span th:text="${reservation.screening.theaterName}"></span></p>
+        <p>상영 시간:
+            <span th:text="${#temporals.format(reservation.screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+        <p>예매자: <span th:text="${reservation.name}"></span></p>
+        <p>연락처: <span th:text="${reservation.phone}"></span></p>
+        <p>예매 인원: <span th:text="${reservation.reservedCount}"></span>명</p>
+        <p>좌석: <span th:text="${reservation.seats}"></span></p>
+        <p>예매 시각:
+            <span th:text="${#temporals.format(reservation.reservedAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+    </div>
+
+    <div class="complete-actions">
+        <a href="/movies">영화 목록으로</a>
+    </div>
+</div>
 
 </body>
 </html>

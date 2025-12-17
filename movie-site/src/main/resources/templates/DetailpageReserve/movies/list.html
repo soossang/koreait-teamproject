@@ -1,28 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>영화 목록</title>
+  <meta charset="UTF-8" />
+  <title>영화 목록</title>
 
-    <!-- Film Box 공통 헤더 스타일 -->
-    <link rel="stylesheet" href="/Member/css/index.css">
+  <!-- Film Box 공통 헤더 스타일 -->
+  <link rel="stylesheet" href="/Member/css/index.css" />
 
-	<style>
-        /* 영화 목록에서 상세 보기 링크 색 */
-        .detail-link {
-            color: #1e90ff;          /* 파란색 */
-            text-decoration: underline;
-            font-weight: 600;
-            cursor: pointer;
-        }
+  <!-- ✅ 영화 목록 전용 CSS -->
+  <link rel="stylesheet" th:href="@{/DetailpageReserve/css/movies/list.css}" />
 
-        .detail-link:hover {
-            color: #63b3ff;          /* 마우스 올렸을 때 조금 더 밝은 파랑 */
-        }
-    </style>
-<script th:src="@{/Member/js/index.js}" defer></script>    
+  <!-- ✅ 더보기 기능 JS -->
+  <script th:src="@{/DetailpageReserve/js/movies/load-more.js}" defer></script>
 </head>
+
 <body>
+<<<<<<< HEAD
 	<header class="header">
 	        <div class="header-inner">
 	            <!-- 로고 전체를 홈 링크로 (Member 메인으로 이동) -->
@@ -50,32 +43,56 @@
 	        </div>
 	</header>
 <h1>영화 목록</h1>
+=======
+  <!-- Film Box 공통 헤더 -->
+  <div th:replace="fragments/header :: header('movies')"></div>
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 
-<div th:if="${#lists.isEmpty(movies)}">
-    등록된 영화가 없습니다.
-</div>
+  <main class="movies-page">
+    <header class="movies-header">
+      <h1 class="page-title">영화</h1>
+      <p class="result-count">
+        <span th:text="${#lists.size(movies)}"></span>개의 영화가 검색되었습니다.
+      </p>
+    </header>
 
-<div th:each="movie : ${movies}">
-    <div style="border:1px solid #ccc; margin:10px; padding:10px;">
-        <!-- DB의 poster_url: /DetailpageReserve/img/xxx.webp -->
-        <img th:src="${movie.posterUrl}" alt="포스터" style="height:150px;">
-
-        <h2 th:text="${movie.title}"></h2>
-
-        <p>
-            장르:
-            <span th:text="${movie.genre}"></span>
-            /
-            상영시간:
-            <span th:text="${movie.runningTime}"></span>
-            /
-            등급:
-            <span th:text="${movie.rating}"></span>
-        </p>
-
-        <a th:href="@{|/movies/${movie.id}|}" class="detail-link">상세 보기</a>
+    <div th:if="${#lists.isEmpty(movies)}" class="empty-state">
+      등록된 영화가 없습니다.
     </div>
-</div>
-<script th:src="@{/Member/js/index.js}"></script>
+
+    <!-- ✅ 메가박스처럼 카드 그리드 -->
+    <section class="movie-grid" id="movieGrid" th:if="${!#lists.isEmpty(movies)}">
+      <article class="movie-card movie-item"
+               th:each="movie, stat : ${movies}"
+               th:data-index="${stat.index}">
+        <a class="poster" th:href="@{|/movies/${movie.id}|}">
+          <img th:src="${movie.posterUrl}" th:alt="${movie.title}" loading="lazy" />
+        </a>
+
+        <div class="movie-info">
+          <h2 class="movie-title" th:text="${movie.title}"></h2>
+
+          <div class="movie-meta">
+            <span class="badge" th:text="${movie.rating}"></span>
+            <span class="meta-text">
+              <span th:text="${movie.genre}"></span>
+              <span class="dot">·</span>
+              <span th:text="${movie.runningTime}"></span>
+            </span>
+          </div>
+
+          <div class="movie-actions">         
+             <a class="btn btn-primary" th:href="@{|/movies/${movie.id}|}">상세</a>         
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ✅ 3번째 캡쳐처럼 하단 더보기 -->
+    <div class="loadmore-wrap" th:if="${!#lists.isEmpty(movies)}">
+      <button type="button" class="loadmore-btn" id="loadMoreBtn">더보기</button>
+      <p class="loadmore-hint" id="loadMoreHint" aria-live="polite"></p>
+    </div>
+  </main>
 </body>
 </html>

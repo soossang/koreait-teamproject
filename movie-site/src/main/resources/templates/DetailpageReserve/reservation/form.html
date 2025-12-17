@@ -4,10 +4,17 @@
     <meta charset="UTF-8"/>
     <title>좌석 선택 및 예매</title>
 
-    <!-- DetailpageReserve 전용 CSS -->
+    <!-- Film Box 공통 헤더 스타일/동작 -->
+    <link rel="stylesheet" href="/Member/css/index.css">
+    <script th:src="@{/Member/js/index.js}" defer></script>
+
+    <!-- DetailpageReserve 전용 CSS (index.css보다 나중에 로드) -->
     <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
 </head>
-<body>
+<body class="reserve-body">
+
+<!-- Film Box 공통 헤더 -->
+<div th:replace="fragments/header :: header('movies')"></div>
 
 <div class="reserve-page">
     <h1>좌석 선택 및 예매</h1>
@@ -62,15 +69,19 @@
                     <div th:each="row : ${rows}" class="seat-row">
                         <div class="row-label" th:text="${row}"></div>
 
+                        <!--
+                          cols 값이 무엇이든(문자열 'col' 등) 화면에는 1..N 숫자 라벨이 나오도록
+                          iteration status(count)를 사용합니다.
+                        -->
                         <div class="row-seats"
-                             th:each="col : ${cols}"
-                             th:with="seatId=${row + col}">
+                             th:each="col, stat : ${cols}"
+                             th:with="seatNo=${stat.count}, seatId=${row + seatNo}">
                             <button type="button"
                                     class="seat"
                                     th:id="${seatId}"
                                     th:data-seat="${seatId}"
                                     th:classappend="${#sets.contains(reservedSeats, seatId)} ? ' reserved' : ''"
-                                    th:text="${#sets.contains(reservedSeats, seatId)} ? 'X' : col"
+                                    th:text="${seatNo}"
                                     th:disabled="${#sets.contains(reservedSeats, seatId)}">
                             </button>
                         </div>

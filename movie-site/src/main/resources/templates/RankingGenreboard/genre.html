@@ -56,8 +56,8 @@
     <div class="toolbar">
       <label for="genreSelect" class="muted">장르</label>
       <select id="genreSelect">
-		  <option value="">전체</option>
-		  <option selected>액션</option><option>드라마</option><option>코미디</option><option>로맨스</option>
+		  <option value="" selected>전체</option>
+		  <option>액션</option><option>드라마</option><option>코미디</option><option>로맨스</option>
 		  <option>스릴러</option><option>공포</option><option>애니메이션</option><option>범죄</option>
 		  <option>SF</option><option>판타지</option><option>전쟁</option><option>사극</option>
 		  <option>다큐</option><option>가족</option><option>모험</option><option>음악</option>
@@ -65,19 +65,16 @@
       </select>
 
       <label for="dirSelect" class="muted">정렬</label>
+      
       <select id="dirSelect">
         <option value="asc" selected>제목 오름차순</option>
         <option value="desc">제목 내림차순</option>
       </select>
-
-      <label for="limitInput" class="muted">개수</label>
-      <input id="limitInput" type="number" min="1" max="200" value="100" style="width:90px" />
-
-      <button id="loadBtn" class="btn">불러오기</button>
       <span id="status" class="muted count"></span>
     </div>
 
     <ul id="titleList" class="title-list"></ul>
+    <div id="pager" class="pager"></div>
     <div id="emptyBox" class="empty hidden">해당 장르의 제목이 없습니다</div>
   </div>
 

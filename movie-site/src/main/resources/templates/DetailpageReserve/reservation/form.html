@@ -4,17 +4,11 @@
     <meta charset="UTF-8"/>
     <title>좌석 선택 및 예매</title>
 
-    <!-- Film Box 공통 헤더 스타일/동작 -->
-    <link rel="stylesheet" href="/Member/css/index.css">
-    <script th:src="@{/Member/js/index.js}" defer></script>
-
-    <!-- DetailpageReserve 전용 CSS (index.css보다 나중에 로드) -->
+    <!-- DetailpageReserve 전용 CSS -->
     <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
+    <script th:src="@{/DetailpageReserve/js/reserve-auth-guard.js}" defer></script>
 </head>
-<body class="reserve-body">
-
-<!-- Film Box 공통 헤더 -->
-<div th:replace="fragments/header :: header('movies')"></div>
+<body class="reserve-body" data-require-login="true">
 
 <div class="reserve-page">
     <h1>좌석 선택 및 예매</h1>

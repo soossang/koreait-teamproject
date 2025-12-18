@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
@@ -15,4 +16,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // ★ 특정 상영 회차의 예약 인원 수 합계
     @Query("select coalesce(sum(r.reservedCount), 0) from Reservation r where r.screening.id = :screeningId")
     int sumReservedCountByScreeningId(@Param("screeningId") Long screeningId);
+
+    // 예매 조회용 (10자리 랜덤 코드)
+    Optional<Reservation> findByReservationNumber(String reservationNumber);
+    boolean existsByReservationNumber(String reservationNumber);
 }

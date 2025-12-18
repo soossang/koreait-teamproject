@@ -15,7 +15,7 @@ public class GenreService {
     private final BoxOfficeAlltimeRepository repo;
     
     public GenreService(BoxOfficeAlltimeRepository repo) {
-        this.repo = repo;
+    	this.repo = repo;
     }
 
     public List<String> titles(String genre, int limit, String dir) {

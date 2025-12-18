@@ -18,6 +18,8 @@ public class MemberWebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtAuthenticationInterceptor)
                 .addPathPatterns(
                         "/api/member/**",
+                        "/api/reservations/**",
+                        "/api/screenings/**",
                         "/api/admin/member/**"
                 )
                 .excludePathPatterns(

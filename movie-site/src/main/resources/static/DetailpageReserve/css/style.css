@@ -425,6 +425,12 @@
    - 영화 상세 페이지와 톤을 맞춘 다크 UI
    ------------------------------ */
 
+body {
+    font-family: "Noto Sans KR", sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+}
+
 body.reserve-body {
     background:
         radial-gradient(circle at 18% 10%, rgba(255, 45, 163, 0.12), transparent 46%),
@@ -764,4 +770,22 @@ body.reserve-body {
         font-size: 11px;
         line-height: 26px;
     }
+    
 }
+
+.complete-actions{
+  display:flex;
+  justify-content:center;
+  margin-top:18px;
+}
+
+.btn-movie-list{
+  width:260px;
+}
+
+.actions{
+  display: flex;
+  justify-content: center;
+}
+
+

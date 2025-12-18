@@ -22,7 +22,11 @@
 	            <nav class="main-nav">
 	                <a href="/">홈</a>
 	                <a href="/movies">영화/예매</a>
+<<<<<<< HEAD
 	                <a href="/ranking" >흥행영화순위</a>
+=======
+	                <a href="/ranking">흥행영화순위</a>
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 	                <a href="/genre">장르</a>
 	                <a href="/board">게시판</a>
 	            </nav>
@@ -45,10 +49,54 @@
                 <!-- JS에서 /api/member/me 같은 걸로 정보 채우면 됨 -->
                 <p>회원 정보를 불러오는 중...</p>
             </div>
+
+            <hr class="divider" />
+
+            <div class="reserve-lookup">
+                <h2 class="section-title">예매 조회 / 수정</h2>
+                <p class="section-sub">예매 완료 페이지에 표시된 10자리 예매번호를 입력해 주세요.</p>
+
+                <div class="reserve-row">
+                    <input id="reservationNumberInput" class="reserve-input" type="text" maxlength="10"
+                           placeholder="예매번호 10자리" autocomplete="off" />
+                    <button id="reservationSearchBtn" class="reserve-btn" type="button">조회</button>
+                </div>
+
+                <div id="reservationResult" class="reserve-result"></div>
+            </div>
         </section>
     </main>
 
-    <script src="/Member/js/mypage.js"></script>
+    
+    <!-- 좌석 선택 모달 -->
+    <div id="seatModal" class="seat-modal hidden" aria-hidden="true">
+        <div class="seat-modal-backdrop" id="seatModalBackdrop"></div>
+        <div class="seat-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="seatModalTitle">
+            <div class="seat-modal-header">
+                <div id="seatModalTitle" class="seat-modal-title">좌석 선택</div>
+                <button type="button" class="seat-modal-close" id="seatModalClose" aria-label="닫기">×</button>
+            </div>
+
+            <div class="seat-modal-body">
+                <div class="screen">SCREEN</div>
+                <div id="seatGrid" class="seat-grid"></div>
+
+                <div class="legend">
+                    <div class="legend-item"><span class="legend-box"></span> 선택 가능</div>
+                    <div class="legend-item"><span class="legend-box selected"></span> 선택 좌석</div>
+                    <div class="legend-item"><span class="legend-box reserved"></span> 예약 완료</div>
+                </div>
+
+                <div class="seat-help" id="seatHelpText"></div>
+            </div>
+
+            <div class="seat-modal-footer">
+                <button type="button" class="seat-confirm" id="seatModalConfirm">선택 완료</button>
+            </div>
+        </div>
+    </div>
+
+<script src="/Member/js/mypage.js"></script>
 </body>
 
 </html>

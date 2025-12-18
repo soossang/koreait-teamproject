@@ -12,4 +12,8 @@ public class RootController {
         return "forward:/Member/index.html";
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git

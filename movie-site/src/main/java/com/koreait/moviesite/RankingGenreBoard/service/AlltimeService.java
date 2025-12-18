@@ -2,19 +2,19 @@ package com.koreait.moviesite.RankingGenreBoard.service;
 
 import com.koreait.moviesite.RankingGenreBoard.dao.BoxOfficeAlltimeRepository;
 import com.koreait.moviesite.RankingGenreBoard.dto.BoxOfficeSummary;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class AlltimeService {
     private final BoxOfficeAlltimeRepository repo;
     
     public AlltimeService(BoxOfficeAlltimeRepository repo) {
-        this.repo = repo;
+    	this.repo = repo;
     }
     
 

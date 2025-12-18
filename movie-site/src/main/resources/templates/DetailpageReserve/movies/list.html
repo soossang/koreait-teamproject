@@ -16,8 +16,38 @@
 </head>
 
 <body>
+<<<<<<< HEAD
+	<header class="header">
+	        <div class="header-inner">
+	            <!-- 로고 전체를 홈 링크로 (Member 메인으로 이동) -->
+	            <a href="/" class="logo">
+	                <div class="logo-mark">FB</div>
+	                Film Box
+	            </a>
+	
+	            <!-- 상단 메뉴 -->
+	            <nav class="main-nav">
+	                <a href="/">홈</a>
+	                <a href="/movies" class="active">영화/예매</a>
+	                <a href="/ranking">흥행영화순위</a>
+	                <a href="/genre">장르</a>
+	                <a href="/board">게시판</a>
+	            </nav>
+	
+	            <!-- 로그인 / 회원가입 영역 -->
+	            <div class="auth-nav">
+	                <a href="/login" data-role="login">로그인</a>
+	                <a href="/signup" data-role="signup">회원가입</a>
+	                <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+	                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+	            </div>
+	        </div>
+	</header>
+<h1>영화 목록</h1>
+=======
   <!-- Film Box 공통 헤더 -->
   <div th:replace="fragments/header :: header('movies')"></div>
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 
   <main class="movies-page">
     <header class="movies-header">

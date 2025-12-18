@@ -39,6 +39,11 @@ function renderCards(list, sortBy, dir, page, pageSize){
   grid.innerHTML = list.map((it, idx) => {
     const rank = rankStart + idx;
 
+    // ✅ 네이버 검색 URL (os 없이 query만)
+    const movieNm = (it.movieNm ?? '').trim();
+    const q = encodeURIComponent(`영화 ${movieNm}`);
+    const naverUrl = `https://search.naver.com/search.naver?where=nexearch&query=${q}`;
+
     // 라인 구성 (정렬 키만 .hot 적용)
     const titleCls = `title title-ellipsis${isMovie?' hot':''}`;
     const openLine = it.openDt
@@ -48,18 +53,23 @@ function renderCards(list, sortBy, dir, page, pageSize){
     const salesLine = `<div class="muted${isSales?' hot':''}">누적매출: ${fmt(it.salesAcc)}</div>`;
     const scrLine   = `<div class="muted${isScreen?' hot':''}">스크린수: ${it.screenCnt ?? '-'}</div>`;
 
+    // ✅ 기존 <div class="card"> 를 <a class="card card-link"> 로 변경
+    // - 카드 전체 클릭 가능
+    // - target="_blank" : 새 탭 열기 (원치 않으면 제거)
     return `
-      <div class="card">
+      <a class="card card-link"
+         href="${naverUrl}"
+         target="_blank" rel="noopener"
+         aria-label="네이버에서 ${escapeHtml(movieNm)} 검색">
         <div class="muted">
-          <!-- 배지는 항상 빨강 -->
           <span class="badge badge--active" title="${key.toUpperCase()} ${dir==='asc'?'오름':'내림'}차순 전역순위">#${rank}</span>
         </div>
-        <div class="${titleCls}">${escapeHtml(it.movieNm)}</div>
+        <div class="${titleCls}">${escapeHtml(movieNm)}</div>
         ${openLine}
         ${audiLine}
         ${salesLine}
         ${scrLine}
-      </div>
+      </a>
     `;
   }).join('');
 }

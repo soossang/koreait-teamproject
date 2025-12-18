@@ -26,4 +26,15 @@ public interface BoxOfficeAlltimeRepository extends JpaRepository<BoxOfficeAllti
             where upper(g.name) = upper(:genre)
            """)
     Page<String> findTitlesByGenre(@Param("genre") String genre, Pageable pageable);
+    
+    /**
+     * 장르 "전체" 용: 영화 "제목만" 반환 (중복 제거)
+     * GenreService.titles(...) 에서 "전체" 선택 시 사용
+     */
+    @Query("""
+           select distinct b.movieNm
+             from BoxOfficeAlltime b
+           """)
+    Page<String> findAllTitles(Pageable pageable);	
 }
+

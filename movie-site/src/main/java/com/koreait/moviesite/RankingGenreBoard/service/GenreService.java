@@ -12,11 +12,8 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class GenreService {
+
     private final BoxOfficeAlltimeRepository repo;
-    
-    public GenreService(BoxOfficeAlltimeRepository repo) {
-        this.repo = repo;
-    }
 
     public List<String> titles(String genre, int limit, String dir) {
         String g = (genre == null) ? "" : genre.trim();
@@ -33,6 +30,7 @@ public class GenreService {
         // 그 외에는 기존 장르 필터
         return repo.findTitlesByGenre(g, pageable).getContent();
     }
+
     public Page<String> titlesPage(String genre, int page, int size, String dir) {
         String g = (genre == null) ? "" : genre.trim();
 
@@ -48,5 +46,4 @@ public class GenreService {
         }
         return repo.findTitlesByGenre(g, pageable);
     }
-
 }

@@ -14,10 +14,6 @@ import java.util.List;
 public class RankingMovieController {
 
     private final GenreService genreService;
-    
-    public RankingMovieController(GenreService genreService) {
-    	this.genreService = genreService;
-    }
 
     // ✅ 한 페이지에 20개 고정
     private static final int PAGE_SIZE = 20;
@@ -55,9 +51,7 @@ public class RankingMovieController {
     }
 
     // ===== 응답 DTO =====
-
     public record MovieTitleDto(String movieNm) {}
-
     public record TitlesPageResponse(
             List<MovieTitleDto> content,
             int page,

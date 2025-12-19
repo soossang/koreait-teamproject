@@ -27,6 +27,12 @@ let reqToken = 0;
 let currentPage = 0;
 let totalPages = 0;
 
+/** ✅ 네이버 검색 URL 생성: query=영화+제목 (os 파라미터 없음) */
+function buildNaverUrl(title){
+  const q = encodeURIComponent(`영화 ${String(title ?? '').trim()}`).replace(/%20/g, '+');
+  return `https://search.naver.com/search.naver?where=nexearch&query=${q}`;
+}
+
 async function loadTitles(page = 0){
   const my = ++reqToken;
 
@@ -82,17 +88,28 @@ async function loadTitles(page = 0){
 
     hide(emptyEl);
 
-    // 상태 텍스트: "542건 (3/28)"
+    // 상태 텍스트: "100건 (1/5)"
     const pageText = totalPages > 0 ? ` (${currentPage + 1}/${totalPages})` : '';
     statusEl && (statusEl.textContent = `${totalElements}건${pageText}`);
 
-    // 목록 렌더
-    listEl.innerHTML = items.map(it => `
-      <li>
-        <span class="dot" aria-hidden="true"></span>
-        <span>${escapeHtml(it.movieNm)}</span>
-      </li>
-    `).join('');
+    // ✅ 목록 렌더링 (제목 클릭 시 새 탭으로 네이버 검색 열기)
+    listEl.innerHTML = items.map(it => {
+      const title = (it && it.movieNm) ? String(it.movieNm) : '';
+      const safeTitle = escapeHtml(title);
+      const href = buildNaverUrl(title);
+
+      return `
+        <li>
+          <span class="dot" aria-hidden="true"></span>
+          <a class="title-link"
+             href="${href}"
+             target="_blank"
+             rel="noopener noreferrer">
+             ${safeTitle}
+          </a>
+        </li>
+      `;
+    }).join('');
 
     renderPager(totalPages, currentPage);
 
@@ -116,13 +133,15 @@ function renderPager(totalPages, currentPage){
 
   let html = '';
 
+  // ✅ 첫 페이지면 '이전' disabled
   html += `<button class="pg-btn" ${prevDisabled ? 'disabled' : ''} data-page="${currentPage - 1}">이전</button>`;
 
-  // ✅ 1~끝 번호 전부 출력
+  // ✅ 1~끝 번호 전부 출력 + 현재 페이지 active
   for(let p = 0; p < totalPages; p++){
     html += `<button class="pg-num ${p === currentPage ? 'active' : ''}" data-page="${p}">${p + 1}</button>`;
   }
 
+  // ✅ 마지막 페이지면 '다음' disabled
   html += `<button class="pg-btn" ${nextDisabled ? 'disabled' : ''} data-page="${currentPage + 1}">다음</button>`;
 
   pagerEl.innerHTML = html;
@@ -135,7 +154,6 @@ function renderPager(totalPages, currentPage){
     });
   });
 }
-
 
 function escapeHtml(s){
   return String(s ?? '').replace(/[&<>"']/g, m => ({

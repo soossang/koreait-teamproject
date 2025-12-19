@@ -266,6 +266,24 @@
     box-shadow: 0 0 0 3px rgba(255, 45, 163, 0.18);
 }
 
+
+/* ✅ 드롭다운 옵션(목록) 배경이 너무 밝아 글자가 안 보이는 문제 해결 */
+.select {
+    /* 브라우저 기본 UI를 다크 테마로 렌더링하도록 힌트(지원하는 브라우저에서 효과) */
+    color-scheme: dark;
+}
+
+/* 옵션/옵션그룹 배경·글자색 지정 (Chrome/Edge/Firefox 등에서 적용) */
+.select option,
+.select optgroup {
+    background-color: rgba(10, 12, 18, 0.98);
+    color: rgba(229, 231, 235, 0.95);
+}
+
+/* '전체 지역' 같은 기본 옵션도 동일하게 적용 */
+.select option[value="ALL"] {
+    font-weight: 600;
+}
 .screening-list {
     border-radius: 18px;
     border: 1px solid var(--border);

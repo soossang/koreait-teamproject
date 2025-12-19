@@ -491,3 +491,39 @@ a {
 .seat-edit-row{display:flex; gap:10px; align-items:center;}
 .reserve-seat-btn{padding:10px 14px; border-radius:999px; font-weight:800; cursor:pointer; border:1px solid rgba(255,77,184,0.7); background:rgba(255,255,255,0.06); color:#e5e7eb; white-space:nowrap;}
 .reserve-seat-btn:hover{filter:brightness(1.1);}
+
+
+/* ===== 마이페이지: 예매번호 찾기 리스트 ===== */
+.reserve-btn-secondary{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e5e7eb;
+  box-shadow: none;
+}
+.reserve-btn-secondary:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+
+.reserve-list{ margin-top: 10px; display:flex; flex-direction:column; gap:10px; }
+.reserve-item{
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 12px 14px;
+  background: rgba(2, 6, 23, 0.35);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.reserve-item-title{ font-weight: 800; font-size: 13px; }
+.reserve-item-sub{ color:#9ca3af; font-size: 12px; margin-top: 4px; }
+.reserve-use-btn{
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(236, 72, 153, 0.65);
+  background: rgba(236, 72, 153, 0.14);
+  color: #f9fafb;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.reserve-use-btn:hover{ filter: brightness(1.08); }

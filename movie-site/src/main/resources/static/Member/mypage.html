@@ -48,6 +48,7 @@
 
             <hr class="divider" />
 
+            <!-- ✅ 예매 조회/수정이 위로 오도록 순서 변경 -->
             <div class="reserve-lookup">
                 <h2 class="section-title">예매 조회 / 수정</h2>
                 <p class="section-sub">예매 완료 페이지에 표시된 10자리 예매번호를 입력해 주세요.</p>
@@ -59,6 +60,21 @@
                 </div>
 
                 <div id="reservationResult" class="reserve-result"></div>
+            </div>
+
+            <hr class="divider" />
+
+            <div class="reserve-lookup">
+                <h2 class="section-title">예매번호 찾기</h2>
+                <p class="section-sub">회원 정보에 등록된 휴대폰 번호로 예매 내역에서 예매번호를 찾아옵니다.</p>
+
+                <div class="reserve-row">
+                    <button id="findReservationNumbersBtn" class="reserve-btn reserve-btn-secondary" type="button">
+                        내 예매번호 찾기
+                    </button>
+                </div>
+
+                <div id="reservationNumberList" class="reserve-result"></div>
             </div>
         </section>
     </main>

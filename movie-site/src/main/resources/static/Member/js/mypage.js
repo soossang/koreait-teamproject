@@ -139,6 +139,64 @@ async function cancelReservation(reservationNumber, token) {
     return data;
 }
 
+
+async function fetchMyReservationNumbers(token) {
+    const res = await fetch("/api/reservations/my-numbers", {
+        headers: { Authorization: "Bearer " + token },
+    });
+
+    if (res.status === 401 || res.status === 403) {
+        alert("로그인을 완료한 후에 이용 가능합니다.");
+        redirectToLogin();
+        throw new Error("로그인이 필요합니다.");
+    }
+
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* ignore */ }
+
+    if (!res.ok) {
+        const msg = (data && data.message) ? data.message : "예매번호 찾기에 실패했습니다.";
+        throw new Error(msg);
+    }
+    return Array.isArray(data) ? data : [];
+}
+
+function renderReservationNumberList(items) {
+    const box = document.getElementById("reservationNumberList");
+    if (!box) return;
+
+    if (!items || items.length === 0) {
+        box.innerHTML = "<div>예매 내역이 없습니다.</div>";
+        return;
+    }
+
+    const esc = (v) => (v ?? "").toString().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    box.innerHTML = `
+      <div class="reserve-list">
+        ${items.map(it => `
+          <div class="reserve-item">
+            <div>
+              <div class="reserve-item-title">${esc(it.movieTitle)} <span style="opacity:.75">(${esc(it.theaterName)})</span></div>
+              <div class="reserve-item-sub">상영: ${esc(it.screeningTime)} · 예매번호: <b>${esc(it.reservationNumber)}</b></div>
+              <div class="reserve-item-sub">좌석: ${esc(it.seats || "-")} · 인원: ${esc(it.reservedCount)}</div>
+            </div>
+            <button class="reserve-use-btn" type="button" data-num="${esc(it.reservationNumber)}">이 번호로 조회</button>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    box.querySelectorAll(".reserve-use-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const num = btn.getAttribute("data-num");
+            const input = document.getElementById("reservationNumberInput");
+            const searchBtn = document.getElementById("reservationSearchBtn");
+            if (input) input.value = num || "";
+            if (searchBtn) searchBtn.click();
+        });
+    });
+}
+
 // 혹시 inline onclick 등을 쓰는 경우를 대비해 전역에도 노출
 window.cancelReservation = cancelReservation;
 window.updateReservation = updateReservation;
@@ -470,6 +528,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (e) {
         console.error(e);
         box.innerHTML = "<p>네트워크 오류가 발생했습니다.</p>";
+    }
+
+
+    // ===== 예매번호 찾기 =====
+    const findBtn = document.getElementById("findReservationNumbersBtn");
+    if (findBtn) {
+        findBtn.addEventListener("click", async () => {
+            const token = localStorage.getItem("accessToken");
+            if (!token) {
+                alert("로그인을 완료한 후에 이용 가능합니다.");
+                redirectToLogin();
+                return;
+            }
+            const box = document.getElementById("reservationNumberList");
+            if (box) box.innerHTML = "조회 중...";
+            try {
+                const items = await fetchMyReservationNumbers(token);
+                renderReservationNumberList(items);
+            } catch (e) {
+                console.error(e);
+                if (box) box.innerHTML = `<div class="reserve-error">${(e && e.message) ? e.message : "예매번호 찾기에 실패했습니다."}</div>`;
+            }
+        });
     }
 
     // ===== 예매 조회/수정 =====

@@ -2,9 +2,12 @@ package com.koreait.moviesite.DetailpageReserve.controller;
 
 import com.koreait.moviesite.DetailpageReserve.domain.Reservation;
 import com.koreait.moviesite.DetailpageReserve.dto.ReservationStatusResponse;
+import com.koreait.moviesite.DetailpageReserve.dto.ReservationNumberLookupResponse;
 import com.koreait.moviesite.DetailpageReserve.dto.ReservationUpdateRequest;
 import com.koreait.moviesite.DetailpageReserve.service.ReservationService;
 import com.koreait.moviesite.Member.security.AuthenticatedMember;
+import com.koreait.moviesite.Member.service.MemberService;
+import com.koreait.moviesite.Member.dto.MemberProfileResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +19,11 @@ import java.util.Map;
 public class ReservationApiController {
 
     private final ReservationService reservationService;
+    private final MemberService memberService;
 
-    public ReservationApiController(ReservationService reservationService) {
+    public ReservationApiController(ReservationService reservationService, MemberService memberService) {
         this.reservationService = reservationService;
+        this.memberService = memberService;
     }
 
     @GetMapping("/{reservationNumber}")
@@ -66,6 +71,36 @@ public class ReservationApiController {
                 r.getPhone(),
                 r.getReservedCount(),
                 r.getSeats()
+        );
+    }
+
+
+    // ===== 마이페이지: 내 휴대폰 번호로 예매번호 찾기 =====
+    @GetMapping("/my-numbers")
+    public ResponseEntity<?> getMyReservationNumbers(
+            @RequestAttribute("authMember") AuthenticatedMember authMember
+    ) {
+        MemberProfileResponse me = memberService.getProfile(authMember.id());
+        String phone = me.phone();
+        if (phone == null || phone.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "회원 휴대폰 정보가 없습니다. 회원정보에서 휴대폰을 등록해 주세요."));
+        }
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return ResponseEntity.ok(
+                reservationService.findByPhoneVariants(phone).stream()
+                        .map(r -> new ReservationNumberLookupResponse(
+                                r.getReservationNumber(),
+                                r.getScreening().getMovie().getTitle(),
+                                r.getScreening().getTheaterName(),
+                                r.getScreening().getScreeningTime().format(fmt),
+                                r.getReservedAt() != null ? r.getReservedAt().format(fmt) : null,
+                                r.getReservedCount(),
+                                r.getSeats(),
+                                r.getName(),
+                                r.getPhone()
+                        ))
+                        .toList()
         );
     }
 

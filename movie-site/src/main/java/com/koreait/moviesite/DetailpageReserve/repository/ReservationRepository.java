@@ -20,4 +20,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // 예매 조회용 (10자리 랜덤 코드)
     Optional<Reservation> findByReservationNumber(String reservationNumber);
     boolean existsByReservationNumber(String reservationNumber);
+
+
+    // 마이페이지 예매번호 찾기 (휴대폰 번호로 조회)
+    List<Reservation> findByPhoneInOrderByReservedAtDesc(List<String> phones);
 }

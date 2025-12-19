@@ -159,4 +159,41 @@ private String generateUniqueReservationNumber(int length) {
     
     
     
+
+
+    // ===== 마이페이지: 예매번호 찾기 =====
+    @Transactional(readOnly = true)
+    public List<Reservation> findByPhoneVariants(String phone) {
+        if (phone == null || phone.isBlank()) return List.of();
+
+        Set<String> variants = new LinkedHashSet<>();
+        variants.add(phone);
+
+        String digits = digitsOnly(phone);
+        if (!digits.isBlank()) {
+            variants.add(digits);
+            String hyphen = toHyphenPhone(digits);
+            if (hyphen != null) variants.add(hyphen);
+        }
+
+        variants.removeIf(v -> v == null || v.isBlank());
+        if (variants.isEmpty()) return List.of();
+
+        return reservationRepository.findByPhoneInOrderByReservedAtDesc(new ArrayList<>(variants));
+    }
+
+    private String digitsOnly(String s) {
+        return s == null ? "" : s.replaceAll("\\D", "");
+    }
+
+    /**
+     * 01012345678 -> 010-1234-5678 (11자리)
+     */
+    private String toHyphenPhone(String digits) {
+        if (digits == null) return null;
+        if (digits.length() == 11) {
+            return digits.substring(0, 3) + "-" + digits.substring(3, 7) + "-" + digits.substring(7);
+        }
+        return null;
+    }
 }

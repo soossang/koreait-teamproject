@@ -1,87 +1,118 @@
 package com.koreait.moviesite.RankingGenreBoard.controller;
 
-import com.koreait.moviesite.RankingGenreBoard.dto.BoardWriteForm;
-import com.koreait.moviesite.RankingGenreBoard.entity.BoardPost;
-import com.koreait.moviesite.RankingGenreBoard.repository.BoardPostRepository;
+import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
+import com.koreait.moviesite.RankingGenreBoard.dto.BoardWriteRequest;
+import com.koreait.moviesite.RankingGenreBoard.service.BoardService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriUtils;
 
-import java.security.Principal;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 @RequestMapping("/board")
 public class BoardController {
 
-    private final BoardPostRepository boardPostRepository;
+    // ✅ 템플릿 폴더명과 일치 (네가 알려준 위치 기준)
+    private static final String VIEW_BASE = "RankingGenreboard";
 
-    public BoardController(BoardPostRepository boardPostRepository) {
-        this.boardPostRepository = boardPostRepository;
+    private final BoardService boardService;
+
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
     }
 
-    // 게시판 목록
+    // ✅ 게시판 목록
     @GetMapping
-    public String board(Model model) {
-        List<BoardPost> posts = boardPostRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        model.addAttribute("posts", posts);
-        return "board/board"; // templates/board/board.html
+    public String list(@RequestParam(name = "page", defaultValue = "1") int page, Model model) {
+
+        int safePage = Math.max(page, 1);
+        int pageIndex = safePage - 1;
+
+        Pageable pageable = PageRequest.of(pageIndex, 10, Sort.by(Sort.Direction.DESC, "id"));
+
+        // 1) 서비스에서 Page 형태로 받기 (이미 구현되어 있음)
+        Page<BoardDtos.PostResponse> pageResult = boardService.list(pageable);
+
+        // 2) ✅ board.html이 기대하는 모델명으로 맞춰서 내려주기
+        model.addAttribute("posts", pageResult.getContent());
+        model.addAttribute("totalPages", pageResult.getTotalPages());
+        model.addAttribute("totalElements", pageResult.getTotalElements());
+        model.addAttribute("currentPage", safePage);
+
+        return VIEW_BASE + "/board";
     }
 
-    // 글쓰기 폼
+    // ✅ 게시글 상세 (boarddetail.html과 연결)
+    @GetMapping("/{id}")
+    public String detail(@PathVariable("id") Long id,
+                         @RequestParam(name = "page", defaultValue = "1") int page,
+                         Model model) {
+
+        // 조회수 증가 true
+        BoardDtos.PostResponse post = boardService.get(id, true);
+
+        model.addAttribute("post", post);
+        model.addAttribute("backPage", Math.max(page, 1)); // boarddetail.html에서 목록 복귀에 사용
+
+        return VIEW_BASE + "/boarddetail";
+    }
+
+    // ✅ 글쓰기 폼
     @GetMapping("/write")
     public String writeForm(HttpServletRequest request, Model model) {
-        String loginId = getLoginId(request);
+
+        String loginId = getLoginIdFromSession(request);
         if (loginId == null) {
-            // 로그인 안 했으면 로그인 페이지로 보내기(원래 가려던 곳도 같이)
-            return "redirect:/login?redirect=/board/write";
+            return redirectToLoginWithRedirectParam("/board/write");
         }
 
-        model.addAttribute("form", new BoardWriteForm());
         model.addAttribute("loginId", loginId);
-        return "board/write"; // templates/board/write.html
+        model.addAttribute("form", new BoardWriteRequest());
+
+        return VIEW_BASE + "/write";
     }
 
-    // 글 저장
+    // ✅ 글쓰기 저장
     @PostMapping("/write")
-    public String writeSubmit(@Valid @ModelAttribute("form") BoardWriteForm form,
-                              BindingResult bindingResult,
+    public String writeSubmit(@ModelAttribute("form") BoardWriteRequest form,
                               HttpServletRequest request) {
 
-        String loginId = getLoginId(request);
+        String loginId = getLoginIdFromSession(request);
         if (loginId == null) {
-            return "redirect:/login?redirect=/board/write";
+            return redirectToLoginWithRedirectParam("/board/write");
         }
 
-        if (bindingResult.hasErrors()) {
-            return "board/write";
-        }
+        BoardDtos.PostCreateRequest req =
+                new BoardDtos.PostCreateRequest(form.getTitle(), form.getContent(), loginId);
 
-        BoardPost post = new BoardPost();
-        post.setAuthor(loginId);
-        post.setTitle(form.getTitle());
-        post.setContent(form.getContent());
-        boardPostRepository.save(post);
+        boardService.create(req);
 
         return "redirect:/board";
     }
 
-    // ✅ 로그인 아이디 찾기(세션 or Spring Security)
-    private String getLoginId(HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        if (principal != null) {
-            return principal.getName(); // Spring Security 사용 시
-        }
-
+    // -------------------
+    // 세션 로그인 체크
+    // -------------------
+    private String getLoginIdFromSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) return null;
 
-        Object loginId = session.getAttribute("loginId"); // 네가 로그인 성공 시 넣어둔 키로 맞추기
-        return (loginId == null) ? null : loginId.toString();
+        Object v = session.getAttribute("loginId");
+        return (v == null) ? null : v.toString();
+    }
+
+    private String redirectToLoginWithRedirectParam(String redirectPath) {
+        String encoded = UriUtils.encode(redirectPath, StandardCharsets.UTF_8);
+        return "redirect:/login?redirect=" + encoded;
     }
 }

@@ -11,12 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class AlltimeService {
-    private final BoxOfficeAlltimeRepository repo;
-    
-    public AlltimeService(BoxOfficeAlltimeRepository repo) {
-    	this.repo = repo;
-    }
-    
+    private final BoxOfficeAlltimeRepository repo;    
 
     public Page<BoxOfficeSummary> page(int page, int size, String sortBy, String dir) {
         int p = Math.max(page, 1) - 1;            // 1-based → 0-based

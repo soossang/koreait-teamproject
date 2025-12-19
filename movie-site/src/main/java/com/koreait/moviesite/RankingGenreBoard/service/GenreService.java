@@ -14,13 +14,6 @@ import java.util.List;
 public class GenreService {
 
     private final BoxOfficeAlltimeRepository repo;
-<<<<<<< HEAD
-=======
-    
-    public GenreService(BoxOfficeAlltimeRepository repo) {
-    	this.repo = repo;
-    }
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 
     public List<String> titles(String genre, int limit, String dir) {
         String g = (genre == null) ? "" : genre.trim();

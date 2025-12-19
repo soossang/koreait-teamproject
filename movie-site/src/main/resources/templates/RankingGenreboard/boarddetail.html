@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${post.title}">게시글 상세</title>
+
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <link rel="stylesheet" href="/Member/css/index.css" />
+  <script th:src="@{/Member/js/index.js}" defer></script>
+
+  <style>
+    .post-wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }
+    .post-card { border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 18px; background: rgba(255,255,255,.04); }
+    .post-title { font-size: 22px; font-weight: 800; margin: 0 0 10px; }
+    .post-meta { display:flex; gap:14px; flex-wrap:wrap; color: rgba(255,255,255,.65); font-size: 13px; margin-bottom: 14px; }
+    .post-content { white-space: pre-wrap; line-height: 1.6; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.10); }
+    .post-actions { margin-top: 16px; display:flex; gap:10px; }
+    .btn-link { display:inline-flex; align-items:center; justify-content:center;
+      padding: 8px 12px; border-radius: 10px; border:1px solid rgba(255,255,255,.18); text-decoration:none; color:#fff; }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark">FB</div>
+      Film Box
+    </a>
+
+    <nav class="main-nav">
+      <a href="/">홈</a>
+      <a href="/movies">영화/예매</a>
+      <a href="/ranking">흥행영화순위</a>
+      <a href="/genre">장르</a>
+      <a href="/board" class="active">게시판</a>
+    </nav>
+
+    <div class="auth-nav">
+      <a href="/login" data-role="login">로그인</a>
+      <a href="/signup" data-role="signup">회원가입</a>
+      <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+      <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+    </div>
+  </div>
+</header>
+
+<div class="post-wrap">
+  <div class="post-card">
+    <h1 class="post-title" th:text="${post.title}">제목</h1>
+
+    <div class="post-meta">
+      <span>작성자: <b th:text="${post.author}">author</b></span>
+      <span>조회수: <b th:text="${post.viewCount}">0</b></span>
+      <span>작성일:
+        <b th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm') : ''}"></b>
+      </span>
+    </div>
+
+    <div class="post-content" th:text="${post.content}">내용</div>
+
+    <div class="post-actions">
+      <!-- ✅ 상세 들어올 때 page 파라미터를 backPage로 model에 넣어줌 -->
+      <a class="btn-link" th:href="@{/board(page=${backPage})}">목록으로</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

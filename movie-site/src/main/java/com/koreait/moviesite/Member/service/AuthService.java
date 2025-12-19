@@ -53,21 +53,52 @@ public class AuthService {
         memberRepository.save(member);
     }
 
-    public LoginResponse login(LoginRequest request) {
-        MemberEntity member = memberRepository.findByLoginId(request.loginId())
+    /**
+     * ✅ “아이디/비번 검증 후 MemberEntity 반환”
+     * - 세션 저장, 권한(role) 확인 같은 데서 MemberEntity가 필요할 때 사용
+     */
+    public MemberEntity authenticate(String loginId, String password) {
+        MemberEntity member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다."));
 
         if (!member.isActive()) {
             throw new IllegalStateException("비활성화된 계정입니다.");
         }
 
-        if (!passwordEncoder.matches(request.password(), member.getPassword())) {
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
+
+        return member;
+    }
+
+    /**
+     * ✅ 기존 API용 로그인(토큰만 내려주는 형태)도 유지
+     */
+    public LoginResponse login(LoginRequest request) {
+
+        MemberEntity member = memberRepository.findByLoginId(request.getLoginId())
+                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다."));
+
+        if (!member.isActive()) {
+            throw new IllegalStateException("비활성화된 계정입니다.");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
         String token = jwtTokenProvider.generateToken(member);
-        long expiresIn = jwtTokenProvider.getValidityInSeconds();
+        long expiresIn = jwtTokenProvider.getValidityInSeconds(); // :contentReference[oaicite:7]{index=7}
 
-        return new LoginResponse(token, "Bearer", expiresIn);
+        // ✅ LoginResponse는 5개 생성자만 있음 :contentReference[oaicite:8]{index=8}
+        return new LoginResponse(
+                "Bearer",
+                token,
+                expiresIn,
+                member.getLoginId(),
+                member.getRole().name()
+        );
     }
+
 }

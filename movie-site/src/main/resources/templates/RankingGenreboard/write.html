@@ -1,34 +1,94 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>글쓰기</title>
+
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <link rel="stylesheet" href="/Member/css/index.css" />
+  <script th:src="@{/Member/js/index.js}" defer></script>
+
+  <style>
+    .board-form { max-width: 860px; margin: 18px auto; }
+    .form-row { margin-bottom: 14px; }
+    .form-row label { display:block; margin-bottom:6px; font-weight:600; }
+    .form-row input, .form-row textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.03);
+      color: #fff;
+      outline: none;
+    }
+    .form-actions { display:flex; gap:10px; margin-top: 14px; }
+    .form-actions button, .form-actions a {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.06);
+      color:#fff;
+      text-decoration:none;
+      cursor:pointer;
+    }
+    .form-actions button { background: rgba(99,102,241,.55); border-color: rgba(99,102,241,.8); }
+    .error { color:#ff6b6b; margin-top:6px; font-size: 13px; }
+  </style>
 </head>
+
 <body>
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark">FB</div>
+      Film Box
+    </a>
 
-<!-- (너희 프로젝트가 fragments/header 쓰면 여기 include) -->
-<!-- <div th:replace="fragments/header :: header"></div> -->
+    <nav class="main-nav">
+      <a href="/">홈</a>
+      <a href="/movies">영화/예매</a>
+      <a href="/ranking">흥행영화순위</a>
+      <a href="/genre">장르</a>
+      <a href="/board" class="active">게시판</a>
+    </nav>
 
-<h2>글쓰기</h2>
+    <div class="auth-nav">
+      <a href="/login" data-role="login">로그인</a>
+      <a href="/signup" data-role="signup">회원가입</a>
+      <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+      <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+    </div>
+  </div>
+</header>
 
-<form th:action="@{/board/write}" method="post" th:object="${form}">
-  <div>
-    <label>제목</label><br>
-    <input type="text" th:field="*{title}" maxlength="200" style="width:500px;">
-    <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red;"></div>
+<div class="container">
+  <div class="toolbar" style="margin-top:12px;">
+    <h2 style="margin:0;">글쓰기</h2>
   </div>
 
-  <div style="margin-top:10px;">
-    <label>내용</label><br>
-    <textarea th:field="*{content}" rows="10" cols="80"></textarea>
-    <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color:red;"></div>
-  </div>
+  <form class="board-form" th:action="@{/board/write}" method="post" th:object="${form}">
+    <!-- ✅ Spring Security CSRF 켜져 있으면 필요 -->
+    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-  <div style="margin-top:10px;">
-    <button type="submit">등록</button>
-    <a th:href="@{/board}">취소</a>
-  </div>
-</form>
+    <div class="form-row">
+      <label for="title">제목</label>
+      <input id="title" type="text" th:field="*{title}" maxlength="200" placeholder="제목을 입력하세요" />
+      <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+    </div>
 
+    <div class="form-row">
+      <label for="content">내용</label>
+      <textarea id="content" th:field="*{content}" rows="10" placeholder="내용을 입력하세요"></textarea>
+      <div class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit">등록</button>
+      <a th:href="@{/board}">취소</a>
+    </div>
+  </form>
+</div>
 </body>
 </html>

@@ -1,172 +1,80 @@
-// ===== 공통: 쿼리스트링 =====
-function getQueryParam(name) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get(name);
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
+  const loginIdEl = document.getElementById("loginId");
+  const passwordEl = document.getElementById("password");
+  const msgEl = document.getElementById("loginMessage");
 
-// ===== 공통: 헤더 상태 업데이트 =====
-function updateAuthNav() {
-    const token = localStorage.getItem("accessToken");
+  if (!form || !loginIdEl || !passwordEl) return;
 
-    const loginLink = document.querySelector('.auth-nav a[data-role="login"]');
-    const signupLink = document.querySelector('.auth-nav a[data-role="signup"]');
-    const mypageLink = document.querySelector('.auth-nav a[data-role="mypage"]');
-    const logoutLink = document.querySelector('.auth-nav a[data-role="logout"]');
+  const showMsg = (text) => {
+    if (!msgEl) return;
+    msgEl.textContent = text || "";
+    msgEl.style.display = text ? "block" : "none";
+  };
 
-    if (!loginLink || !signupLink || !mypageLink || !logoutLink) return;
+  const clearMsg = () => showMsg("");
 
-    if (token) {
-        loginLink.style.display = "none";
-        signupLink.style.display = "none";
-        mypageLink.style.display = "inline-block";
-        logoutLink.style.display = "inline-block";
-    } else {
-        loginLink.style.display = "inline-block";
-        signupLink.style.display = "inline-block";
-        mypageLink.style.display = "none";
-        logoutLink.style.display = "none";
+  // redirect 파라미터가 있으면 그곳으로, 없으면 홈
+  const getRedirectUrl = () => {
+    const redirect = new URLSearchParams(location.search).get("redirect");
+    return redirect || "/";
+  };
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearMsg();
+
+    const loginId = (loginIdEl.value || "").trim();
+    const password = (passwordEl.value || "").trim();
+
+    if (!loginId || !password) {
+      showMsg("아이디와 비밀번호를 입력해주세요.");
+      return;
     }
 
-    logoutLink.onclick = (e) => {
-        e.preventDefault();
-        localStorage.removeItem("accessToken");
-        window.location.href = "/Member/index.html";
-    };
-}
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // ✅ 세션 쿠키(JSESSIONID) 유지: /board/write 튕김 방지
+        body: JSON.stringify({ loginId, password }),
+      });
 
-// ===== 로그인 =====
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      const data = await res.json().catch(() => ({}));
 
-        const loginMessage = document.getElementById("loginMessage");
-        loginMessage.textContent = "";
-        loginMessage.className = "auth-message";
+      if (!res.ok) {
+        // 서버가 message를 주면 표시, 없으면 기본 문구
+        showMsg(data.message || "로그인에 실패했습니다.");
+        return;
+      }
 
-        const loginId = document.getElementById("loginId").value.trim();
-        const password = document.getElementById("password").value;
+      // ✅ 서버 응답(JSON)에서 토큰 추출 (너가 확인한 그대로 token 필드)
+      let token = data.token || data.accessToken || data.access_token || null;
 
-        if (!loginId || !password) {
-            loginMessage.textContent = "아이디와 비밀번호를 입력해 주세요.";
-            loginMessage.classList.add("error");
-            return;
-        }
+      // 혹시 body에 없으면 Authorization 헤더에서도 시도 (안전장치)
+      if (!token) {
+        const auth = res.headers.get("Authorization") || res.headers.get("authorization");
+        if (auth && auth.startsWith("Bearer ")) token = auth.substring(7);
+      }
 
-        try {
-            const res = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ loginId, password }),
-            });
+      // ✅ 핵심: 기존 index.js가 accessToken만 보니까 accessToken으로 저장
+      if (token) {
+        localStorage.setItem("accessToken", token);
+        // 호환용으로 token도 저장(다른 스크립트가 token을 볼 수 있으니)
+        localStorage.setItem("token", token);
+      }
 
-            if (!res.ok) {
-                loginMessage.textContent = "로그인 실패: 아이디/비밀번호를 확인해주세요.";
-                loginMessage.classList.add("error");
-                return;
-            }
+      // loginId/role 저장(선택)
+      if (data.loginId) localStorage.setItem("loginId", data.loginId);
+      if (data.role) localStorage.setItem("role", data.role);
 
-            const data = await res.json();
+      // ✅ 사용자가 싫어하는 문구는 절대 띄우지 않음
+      clearMsg();
 
-            if (!data.accessToken) {
-                loginMessage.textContent = "서버에서 토큰이 전달되지 않았습니다.";
-                loginMessage.classList.add("error");
-                return;
-            }
-
-            // 토큰 저장
-            localStorage.setItem("accessToken", data.accessToken);
-
-            loginMessage.textContent = "로그인 성공! 잠시 후 이동합니다.";
-            loginMessage.classList.add("success");
-
-            const redirect = getQueryParam("redirect") || "/Member/mypage.html";
-            setTimeout(() => {
-                window.location.href = redirect;
-            }, 800);
-        } catch (error) {
-            console.error(error);
-            loginMessage.textContent = "네트워크 오류가 발생했습니다.";
-            loginMessage.classList.add("error");
-        }
-    });
-}
-
-// ===== 회원가입 =====
-const signupForm = document.getElementById("signupForm");
-if (signupForm) {
-    signupForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const msg = document.getElementById("signupMessage");
-        msg.textContent = "";
-        msg.className = "auth-message";
-
-        const loginId = document.getElementById("signupLoginId").value.trim();
-        const password = document.getElementById("signupPassword").value;
-        const passwordConfirm = document.getElementById("signupPasswordConfirm").value;
-        const email = document.getElementById("signupEmail").value.trim();
-        const phone = document.getElementById("signupPhone").value.trim();
-
-        if (!loginId || !password) {
-            msg.textContent = "아이디와 비밀번호는 필수입니다.";
-            msg.classList.add("error");
-            return;
-        }
-
-        if (password !== passwordConfirm) {
-            msg.textContent = "비밀번호가 일치하지 않습니다.";
-            msg.classList.add("error");
-            return;
-        }
-
-        try {
-            const res = await fetch("/api/auth/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    loginId,
-                    password,
-                    email: email || null,
-                    phone: phone || null,
-                }),
-            });
-
-            if (!res.ok) {
-                let errorText = "";
-
-                try {
-                    const data = await res.json();
-                    errorText = data.message || JSON.stringify(data);
-                } catch {
-                    try {
-                        errorText = await res.text();
-                    } catch { }
-                }
-
-                msg.textContent =
-                    errorText && errorText.length < 120
-                        ? errorText
-                        : "회원가입에 실패했습니다.";
-
-                msg.classList.add("error");
-                return;
-            }
-
-            msg.textContent = "회원가입 완료! 로그인 페이지로 이동합니다.";
-            msg.classList.add("success");
-
-            setTimeout(() => {
-                window.location.href = "/Member/login.html";
-            }, 800);
-        } catch (error) {
-            console.error(error);
-            msg.textContent = "네트워크 오류가 발생했습니다.";
-            msg.classList.add("error");
-        }
-    });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    updateAuthNav();
+      // ✅ 바로 이동
+      window.location.href = getRedirectUrl();
+    } catch (err) {
+      showMsg("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  });
 });

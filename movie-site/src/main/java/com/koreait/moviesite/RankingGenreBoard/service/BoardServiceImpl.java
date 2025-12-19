@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.koreait.moviesite.RankingGenreBoard.dao.BoardCommentRepository;
-import com.koreait.moviesite.RankingGenreBoard.dao.BoardPostRepository;
+import com.koreait.moviesite.RankingGenreBoard.repository.BoardPostRepository;
 import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
 import com.koreait.moviesite.RankingGenreBoard.entity.BoardComment;
 import com.koreait.moviesite.RankingGenreBoard.entity.BoardPost;
@@ -71,4 +71,16 @@ public class BoardServiceImpl implements BoardService {
         return new BoardDtos.PostResponse(p.getId(), p.getTitle(), p.getContent(), p.getAuthor(),
                 p.getCreatedAt(), p.getUpdatedAt(), p.getViewCount(), comments);
     }
+
+	@Override
+	public void createPost(String loginId, String title, String content) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Page getPage(int page) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

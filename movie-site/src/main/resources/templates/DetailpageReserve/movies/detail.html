@@ -2,30 +2,61 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title th:text="${movie.title}">영화 상세</title>
+    <title th:text="${movie != null ? movie.title : '영화 상세'}">영화 상세</title>
 
     <!-- Film Box 공통 헤더 스타일 -->
     <link rel="stylesheet" href="/Member/css/index.css" />
 
     <!-- 기존 CSS -->
     <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
+
+    <!-- 공통 JS (로그인/로그아웃 메뉴 제어 등) -->
     <script th:src="@{/Member/js/index.js}" defer></script>
+
+    <!-- 예매 접근 제어 JS -->
     <script th:src="@{/DetailpageReserve/js/reserve-auth-guard.js}" defer></script>
 </head>
+
 <body class="reserve-body movie-detail-page">
 
-<!-- Film Box 공통 헤더 -->
-<div th:replace="fragments/header :: header('movies')"></div>
+<!-- ✅ (중요) fragments/header를 쓰지 말고 list.html처럼 헤더를 직접 넣기 -->
+<header class="header">
+    <div class="header-inner">
+        <!-- 로고 전체를 홈 링크로 -->
+        <a href="/" class="logo">
+            <div class="logo-mark">FB</div>
+            Film Box
+        </a>
+
+        <!-- 상단 메뉴 -->
+        <nav class="main-nav">
+            <a href="/">홈</a>
+            <a href="/movies" class="active">영화/예매</a>
+            <a href="/ranking">흥행영화순위</a>
+            <a href="/genre">장르</a>
+            <a href="/board">게시판</a>
+        </nav>
+
+        <!-- 로그인 / 회원가입 영역 -->
+        <div class="auth-nav">
+            <a href="/login" data-role="login">로그인</a>
+            <a href="/signup" data-role="signup">회원가입</a>
+            <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+            <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+        </div>
+    </div>
+</header>
 
 <main class="detail-layout movie-detail">
+
     <!-- 상단 뒤로가기 링크 -->
     <a th:href="@{/movies}" class="back-to-list">&larr; 영화 목록</a>
 
     <!-- ===== 영화 히어로 영역 ===== -->
-    <section class="movie-hero">
+    <section class="movie-hero" th:if="${movie != null}">
         <div class="movie-hero__poster">
             <!-- DB 값: /DetailpageReserve/img/xxx.webp -->
-            <img th:src="${movie.posterUrl}" alt="포스터" class="movie-poster"/>
+            <img th:src="${movie.posterUrl}" th:alt="${movie.title}" class="movie-poster"/>
         </div>
 
         <div class="movie-hero__content">
@@ -50,8 +81,16 @@
         </div>
     </section>
 
+    <!-- movie가 null이면 안내만 보여주기 (500 방지) -->
+    <section th:if="${movie == null}" style="padding:24px; color:#fff;">
+        <h2>영화 정보를 찾을 수 없습니다.</h2>
+        <p>컨트롤러에서 model에 movie를 담아 전달하는지 확인해주세요.</p>
+        <a href="/movies" style="color:#8ab4ff;">영화 목록으로 돌아가기</a>
+    </section>
+
     <!-- ===== 예고편 / 관련 영상 ===== -->
-    <section class="trailer-section" th:if="${trailerIds != null and !#lists.isEmpty(trailerIds)}">
+    <section class="trailer-section"
+             th:if="${trailerIds != null and !#lists.isEmpty(trailerIds)}">
         <div class="section-head">
             <h2 class="section-title">예고편 / 관련 영상</h2>
         </div>
@@ -75,13 +114,14 @@
             <h2 class="section-title">상영 정보</h2>
         </div>
 
-        <!-- 상영 일정 없을 때 -->
-        <div class="no-screening" th:if="${#lists.isEmpty(screenings)}">
+        <!-- screenings가 null이거나 비어있을 때 -->
+        <div class="no-screening"
+             th:if="${screenings == null or #lists.isEmpty(screenings)}">
             등록된 상영 일정이 없습니다.
         </div>
 
-        <!-- 필터 + 목록 (상영 일정 있을 때) -->
-        <div th:unless="${#lists.isEmpty(screenings)}">
+        <!-- 상영 일정 있을 때 -->
+        <div th:if="${screenings != null and !#lists.isEmpty(screenings)}">
             <div class="screening-controls">
                 <div class="control">
                     <div class="control-label">영화관 선택</div>
@@ -113,25 +153,32 @@
                     </div>
 
                     <div class="screening-col screening-col--time">
-                        <div class="date" th:text="${#temporals.format(screening.screeningTime, 'M월 d일')}">1월 2일</div>
-                        <div class="time" th:text="${#temporals.format(screening.screeningTime, 'HH:mm')}">23:00</div>
+                        <div class="date"
+                             th:text="${screening.screeningTime != null ? #temporals.format(screening.screeningTime, 'M월 d일') : ''}">
+                            1월 2일
+                        </div>
+                        <div class="time"
+                             th:text="${screening.screeningTime != null ? #temporals.format(screening.screeningTime, 'HH:mm') : ''}">
+                            23:00
+                        </div>
                     </div>
 
                     <div class="screening-col screening-col--seats">
                         <div class="seats">
-                            <span th:text="${availableSeatsMap[screening.id]}">0</span>
+                            <span th:text="${availableSeatsMap != null ? availableSeatsMap[screening.id] : 0}">0</span>
                             <span class="muted">/</span>
                             <span th:text="${screening.totalSeats}">50</span>
                         </div>
                     </div>
 
                     <div class="screening-col screening-col--action">
-                        <a th:if="${availableSeatsMap[screening.id] > 0}"
+                        <a th:if="${(availableSeatsMap != null ? availableSeatsMap[screening.id] : 0) > 0}"
                            th:href="@{|/reserve/${screening.id}|}"
                            class="btn-reserve">
                             예매하기
                         </a>
-                        <span th:if="${availableSeatsMap[screening.id] <= 0}" class="btn-soldout">
+                        <span th:if="${(availableSeatsMap != null ? availableSeatsMap[screening.id] : 0) <= 0}"
+                              class="btn-soldout">
                             매진
                         </span>
                     </div>
@@ -140,7 +187,6 @@
         </div>
     </section>
 
-    <!-- 아래 여백 -->
     <div class="page-spacer"></div>
 </main>
 
@@ -153,7 +199,6 @@
 
         if (!rows.length || !branchSelect) return;
 
-        // 지점 목록 중복 제거해서 select option 만들기
         const branchSet = new Set();
         rows.forEach(row => {
             const theater = row.dataset.theater || '';
@@ -173,11 +218,8 @@
         function applyFilter() {
             rows.forEach(row => {
                 const theater = row.dataset.theater || '';
-
-                // 브랜드는 극장 이름에 포함되는지만 체크 (CGV / 롯데시네마 / 메가박스)
                 const brandMatch = (currentBrand === 'ALL') || theater.includes(currentBrand);
                 const branchMatch = (currentBranch === 'ALL') || theater === currentBranch;
-
                 row.style.display = (brandMatch && branchMatch) ? '' : 'none';
             });
         }
@@ -198,8 +240,6 @@
     });
 </script>
 
-<!-- 아래 여백 -->
 <div style="height: 80px;"></div>
-
 </body>
 </html>

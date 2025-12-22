@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
-
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <title>Film Box</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <title>Film Box</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- 메인 전용 CSS -->
-    <link rel="stylesheet" href="/Member/css/index.css" />
+  <link rel="stylesheet" href="/Member/css/index.css" th:href="@{/Member/css/index.css}" />
 </head>
 
 <body>
@@ -29,21 +27,12 @@
 			</nav>
 
             <div class="auth-nav">
-                <a href="/login" data-role="login">로그인</a>
-<<<<<<< HEAD
-=======
-=======
-<<<<<<< HEAD
-                <a href="/login" data-role="login">로그인</a>
-=======
-                <a href="/loginl" data-role="login">로그인</a>
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
-                <a href="/signup" data-role="signup">회원가입</a>
-                <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
-                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
-            </div>
+			  <a href="/login" data-role="login">로그인</a>
+			  <a href="/signup" data-role="signup">회원가입</a>
+			  <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+			  <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+			</div>
+            
         </div>
     </header>
 
@@ -122,7 +111,6 @@
     </main>
 
     <!-- 메인 전용 JS (헤더 상태 관리 포함) -->
-    <script src="/Member/js/index.js"></script>
+	<script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
 </body>
-
 </html>

@@ -13,32 +13,87 @@
     .board-form { max-width: 860px; margin: 18px auto; }
     .form-row { margin-bottom: 14px; }
     .form-row label { display:block; margin-bottom:6px; font-weight:600; }
+
     .form-row input, .form-row textarea {
       width: 100%;
       padding: 10px 12px;
       border-radius: 10px;
-      border: 1px solid rgba(255,255,255,.15);
-      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
       color: #fff;
       outline: none;
     }
+    .form-row input::placeholder, .form-row textarea::placeholder {
+      color: rgba(255,255,255,.55);
+    }
+
     .form-actions { display:flex; gap:10px; margin-top: 14px; }
     .form-actions button, .form-actions a {
       display:inline-flex; align-items:center; justify-content:center;
       padding: 10px 14px;
       border-radius: 10px;
-      border: 1px solid rgba(255,255,255,.15);
-      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
       color:#fff;
       text-decoration:none;
       cursor:pointer;
     }
-    .form-actions button { background: rgba(99,102,241,.55); border-color: rgba(99,102,241,.8); }
+
+    .btn-primary {
+      background: rgba(99,102,241,.60);
+      border-color: rgba(99,102,241,.85);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.22);
+    }
+
     .error { color:#ff6b6b; margin-top:6px; font-size: 13px; }
+
+    .img-preview {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .img-thumb {
+      position: relative;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,.06);
+      height: 110px;
+    }
+    .img-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+    .img-remove {
+      position:absolute;
+      top:6px; right:6px;
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(0,0,0,.45);
+      color:#fff;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .img-hint {
+      font-size: 12px;
+      color: rgba(255,255,255,.65);
+      margin-top: 6px;
+    }
   </style>
 </head>
 
-<body>
+<body class="board-write-page">
 <header class="header">
   <div class="header-inner">
     <a href="/" class="logo">
@@ -68,8 +123,12 @@
     <h2 style="margin:0;">글쓰기</h2>
   </div>
 
-  <form class="board-form" th:action="@{/board/write}" method="post" th:object="${form}">
-    <!-- ✅ Spring Security CSRF 켜져 있으면 필요 -->
+  <form class="board-form"
+        th:action="@{/board/write}"
+        method="post"
+        th:object="${form}"
+        enctype="multipart/form-data">
+
     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
     <div class="form-row">
@@ -82,13 +141,86 @@
       <label for="content">내용</label>
       <textarea id="content" th:field="*{content}" rows="10" placeholder="내용을 입력하세요"></textarea>
       <div class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+
+      <div id="imgPreview" class="img-preview"></div>
+      <div class="img-hint">이미지 최대 5장 / 장당 5MB 권장 (jpg, png, webp, gif)</div>
     </div>
 
     <div class="form-actions">
-      <button type="submit">등록</button>
-      <a th:href="@{/board}">취소</a>
+      <button type="button" id="btnAddImage" class="btn-secondary">이미지 추가</button>
+      <input type="file" id="images" name="images" accept="image/*" multiple hidden />
+
+      <button type="submit" class="btn-primary">등록</button>
+      <a th:href="@{/board}" class="btn-secondary">취소</a>
     </div>
   </form>
 </div>
+
+<script>
+  (function () {
+    const addBtn = document.getElementById('btnAddImage');
+    const fileInput = document.getElementById('images');
+    const preview = document.getElementById('imgPreview');
+
+    const MAX_COUNT = 5;
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    const dt = new DataTransfer();
+
+    addBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', () => {
+      const selected = Array.from(fileInput.files || []);
+      for (const f of selected) {
+        if (!f.type.startsWith('image/')) {
+          alert('이미지 파일만 업로드할 수 있어요.');
+          continue;
+        }
+        if (f.size > MAX_SIZE) {
+          alert('파일이 너무 큽니다 (5MB 이하 권장).');
+          continue;
+        }
+        if (dt.files.length >= MAX_COUNT) {
+          alert('이미지는 최대 ' + MAX_COUNT + '장까지 가능해요.');
+          break;
+        }
+        dt.items.add(f);
+      }
+      fileInput.files = dt.files;
+      render();
+      fileInput.value = '';
+    });
+
+    function render() {
+      preview.innerHTML = '';
+      Array.from(dt.files).forEach((file, idx) => {
+        const url = URL.createObjectURL(file);
+
+        const wrap = document.createElement('div');
+        wrap.className = 'img-thumb';
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = file.name;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'img-remove';
+        btn.textContent = '×';
+        btn.addEventListener('click', () => {
+          dt.items.remove(idx);
+          fileInput.files = dt.files;
+          render();
+        });
+
+        wrap.appendChild(img);
+        wrap.appendChild(btn);
+        preview.appendChild(wrap);
+
+        img.onload = () => URL.revokeObjectURL(url);
+      });
+    }
+  })();
+</script>
+
 </body>
 </html>

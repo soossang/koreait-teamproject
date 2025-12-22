@@ -9,7 +9,7 @@ import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
 
 public interface BoardService {
 
-    // ====== 기존 메서드(이미 구현되어 있음) ======
+    // ====== 기존 메서드 ======
     Page<BoardDtos.PostResponse> list(Pageable pageable);
 
     BoardDtos.PostResponse get(Long id, boolean increaseView);
@@ -23,14 +23,11 @@ public interface BoardService {
     Long addComment(Long postId, BoardDtos.CommentCreateRequest req);
 
     // ======================================================
-    // ✅ BoardController 호환용 메서드 2개 (추가)
-    //    - BoardController가 호출하는 getPage / createPost를 제공
+    // ✅ 컨트롤러 편의 메서드 (default)
     // ======================================================
 
     /**
-     * BoardController가 쓰는 방식: boardService.getPage(page)
-     * page는 1부터 들어온다고 가정하고, 내부적으로 0-based로 변환.
-     * 페이지 크기(size)는 일단 10으로 설정 (원하면 5/15 등으로 바꾸면 됨)
+     * /board?page=1 형태 페이징 지원
      */
     default Page<BoardDtos.PostResponse> getPage(int page) {
         int safePage = Math.max(page, 1);
@@ -39,20 +36,19 @@ public interface BoardService {
         Pageable pageable = PageRequest.of(
                 pageIndex,
                 10,
-                Sort.by(Sort.Direction.DESC, "id") // 보통 최신글이 위로
+                Sort.by(Sort.Direction.DESC, "id")
         );
 
         return list(pageable);
     }
 
     /**
-     * BoardController가 쓰는 방식: boardService.createPost(loginId, title, content)
-     * 내부적으로 BoardDtos.PostCreateRequest로 감싸서 create(...)에 위임.
+     * ✅ 핵심 수정: void → Long
+     * - 글 저장 후 postId를 리턴해야 이미지와 연결 가능
+     * - 기존처럼 boardService.createPost(...) 호출만 해도 (리턴 무시) 컴파일 OK
      */
-    default void createPost(String loginId, String title, String content) {
-        // PostCreateRequest의 필드가 (title, content, author) 라는 전제
-        // (BoardServiceImpl이 req.title()/req.content()/req.author()를 쓰고 있어서 보통 이 순서일 확률이 큼)
+    default Long createPost(String loginId, String title, String content) {
         BoardDtos.PostCreateRequest req = new BoardDtos.PostCreateRequest(title, content, loginId);
-        create(req);
+        return create(req);
     }
 }

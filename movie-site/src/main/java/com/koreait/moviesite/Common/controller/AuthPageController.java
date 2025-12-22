@@ -8,16 +8,17 @@ public class AuthPageController {
 
     @GetMapping("/login")
     public String login() {
-        return "forward:/Member/login.html";
+        return "Member/login";
     }
 
     @GetMapping("/signup")
     public String signup() {
-        return "forward:/Member/signup.html";
+        return "Member/signup";
     }
 
     @GetMapping("/mypage")
     public String mypage() {
-        return "forward:/Member/mypage.html";
+        return "Member/mypage";
     }
 }
+

@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
-
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <title>Film Box</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <link rel="stylesheet" href="/Member/css/auth.css" />
+  <meta charset="UTF-8" />
+  <title>Film Box</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/Member/css/auth.css" th:href="@{/Member/css/auth.css}" />
 </head>
 
 <body>
@@ -56,14 +54,12 @@
                 <button type="submit" class="auth-submit">로그인</button>
             </form>
 
-            <div class="auth-footer">
-                아직 회원이 아니신가요?
-                <a href="/signup">회원가입</a>
-            </div>
-        </section>
-    </main>
+             <div class="auth-footer">
+    			아직 회원이 아니신가요?
+    			<a href="/signup" th:href="@{/signup}">회원가입</a>
+  			</div>
 
-    <script src="/Member/js/auth.js"></script>
+  <script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
+  <script src="/Member/js/auth.js" th:src="@{/Member/js/auth.js}" defer></script>
 </body>
-
 </html>

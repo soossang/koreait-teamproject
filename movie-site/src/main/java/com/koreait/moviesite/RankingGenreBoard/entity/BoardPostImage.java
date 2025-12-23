@@ -36,6 +36,14 @@ public class BoardPostImage {
     @Column(name = "content_type", length = 100)
     private String contentType;
 
+    /**
+     * ✅ 이미지 출력 순서(1부터 시작)
+     * - 상세 슬라이더/그리드에서 이 값 기준으로 정렬
+     * - 수정 화면에서 드래그로 순서 변경 시 업데이트
+     */
+    @Column(name = "display_order", nullable = false)
+    private Integer displayOrder = 0;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -43,6 +51,9 @@ public class BoardPostImage {
     void prePersist() {
         if (this.createdAt == null) {
             this.createdAt = LocalDateTime.now();
+        }
+        if (this.displayOrder == null) {
+            this.displayOrder = 0;
         }
     }
 
@@ -66,6 +77,9 @@ public class BoardPostImage {
 
     public String getContentType() { return contentType; }
     public void setContentType(String contentType) { this.contentType = contentType; }
+
+    public Integer getDisplayOrder() { return displayOrder; }
+    public void setDisplayOrder(Integer displayOrder) { this.displayOrder = displayOrder; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

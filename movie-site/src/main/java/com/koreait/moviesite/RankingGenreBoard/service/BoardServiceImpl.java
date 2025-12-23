@@ -58,6 +58,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void delete(Long id) {
+        // FK(board_comment.post_id) 때문에 댓글 먼저 삭제
+        commentRepo.deleteByPost_Id(id);
         postRepo.deleteById(id);
     }
 
@@ -73,12 +75,11 @@ public class BoardServiceImpl implements BoardService {
 
     private BoardDtos.PostResponse toPostResponse(BoardPost p) {
         List<BoardDtos.CommentResponse> comments = p.getId() == null ? List.of()
-                : commentRepo.findAll().stream()
-                    .filter(c -> c.getPost().getId().equals(p.getId()))
-                    .map(c -> new BoardDtos.CommentResponse(
-                            c.getId(), c.getAuthor(), c.getContent(), c.getCreatedAt()
-                    ))
-                    .toList();
+                : commentRepo.findByPost_IdOrderByIdAsc(p.getId()).stream()
+                .map(c -> new BoardDtos.CommentResponse(
+                        c.getId(), c.getAuthor(), c.getContent(), c.getCreatedAt()
+                ))
+                .toList();
 
         return new BoardDtos.PostResponse(
                 p.getId(),

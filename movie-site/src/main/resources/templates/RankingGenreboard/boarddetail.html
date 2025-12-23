@@ -12,55 +12,233 @@
   <style>
     .post-wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }
     .post-card { border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 18px; background: rgba(255,255,255,.04); }
+    .post-head { display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
     .post-title { font-size: 22px; font-weight: 800; margin: 0 0 10px; }
     .post-meta { display:flex; gap:14px; flex-wrap:wrap; color: rgba(255,255,255,.65); font-size: 13px; margin-bottom: 14px; }
     .post-content { white-space: pre-wrap; line-height: 1.6; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.10); }
 
-    /* ✅ 이미지 영역 */
-    .post-images {
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,.10);
-    }
-    .post-images h3 {
-      margin: 0 0 10px;
-      font-size: 16px;
-      font-weight: 800;
-    }
-    .img-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-    }
-    .img-item {
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 14px;
-      overflow: hidden;
-      background: rgba(255,255,255,.06);
-      display:block;
-    }
-    .img-item img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      display:block;
-    }
-    .img-caption {
-      padding: 8px 10px;
-      font-size: 12px;
-      color: rgba(255,255,255,.75);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .post-actions { margin-top: 16px; display:flex; gap:10px; }
+    .actions-right { display:flex; gap: 8px; flex-wrap:wrap; justify-content:flex-end; }
     .btn-link {
       display:inline-flex; align-items:center; justify-content:center;
       padding: 8px 12px; border-radius: 10px;
       border:1px solid rgba(255,255,255,.18);
       text-decoration:none; color:#fff;
       background: rgba(255,255,255,.06);
+      cursor:pointer;
+    }
+    .btn-danger { border-color: rgba(255,90,90,.35); background: rgba(255,90,90,.10); }
+
+    .banner { margin: 0 0 14px; border-radius: 12px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); }
+    .banner strong { display:block; font-size: 13px; margin-bottom: 6px; }
+    .banner ul { margin: 6px 0 0; padding-left: 18px; color: rgba(255,255,255,.82); font-size: 12.5px; }
+    .banner li { margin: 4px 0; }
+    .banner.warn { border-color: rgba(255, 196, 0, .35); background: rgba(255, 196, 0, .10); }
+    .banner.error { border-color: rgba(255, 90, 90, .35); background: rgba(255, 90, 90, .10); }
+    .banner.ok { border-color: rgba(0, 200, 120, .35); background: rgba(0, 200, 120, .10); }
+
+    .post-actions { margin-top: 16px; display:flex; gap:10px; }
+
+    /* =========================
+       ✅ Slider (Carousel)
+       ========================= */
+    .post-images { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.10); }
+    .post-images h3 { margin: 0 0 10px; font-size: 16px; font-weight: 800; }
+
+    .img-slider {
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      background: rgba(255,255,255,.05);
+      overflow: hidden;
+      outline: none;
+    }
+
+    .slider-stage {
+      position: relative;
+      height: 420px;
+      background: rgba(0,0,0,.25);
+    }
+
+    .slider-viewport {
+      position:absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .slider-track {
+      height: 100%;
+      display: flex;
+      transform: translateX(0);
+      transition: transform .25s ease;
+    }
+
+    .slider-slide {
+      flex: 0 0 100%;
+      height: 100%;
+      position: relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .slider-image-btn {
+      width: 100%;
+      height: 100%;
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: zoom-in;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .slider-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      display:block;
+    }
+
+    .slider-caption {
+      position:absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.90);
+      font-size: 12.5px;
+    }
+    .slider-counter { color: rgba(255,255,255,.75); font-size: 12px; }
+
+    .slider-nav {
+      position:absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.35);
+      color: #fff;
+      cursor: pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 20px;
+      user-select:none;
+    }
+    .slider-nav:hover { background: rgba(0,0,0,.50); }
+    .slider-nav:disabled { opacity: .35; cursor: not-allowed; }
+    .slider-nav.prev { left: 10px; }
+    .slider-nav.next { right: 10px; }
+
+    .slider-thumbs {
+      display:flex;
+      gap: 10px;
+      padding: 10px;
+      overflow-x: auto;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .thumb {
+      flex: 0 0 auto;
+      width: 90px;
+      height: 64px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      overflow: hidden;
+      padding: 0;
+      cursor: pointer;
+      opacity: .78;
+    }
+    .thumb.is-active {
+      opacity: 1;
+      border-color: rgba(99,102,241,.85);
+      box-shadow: 0 0 0 2px rgba(99,102,241,.25) inset;
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    .slider-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,.65);
+    }
+
+    /* =========================
+       ✅ Lightbox (포인터 중심 줌 + 드래그)
+       ========================= */
+    .lb { position: fixed; inset: 0; display:none; align-items:center; justify-content:center; z-index: 9999; }
+    .lb.is-open { display:flex; }
+    .lb-backdrop { position:absolute; inset:0; background: rgba(0,0,0,.75); }
+
+    .lb-panel {
+      position:relative;
+      width: min(1100px, 92vw);
+      height: min(760px, 86vh);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      background: rgba(10,10,10,.92);
+      overflow:hidden;
+    }
+    .lb-top {
+      position:absolute; inset: 0 0 auto 0; height: 44px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding: 0 12px;
+      background: rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      z-index: 2;
+    }
+    .lb-title { font-size: 12.5px; color: rgba(255,255,255,.75); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .lb-btns { display:flex; gap:8px; }
+    .lb-btn { height: 28px; padding: 0 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color:#fff; cursor:pointer; }
+
+    .lb-view {
+      position:absolute;
+      inset: 44px 0 0 0;
+      overflow:hidden;
+      cursor: grab;
+      user-select:none;
+      touch-action: none;
+    }
+    .lb-view.dragging { cursor: grabbing; }
+
+    /* ✅ 이번 버전: top/left 0 기준, translate(tx,ty) scale(scale) */
+    .lb-img {
+      position:absolute;
+      top: 0; left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      max-width: none; max-height: none;
+      pointer-events:none;
+      user-select:none;
+    }
+
+    .lb-hint {
+      position:absolute; left: 12px; bottom: 10px;
+      font-size: 12px; color: rgba(255,255,255,.65);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 6px 10px; border-radius: 999px;
+      z-index: 3;
     }
   </style>
 </head>
@@ -92,38 +270,100 @@
 
 <div class="post-wrap">
   <div class="post-card">
-    <h1 class="post-title" th:text="${post.title}">제목</h1>
 
-    <div class="post-meta">
-      <span>작성자: <b th:text="${post.author}">author</b></span>
-      <span>조회수: <b th:text="${post.viewCount}">0</b></span>
-      <span>작성일:
-        <b th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm') : ''}"></b>
-      </span>
+    <div class="banner error" th:if="${postActionError != null}">
+      <strong th:text="${postActionError}">오류</strong>
+    </div>
+    <div class="banner ok" th:if="${postActionSuccess != null}">
+      <strong th:text="${postActionSuccess}">완료</strong>
+    </div>
+
+    <div class="banner warn" th:if="${uploadAttemptedCount != null}"
+         th:with="excluded=${uploadWarnings != null ? #lists.size(uploadWarnings) : (uploadAttemptedCount - (uploadSavedCount != null ? uploadSavedCount : 0))}">
+      <strong>
+        <span th:text="'시도 ' + ${uploadAttemptedCount} + '장 · ' + '저장 ' + ${(uploadSavedCount != null ? uploadSavedCount : 0)} + '장 · ' + '제외 ' + ${excluded} + '건'">
+          시도 0장 · 저장 0장 · 제외 0건
+        </span>
+      </strong>
+      <ul th:if="${uploadWarnings != null and !#lists.isEmpty(uploadWarnings)}">
+        <li th:each="w : ${uploadWarnings}" th:text="${w}">제외 사유</li>
+      </ul>
+    </div>
+
+    <div class="post-head">
+      <div style="min-width:0;">
+        <h1 class="post-title" th:text="${post.title}">제목</h1>
+
+        <div class="post-meta">
+          <span>작성자: <b th:text="${post.author}">author</b></span>
+          <span>조회수: <b th:text="${post.viewCount}">0</b></span>
+          <span>작성일:
+            <b th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm') : ''}"></b>
+          </span>
+        </div>
+      </div>
+
+      <div class="actions-right" th:if="${isOwner}">
+        <a class="btn-link" th:href="@{/board/{id}/edit(id=${post.id}, page=${backPage})}">수정</a>
+        <form th:action="@{/board/{id}/delete(id=${post.id})}" method="post" style="margin:0;">
+          <input type="hidden" name="page" th:value="${backPage}" />
+          <button type="submit" class="btn-link btn-danger"
+                  onclick="return confirm('정말 삭제할까요? 삭제하면 복구할 수 없어요.');">삭제</button>
+        </form>
+      </div>
     </div>
 
     <div class="post-content" th:text="${post.content}">내용</div>
 
-    <!-- ✅ 첨부 이미지 출력 (images / imageUrls 둘 다 지원) -->
-    <div class="post-images"
-         th:with="imgs=${images != null ? images : (imageUrls != null ? imageUrls : null)}"
-         th:if="${imgs != null and !#lists.isEmpty(imgs)}">
+    <!-- ✅ Slider -->
+    <div class="post-images" th:if="${images != null and !#lists.isEmpty(images)}"
+         th:with="cnt=${#lists.size(images)}">
       <h3>첨부 이미지</h3>
 
-      <div class="img-grid">
-        <a class="img-item"
-           th:each="img : ${imgs}"
-           th:with="
-              raw=${img != null and img.url != null ? img.url : img},
-              src=${raw != null and (#strings.startsWith(raw,'http') or #strings.startsWith(raw,'/')) ? raw : '/' + raw},
-              name=${img != null and img.originalName != null ? img.originalName : 'image'}
-           "
-           th:href="@{${src}}"
-           target="_blank" rel="noopener">
-          <img th:src="@{${src}}" th:alt="${name}" loading="lazy" />
-          <div class="img-caption" th:text="${name}">image</div>
-        </a>
+      <div class="img-slider" th:attr="data-count=${cnt}" tabindex="0" aria-label="이미지 슬라이더">
+        <div class="slider-stage">
+          <button type="button" class="slider-nav prev" aria-label="이전 이미지">‹</button>
+          <button type="button" class="slider-nav next" aria-label="다음 이미지">›</button>
+
+          <div class="slider-viewport">
+            <div class="slider-track">
+              <div class="slider-slide"
+                   th:each="img, st : ${images}"
+                   th:with="
+                      raw=${img.url},
+                      src=${raw != null and (#strings.startsWith(raw,'http') or #strings.startsWith(raw,'/')) ? raw : '/' + raw},
+                      name=${img.originalName != null ? img.originalName : 'image'}
+                   "
+                   th:attr="data-src=${src}, data-name=${name}, data-index=${st.index}">
+                <button type="button" class="slider-image-btn js-lb-open"
+                        th:attr="data-src=${src}, data-name=${name}">
+                  <img class="slider-image" th:src="${src}" th:alt="${name}" loading="lazy" />
+                </button>
+
+                <div class="slider-caption">
+                  <div th:text="${name}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">image</div>
+                  <div class="slider-counter" th:text="${(st.index + 1)} + ' / ' + ${cnt}">1 / 1</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slider-thumbs" th:if="${cnt > 1}">
+          <button type="button" class="thumb"
+                  th:each="img, st : ${images}"
+                  th:with="
+                      raw=${img.url},
+                      src=${raw != null and (#strings.startsWith(raw,'http') or #strings.startsWith(raw,'/')) ? raw : '/' + raw},
+                      name=${img.originalName != null ? img.originalName : 'image'}
+                  "
+                  th:attr="data-index=${st.index}, aria-label=${'썸네일 ' + (st.index+1)}">
+            <img th:src="${src}" th:alt="${name}" loading="lazy" />
+          </button>
+        </div>
       </div>
+
+      <div class="slider-hint">←/→ 또는 버튼, 모바일은 스와이프로 넘길 수 있어요. 이미지를 클릭하면 크게 보기(포인터 중심 줌/드래그) 됩니다.</div>
     </div>
 
     <div class="post-actions">
@@ -131,6 +371,259 @@
     </div>
   </div>
 </div>
+
+<!-- ✅ Lightbox -->
+<div id="lb" class="lb" aria-hidden="true">
+  <div class="lb-backdrop" data-close="1"></div>
+  <div class="lb-panel" role="dialog" aria-modal="true" aria-label="이미지 크게 보기">
+    <div class="lb-top">
+      <div class="lb-title" id="lbTitle">이미지</div>
+      <div class="lb-btns">
+        <button type="button" class="lb-btn" id="lbReset">원래대로</button>
+        <button type="button" class="lb-btn" data-close="1">닫기</button>
+      </div>
+    </div>
+
+    <div class="lb-view" id="lbView">
+      <img id="lbImg" class="lb-img" alt="" />
+      <div class="lb-hint">휠: 커서 기준 확대/축소 · 드래그: 이동 · 더블클릭: 초기화 · ESC: 닫기</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  /* =========================
+     ✅ Slider Logic
+     ========================= */
+  document.querySelectorAll('.img-slider').forEach(slider => {
+    const track = slider.querySelector('.slider-track');
+    const prev = slider.querySelector('.slider-nav.prev');
+    const next = slider.querySelector('.slider-nav.next');
+    const thumbs = Array.from(slider.querySelectorAll('.thumb'));
+    const count = parseInt(slider.getAttribute('data-count') || '0', 10);
+
+    let index = 0;
+
+    function update() {
+      if (!track) return;
+      track.style.transform = `translateX(${-index * 100}%)`;
+      if (prev) prev.disabled = (index <= 0);
+      if (next) next.disabled = (index >= count - 1);
+      thumbs.forEach((t, i) => t.classList.toggle('is-active', i === index));
+    }
+
+    function go(n) {
+      if (count <= 0) return;
+      index = Math.max(0, Math.min(count - 1, n));
+      update();
+    }
+
+    if (prev) prev.addEventListener('click', () => go(index - 1));
+    if (next) next.addEventListener('click', () => go(index + 1));
+
+    thumbs.forEach(t => {
+      t.addEventListener('click', () => {
+        const i = parseInt(t.getAttribute('data-index') || '0', 10);
+        go(i);
+      });
+    });
+
+    slider.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1); }
+    });
+
+    // 모바일 스와이프
+    let startX = 0, startY = 0, moved = false;
+    slider.addEventListener('touchstart', (e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      startX = t.clientX; startY = t.clientY;
+      moved = false;
+    }, { passive: true });
+
+    slider.addEventListener('touchmove', (e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) moved = true;
+    }, { passive: true });
+
+    slider.addEventListener('touchend', (e) => {
+      if (!moved) return;
+      const t = e.changedTouches && e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - startX;
+      if (dx > 50) go(index - 1);
+      else if (dx < -50) go(index + 1);
+    });
+
+    update();
+  });
+
+  /* =========================
+     ✅ Lightbox Logic (포인터 중심 줌)
+     ========================= */
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lbImg');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbView = document.getElementById('lbView');
+  const lbReset = document.getElementById('lbReset');
+
+  const state = {
+    open: false,
+    baseScale: 1,   // "contain" 기준 스케일
+    scale: 1,       // 현재 스케일
+    minScale: 1,    // baseScale * 0.3
+    maxScale: 1,    // baseScale * 8
+    tx: 0,          // 이미지 좌상단 x(뷰 기준)
+    ty: 0,          // 이미지 좌상단 y(뷰 기준)
+    dragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    dragStartTx: 0,
+    dragStartTy: 0,
+  };
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+  function applyTransform() {
+    lbImg.style.transform = `translate(${state.tx}px, ${state.ty}px) scale(${state.scale})`;
+  }
+
+  // ✅ 이미지가 뷰에 "contain" 되도록 기본 배치
+  function fitToView() {
+    const vw = lbView.clientWidth;
+    const vh = lbView.clientHeight;
+    const iw = lbImg.naturalWidth || 1;
+    const ih = lbImg.naturalHeight || 1;
+
+    const s = Math.min(vw / iw, vh / ih);
+    state.baseScale = s;
+    state.scale = s;
+
+    state.minScale = s * 0.3;
+    state.maxScale = s * 8;
+
+    // 가운데 정렬(좌상단 기준 tx/ty)
+    state.tx = (vw - iw * s) / 2;
+    state.ty = (vh - ih * s) / 2;
+
+    applyTransform();
+  }
+
+  function openLightbox(src, name) {
+    state.open = true;
+    lb.classList.add('is-open');
+    lb.setAttribute('aria-hidden', 'false');
+
+    lbImg.onload = () => {
+      // 로드 후 contain-fit + center
+      fitToView();
+    };
+
+    lbImg.src = src;
+    lbImg.alt = name || '';
+    lbTitle.textContent = name || '이미지';
+  }
+
+  function closeLightbox() {
+    state.open = false;
+    lb.classList.remove('is-open');
+    lb.setAttribute('aria-hidden', 'true');
+    lbImg.onload = null;
+    lbImg.removeAttribute('src');
+  }
+
+  function resetTransform() {
+    if (!state.open) return;
+    fitToView();
+  }
+
+  document.querySelectorAll('.js-lb-open').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const src = btn.getAttribute('data-src');
+      const name = btn.getAttribute('data-name') || '';
+      if (src) openLightbox(src, name);
+    });
+  });
+
+  lb.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.getAttribute && t.getAttribute('data-close') === '1') closeLightbox();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!state.open) return;
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  lbReset.addEventListener('click', resetTransform);
+
+  // ✅ 포인터 중심 줌(커서 아래 픽셀 고정)
+  lbView.addEventListener('wheel', (e) => {
+    if (!state.open) return;
+    e.preventDefault();
+
+    const rect = lbView.getBoundingClientRect();
+    const px = e.clientX - rect.left; // 뷰 내 x
+    const py = e.clientY - rect.top;  // 뷰 내 y
+
+    // 현재 커서 위치가 이미지의 어떤 좌표를 가리키는지(이미지 좌표계)
+    const imgX = (px - state.tx) / state.scale;
+    const imgY = (py - state.ty) / state.scale;
+
+    const dir = e.deltaY < 0 ? 1 : -1;
+    const factor = dir > 0 ? 1.12 : 1 / 1.12;
+
+    const nextScale = clamp(state.scale * factor, state.minScale, state.maxScale);
+
+    // 커서가 가리키던 imgX/imgY가 같은 화면 px/py에 유지되도록 tx/ty 재계산
+    state.tx = px - imgX * nextScale;
+    state.ty = py - imgY * nextScale;
+    state.scale = nextScale;
+
+    applyTransform();
+  }, { passive: false });
+
+  // ✅ 드래그 이동
+  lbView.addEventListener('mousedown', (e) => {
+    if (!state.open) return;
+    state.dragging = true;
+    lbView.classList.add('dragging');
+    state.dragStartX = e.clientX;
+    state.dragStartY = e.clientY;
+    state.dragStartTx = state.tx;
+    state.dragStartTy = state.ty;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!state.open || !state.dragging) return;
+    const dx = e.clientX - state.dragStartX;
+    const dy = e.clientY - state.dragStartY;
+    state.tx = state.dragStartTx + dx;
+    state.ty = state.dragStartTy + dy;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!state.open) return;
+    state.dragging = false;
+    lbView.classList.remove('dragging');
+  });
+
+  // ✅ 더블클릭 초기화
+  lbView.addEventListener('dblclick', (e) => {
+    if (!state.open) return;
+    e.preventDefault();
+    resetTransform();
+  });
+
+})();
+</script>
 
 </body>
 </html>

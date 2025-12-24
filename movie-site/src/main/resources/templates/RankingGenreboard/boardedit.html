@@ -26,7 +26,7 @@
     }
     textarea { min-height: 240px; resize: vertical; }
 
-    .hint { margin-top: 8px; opacity: .85; font-size: 13px; }
+    .hint { margin-top: 8px; opacity: .85; font-size: 13px; line-height: 1.45; }
     .row { display:flex; gap:10px; flex-wrap:wrap; margin-top: 16px; }
     .btn {
       display:inline-flex; align-items:center; justify-content:center;
@@ -45,12 +45,80 @@
     .section h3 { margin: 0 0 10px; font-size: 16px; font-weight: 900; }
 
     .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-    .img-card { border: 1px solid rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; background: rgba(255,255,255,.06); }
-    .img-card img { width: 100%; height: 140px; object-fit: cover; display:block; }
+
+    .img-card {
+      position: relative;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,.06);
+      cursor: grab;
+      user-select: none;
+    }
+    .img-card:active { cursor: grabbing; }
+
+    .img-card .drag-handle {
+      position:absolute; top:8px; left:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 12px; font-weight: 900;
+      letter-spacing: .5px;
+      cursor: grab;
+      z-index: 2;
+    }
+
+    .img-card .img-btn {
+      width: 100%;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      display:block;
+      cursor: inherit;
+    }
+
+    .img-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display:block;
+      pointer-events: none;
+    }
+
     .img-card .meta { padding: 10px; display:flex; flex-direction: column; gap: 8px; }
     .img-card .name { font-size: 12px; color: rgba(255,255,255,.75); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
     .chk { display:flex; align-items:center; gap: 8px; font-size: 13px; }
     .chk input { width: 16px; height: 16px; }
+
+    .img-card.is-deleting {
+      opacity: .32;
+      filter: grayscale(1);
+    }
+    .img-card.is-deleting .drag-handle {
+      opacity: .7;
+      cursor: not-allowed;
+    }
+    .img-card.is-deleting::after {
+      content: "삭제 예정";
+      position:absolute;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      font-size: 18px;
+      background: rgba(0,0,0,0.35);
+      color: rgba(255,255,255,0.95);
+      z-index: 1;
+      pointer-events:none;
+    }
+
+    .img-card.is-dragging {
+      opacity: .85;
+      outline: 2px dashed rgba(255,255,255,0.45);
+      outline-offset: -8px;
+    }
 
     .preview-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 10px; }
     .thumb { position:relative; border-radius: 14px; overflow:hidden; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); }
@@ -62,11 +130,15 @@
       background: rgba(0,0,0,0.55);
       border: 1px solid rgba(255,255,255,0.18);
       font-size: 12px; font-weight: 900;
+      cursor:pointer;
+      color:#fff;
     }
 
     .error { margin-top: 12px; color:#fecaca; font-size: 13px; white-space: pre-line; display:none; }
     .stat { margin-top: 10px; font-size: 13px; color: rgba(255,255,255,.78); }
     .pill { display:inline-block; padding: 3px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); }
+
+    .mini { font-size: 12px; opacity: .9; margin-top: 6px; }
   </style>
 </head>
 
@@ -109,6 +181,8 @@
              th:name="${_csrf.parameterName}"
              th:value="${_csrf.token}" />
 
+      <input type="hidden" name="imageOrder" id="imageOrder" value="" />
+
       <label for="title">제목</label>
       <input id="title" name="title" type="text" maxlength="200" required
              th:value="${form.title}" />
@@ -120,17 +194,35 @@
       <div class="section">
         <h3>기존 이미지</h3>
 
-        <div th:if="${images == null or #lists.isEmpty(images)}" class="hint">
+        <div class="hint" th:if="${images == null or #lists.isEmpty(images)}">
           기존 첨부 이미지가 없습니다.
         </div>
 
-        <div class="grid" th:if="${images != null and !#lists.isEmpty(images)}">
-          <div class="img-card" th:each="img : ${images}">
-            <a th:href="${img.url}" target="_blank" rel="noopener">
-              <img th:src="${img.url}" th:alt="${img.originalName}" loading="lazy" />
-            </a>
+        <div class="hint" th:if="${images != null and !#lists.isEmpty(images)}">
+          ✅ 순서 변경: <b>이미지를 드래그</b>해서 원하는 위치로 옮기면 저장 시 상세 슬라이더 순서에도 반영돼요.<br/>
+          ✅ 삭제: 체크하면 <b>즉시 흐리게</b> 표시되고, 저장하면 실제로 삭제됩니다.
+          <div class="mini">※ 삭제 예정으로 체크된 이미지는 실수 방지를 위해 드래그가 비활성화됩니다.</div>
+        </div>
+
+        <div id="existingGrid" class="grid" th:if="${images != null and !#lists.isEmpty(images)}">
+          <div class="img-card js-existing-card"
+               th:each="img : ${images}"
+               th:attr="data-id=${img.id}"
+               draggable="true"
+               th:with="
+                 raw=${img.url},
+                 src=${raw != null and (#strings.startsWith(raw,'http') or #strings.startsWith(raw,'/')) ? raw : '/' + raw},
+                 name=${img.originalName != null ? img.originalName : 'image'}
+               ">
+
+            <div class="drag-handle" title="드래그로 순서 변경">⠿</div>
+
+            <button type="button" class="img-btn" th:attr="data-open=${src}">
+              <img th:src="${src}" th:alt="${name}" loading="lazy" />
+            </button>
+
             <div class="meta">
-              <div class="name" th:text="${img.originalName}">file</div>
+              <div class="name" th:text="${name}">file</div>
               <label class="chk">
                 <input type="checkbox" name="deleteImageIds" th:value="${img.id}" class="delChk" />
                 <span>이 이미지 삭제</span>
@@ -175,6 +267,11 @@
     const MAX_TOTAL = 5;
     const MAX_SIZE = 5 * 1024 * 1024;
 
+    const form = document.getElementById('editForm');
+
+    const existingGrid = document.getElementById('existingGrid');
+    const imageOrderInput = document.getElementById('imageOrder');
+
     const addBtn = document.getElementById('addBtn');
     const fileInput = document.getElementById('images');
     const previewGrid = document.getElementById('previewGrid');
@@ -205,15 +302,96 @@
     }
 
     function deletedCount() { return delChks.filter(c => c.checked).length; }
+
     function remainingSlots() {
       const remainExisting = existingCount - deletedCount();
       return Math.max(0, MAX_TOTAL - remainExisting);
     }
 
     function refreshStats() {
-      deleteStat.textContent = `삭제 선택 ${deletedCount()}장`;
-      remainSlot.textContent = `추가 가능 ${remainingSlots()}장`;
+      if (deleteStat) deleteStat.textContent = `삭제 선택 ${deletedCount()}장`;
+      if (remainSlot) remainSlot.textContent = `추가 가능 ${remainingSlots()}장`;
     }
+
+    function applyDeleteVisual(chk) {
+      const card = chk.closest('.js-existing-card');
+      if (!card) return;
+      card.classList.toggle('is-deleting', chk.checked);
+      card.draggable = !chk.checked;
+    }
+
+    delChks.forEach(chk => {
+      applyDeleteVisual(chk);
+      chk.addEventListener('change', () => {
+        applyDeleteVisual(chk);
+        refreshStats();
+        trimNewFilesToSlots();
+        syncImageOrder();
+      });
+    });
+
+    function existingCards() {
+      if (!existingGrid) return [];
+      return Array.from(existingGrid.querySelectorAll('.js-existing-card'));
+    }
+
+    function syncImageOrder() {
+      if (!imageOrderInput) return;
+      const ids = existingCards().map(c => c.getAttribute('data-id')).filter(Boolean);
+      imageOrderInput.value = ids.join(',');
+    }
+
+    let dragging = null;
+
+    if (existingGrid) {
+      existingGrid.addEventListener('dragstart', (e) => {
+        const card = e.target.closest('.js-existing-card');
+        if (!card) return;
+        if (card.classList.contains('is-deleting')) {
+          e.preventDefault();
+          return;
+        }
+        dragging = card;
+        card.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', card.getAttribute('data-id') || '');
+      });
+
+      existingGrid.addEventListener('dragend', () => {
+        if (dragging) dragging.classList.remove('is-dragging');
+        dragging = null;
+        syncImageOrder();
+      });
+
+      existingGrid.addEventListener('dragover', (e) => {
+        if (!dragging) return;
+        e.preventDefault();
+
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const target = el && el.closest('.js-existing-card');
+        if (!target || target === dragging) return;
+        if (target.classList.contains('is-deleting')) return;
+
+        const rect = target.getBoundingClientRect();
+        const after = (e.clientY > rect.top + rect.height / 2) ||
+                      (e.clientY >= rect.top && e.clientY <= rect.bottom && e.clientX > rect.left + rect.width / 2);
+
+        if (after) {
+          existingGrid.insertBefore(dragging, target.nextSibling);
+        } else {
+          existingGrid.insertBefore(dragging, target);
+        }
+      });
+
+      existingGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.img-btn');
+        if (!btn) return;
+        const url = btn.getAttribute('data-open');
+        if (url) window.open(url, '_blank', 'noopener');
+      });
+    }
+
+    syncImageOrder();
 
     function renderPreview() {
       previewGrid.innerHTML = '';
@@ -266,17 +444,12 @@
       renderPreview();
     }
 
-    delChks.forEach(c => c.addEventListener('change', () => {
-      refreshStats();
-      trimNewFilesToSlots();
-    }));
-
-    addBtn.addEventListener('click', () => {
+    addBtn && addBtn.addEventListener('click', () => {
       fileInput.value = '';
       fileInput.click();
     });
 
-    fileInput.addEventListener('change', () => {
+    fileInput && fileInput.addEventListener('change', () => {
       showError('');
       const selected = Array.from(fileInput.files || []);
       if (selected.length === 0) return;
@@ -305,8 +478,9 @@
       renderPreview();
     });
 
-    document.getElementById('editForm').addEventListener('submit', () => {
+    form && form.addEventListener('submit', () => {
       fileInput.files = dt.files;
+      syncImageOrder();
     });
 
     refreshStats();

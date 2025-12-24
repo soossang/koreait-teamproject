@@ -1,29 +1,151 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>글쓰기</title>
+
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <link rel="stylesheet" href="/Member/css/index.css" />
+  <script th:src="@{/Member/js/index.js}" defer></script>
+
+  <style>
+    .board-form { max-width: 860px; margin: 18px auto; }
+    .form-row { margin-bottom: 14px; }
+    .form-row label { display:block; margin-bottom:6px; font-weight:600; }
+
+    .form-row input, .form-row textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      color: #fff;
+      outline: none;
+    }
+    .form-row input::placeholder, .form-row textarea::placeholder {
+      color: rgba(255,255,255,.55);
+    }
+
+    .form-actions { display:flex; gap:10px; margin-top: 14px; flex-wrap:wrap; }
+    .form-actions button, .form-actions a {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color:#fff;
+      text-decoration:none;
+      cursor:pointer;
+    }
+
+    .btn-primary {
+      background: rgba(99,102,241,.60);
+      border-color: rgba(99,102,241,.85);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.22);
+    }
+
+    .error { color:#ff6b6b; margin-top:6px; font-size: 13px; }
+
+    .img-preview {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .img-thumb {
+      position: relative;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,.06);
+      height: 110px;
+    }
+    .img-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display:block;
+    }
+    .img-remove {
+      position:absolute;
+      top:6px; right:6px;
+      width: 28px; height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(0,0,0,.45);
+      color:#fff;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .img-hint {
+      font-size: 12px;
+      color: rgba(255,255,255,.65);
+      margin-top: 6px;
+    }
+
+    /* ✅ 업로드 상태/경고 박스 */
+    .upload-box {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      padding: 10px 12px;
+      display:none;
+    }
+    .upload-box strong { display:block; font-size: 13px; margin-bottom: 6px; }
+    .upload-box ul { margin: 6px 0 0; padding-left: 18px; color: rgba(255,255,255,.82); font-size: 12.5px; }
+    .upload-box li { margin: 4px 0; }
+    .upload-box.warn { border-color: rgba(255,196,0,.35); background: rgba(255,196,0,.10); }
+
+  </style>
 </head>
-<body>
 
-<!-- (너희 프로젝트가 fragments/header 쓰면 여기 include) -->
-<!-- <div th:replace="fragments/header :: header"></div> -->
+<body class="board-write-page">
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark">FB</div>
+      Film Box
+    </a>
 
-<h2>글쓰기</h2>
+    <nav class="main-nav">
+      <a href="/">홈</a>
+      <a href="/movies">영화/예매</a>
+      <a href="/ranking">흥행영화순위</a>
+      <a href="/genre">장르</a>
+      <a href="/board" class="active">게시판</a>
+    </nav>
 
-<form th:action="@{/board/write}" method="post" th:object="${form}">
-  <div>
-    <label>제목</label><br>
-    <input type="text" th:field="*{title}" maxlength="200" style="width:500px;">
-    <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red;"></div>
+    <div class="auth-nav">
+      <a href="/login" data-role="login">로그인</a>
+      <a href="/signup" data-role="signup">회원가입</a>
+      <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+      <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="toolbar" style="margin-top:12px;">
+    <h2 style="margin:0;">글쓰기</h2>
   </div>
 
-  <div style="margin-top:10px;">
-    <label>내용</label><br>
-    <textarea th:field="*{content}" rows="10" cols="80"></textarea>
-    <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color:red;"></div>
-  </div>
+  <form class="board-form"
+        th:action="@{/board/write}"
+        method="post"
+        th:object="${form}"
+        enctype="multipart/form-data">
 
+<<<<<<< HEAD
   <div style="margin-top:10px;">
     <button type="submit">등록</button>
     <a th:href="@{/board}">취소</a>
@@ -31,5 +153,221 @@
 </form>
     <div id="siteFooter"></div>
     <script src="/common/footer.js" defer></script>
+=======
+    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <!-- ✅ 서버로 “시도/제외사유” 전달(상세페이지 배너용) -->
+    <input type="hidden" name="clientAttemptedCount" id="clientAttemptedCount" value="0" />
+    <input type="hidden" name="clientExcludedWarnings" id="clientExcludedWarnings" value="" />
+
+    <div class="form-row">
+      <label for="title">제목</label>
+      <input id="title" type="text" th:field="*{title}" maxlength="200" placeholder="제목을 입력하세요" />
+      <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+    </div>
+
+    <div class="form-row">
+      <label for="content">내용</label>
+      <textarea id="content" th:field="*{content}" rows="10" placeholder="내용을 입력하세요"></textarea>
+      <div class="error" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+
+      <!-- ✅ 업로드 상태/경고 -->
+      <div id="uploadBox" class="upload-box warn">
+        <strong id="uploadSummary">시도 0장 · 업로드 0장 · 제외 0건</strong>
+        <ul id="uploadWarnings"></ul>
+      </div>
+
+      <div id="imgPreview" class="img-preview"></div>
+      <div class="img-hint">
+        이미지 최대 5장 / 장당 5MB 이하 · 허용: jpg, png, webp, gif, avif 🙂
+        <br/>※ 5장 초과/용량 초과/미지원 형식은 “제외”로 표시되고 업로드는 가능한 것만 진행돼요.
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" id="btnAddImage" class="btn-secondary">이미지 추가</button>
+
+      <!-- ✅ 실제 업로드 input (name=images) -->
+      <input type="file" id="images" name="images"
+             accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/avif,image/*"
+             multiple hidden />
+
+      <button type="submit" class="btn-primary">등록</button>
+      <a th:href="@{/board}" class="btn-secondary">취소</a>
+    </div>
+  </form>
+</div>
+
+<script>
+(function () {
+  const addBtn = document.getElementById('btnAddImage');
+  const fileInput = document.getElementById('images');
+  const preview = document.getElementById('imgPreview');
+
+  const uploadBox = document.getElementById('uploadBox');
+  const uploadSummary = document.getElementById('uploadSummary');
+  const uploadWarnings = document.getElementById('uploadWarnings');
+
+  const hidAttempted = document.getElementById('clientAttemptedCount');
+  const hidWarnings = document.getElementById('clientExcludedWarnings');
+
+  const MAX_COUNT = 5;
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+  const ALLOWED_TYPES = new Set([
+    "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif", "image/avif"
+  ]);
+
+  // ✅ “유효한 파일 풀”(여기엔 5장 초과분도 들어감) → 업로드는 앞 5장만
+  const validPool = [];          // File[]
+  const validKeySet = new Set(); // 중복 방지
+
+  // ✅ 유효하지 않은 파일(용량/타입 등)
+  const invalidList = [];        // {file: File, reason: string}[]
+  const invalidKeySet = new Set();
+
+  function keyOf(f) {
+    return `${f.name}|${f.size}|${f.lastModified}`;
+  }
+
+  function fmtMB(bytes) {
+    return (bytes / 1024 / 1024).toFixed(2);
+  }
+
+  // ✅ “파일 선택” 버튼
+  addBtn.addEventListener('click', () => {
+    // ⚠️ 중요: 업로드 input의 value를 “여기서만” 비워 change 이벤트가 항상 발생하게 함
+    // (선택 파일을 비우는 건 picker 시점에서만, dt 반영 후에는 절대 비우지 않음)
+    fileInput.value = "";
+    fileInput.click();
+  });
+
+  // ✅ 파일 선택됨
+  fileInput.addEventListener('change', () => {
+    const selected = Array.from(fileInput.files || []);
+    if (selected.length === 0) {
+      render();
+      return;
+    }
+
+    for (const f of selected) {
+      const k = keyOf(f);
+
+      // 중복 파일 처리(조용히 스킵)
+      if (validKeySet.has(k) || invalidKeySet.has(k)) continue;
+
+      const ct = f.type || "";
+      if (!ct.startsWith("image/") || !ALLOWED_TYPES.has(ct)) {
+        invalidKeySet.add(k);
+        invalidList.push({ file: f, reason: `지원하지 않는 형식 (type=${ct || "unknown"})` });
+        continue;
+      }
+
+      if (f.size > MAX_SIZE) {
+        invalidKeySet.add(k);
+        invalidList.push({ file: f, reason: `5MB 초과 (${fmtMB(f.size)}MB)` });
+        continue;
+      }
+
+      validKeySet.add(k);
+      validPool.push(f);
+    }
+
+    render();
+  });
+
+  function rebuildUploadFiles(acceptedFiles) {
+    const dt = new DataTransfer();
+    acceptedFiles.forEach(f => dt.items.add(f));
+    fileInput.files = dt.files; // ✅ 실제 업로드 대상 확정
+  }
+
+  function render() {
+    // 1) 업로드 대상(앞 5장)
+    const accepted = validPool.slice(0, MAX_COUNT);
+    const overflow = validPool.slice(MAX_COUNT);
+
+    // 2) 실제 업로드 input.files 재구성
+    rebuildUploadFiles(accepted);
+
+    // 3) 썸네일 렌더(업로드 대상만)
+    preview.innerHTML = "";
+    accepted.forEach((file, idx) => {
+      const url = URL.createObjectURL(file);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'img-thumb';
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = file.name;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'img-remove';
+      btn.textContent = '×';
+      btn.addEventListener('click', () => {
+        // accepted idx는 validPool idx와 동일(앞 5장이니까)
+        const removed = validPool.splice(idx, 1)[0];
+        if (removed) validKeySet.delete(keyOf(removed));
+        render();
+      });
+
+      wrap.appendChild(img);
+      wrap.appendChild(btn);
+      preview.appendChild(wrap);
+
+      img.onload = () => URL.revokeObjectURL(url);
+    });
+
+    // 4) 경고/요약 구성
+    const attemptedCount = validPool.length + invalidList.length;
+    const uploadCount = accepted.length;
+
+    const warningLines = [];
+
+    // 용량/타입 제외
+    invalidList.forEach(x => {
+      warningLines.push(`제외: ${x.reason} - ${x.file.name}`);
+    });
+
+    // 5장 초과 제외(유효하지만 초과된 파일들)
+    overflow.forEach(f => {
+      warningLines.push(`제외: 최대 ${MAX_COUNT}장 초과 - ${f.name}`);
+    });
+
+    const excludedCount = warningLines.length;
+
+    // 5) hidden 값 업데이트(서버 배너용)
+    hidAttempted.value = String(attemptedCount);
+    hidWarnings.value = warningLines.join("\n");
+
+    // 6) 화면 표시
+    if (attemptedCount === 0) {
+      uploadBox.style.display = "none";
+      uploadWarnings.innerHTML = "";
+      uploadSummary.textContent = "시도 0장 · 업로드 0장 · 제외 0건";
+      return;
+    }
+
+    uploadBox.style.display = "block";
+    uploadSummary.textContent = `시도 ${attemptedCount}장 · 업로드 ${uploadCount}장 · 제외 ${excludedCount}건`;
+
+    uploadWarnings.innerHTML = "";
+    warningLines.slice(0, 30).forEach(line => {
+      const li = document.createElement("li");
+      li.textContent = line;
+      uploadWarnings.appendChild(li);
+    });
+
+    if (warningLines.length > 30) {
+      const li = document.createElement("li");
+      li.textContent = `… 외 ${warningLines.length - 30}건`;
+      uploadWarnings.appendChild(li);
+    }
+  }
+})();
+</script>
+
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 </body>
 </html>

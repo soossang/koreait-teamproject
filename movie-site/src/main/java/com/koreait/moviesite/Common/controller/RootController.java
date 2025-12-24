@@ -9,10 +9,14 @@ public class RootController {
     @GetMapping("/")
     public String root() {
         // ✅ 주소는 그대로 "/" 유지하면서, 내부적으로 Member/index.html을 보여줌
-        return "forward:/Member/index.html";
+        return "Member/index";
     }
+<<<<<<< HEAD
     
 }
 
 
 
+=======
+}
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git

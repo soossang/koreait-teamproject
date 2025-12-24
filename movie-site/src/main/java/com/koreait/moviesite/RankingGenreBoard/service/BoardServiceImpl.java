@@ -10,6 +10,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+<<<<<<< HEAD
+=======
+import com.koreait.moviesite.RankingGenreBoard.dao.BoardCommentRepository;
+import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
+import com.koreait.moviesite.RankingGenreBoard.entity.BoardComment;
+import com.koreait.moviesite.RankingGenreBoard.entity.BoardPost;
+import com.koreait.moviesite.RankingGenreBoard.repository.BoardPostRepository;
+
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +41,13 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public BoardDtos.PostResponse get(Long id, boolean increaseView) {
+<<<<<<< HEAD
         BoardPost post = postRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("post not found: " + id));
 
+=======
+        BoardPost post = postRepo.findById(id).orElseThrow();
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
         if (increaseView) {
             post.setViewCount(post.getViewCount() + 1);
         }
@@ -65,6 +78,11 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void delete(Long id) {
+<<<<<<< HEAD
+=======
+        // FK(board_comment.post_id) 때문에 댓글 먼저 삭제
+        commentRepo.deleteByPost_Id(id);
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
         postRepo.deleteById(id);
     }
 
@@ -81,6 +99,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private BoardDtos.PostResponse toPostResponse(BoardPost p) {
+<<<<<<< HEAD
         List<BoardDtos.CommentResponse> comments =
                 (p.getId() == null) ? java.util.Collections.emptyList()
                         : commentRepo.findAll().stream()
@@ -95,6 +114,24 @@ public class BoardServiceImpl implements BoardService {
         return new BoardDtos.PostResponse(
                 p.getId(), p.getTitle(), p.getContent(), p.getAuthor(),
                 p.getCreatedAt(), p.getUpdatedAt(), p.getViewCount(), comments
+=======
+        List<BoardDtos.CommentResponse> comments = p.getId() == null ? List.of()
+                : commentRepo.findByPost_IdOrderByIdAsc(p.getId()).stream()
+                .map(c -> new BoardDtos.CommentResponse(
+                        c.getId(), c.getAuthor(), c.getContent(), c.getCreatedAt()
+                ))
+                .toList();
+
+        return new BoardDtos.PostResponse(
+                p.getId(),
+                p.getTitle(),
+                p.getContent(),
+                p.getAuthor(),
+                p.getCreatedAt(),
+                p.getUpdatedAt(),
+                p.getViewCount(),
+                comments
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
         );
     }
 }

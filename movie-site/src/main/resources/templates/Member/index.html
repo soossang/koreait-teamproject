@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Film Box</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="/Member/css/index.css" th:href="@{/Member/css/index.css}" />
+</head>
+
+<body>
+    <!-- ===== 헤더 ===== -->
+    <header class="header">
+        <div class="header-inner">
+            <!-- 로고 전체를 홈 링크로 (항상 메인으로 이동) -->
+            <a href="/" class="logo">
+                <div class="logo-mark">FB</div>
+                Film Box
+            </a>
+
+			<nav class="main-nav">
+				<a href="/" class="active">홈</a>
+			    <a href="/movies">영화/예매</a>
+			    <a href="/ranking">흥행영화순위</a>
+			    <a href="/genre">장르</a>
+			    <a href="/board">게시판</a>
+			</nav>
+
+            <div class="auth-nav">
+			  <a href="/login" data-role="login">로그인</a>
+			  <a href="/signup" data-role="signup">회원가입</a>
+			  <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+			  <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+			</div>
+            
+        </div>
+    </header>
+
+    <!-- ===== 메인 페이지 ===== -->
+    <main class="page">
+        <!-- 히어로 배너 -->
+        <section class="hero-banner">
+            <div class="hero-inner">
+                <div class="hero-text">
+                    <p class="hero-tag">올겨울 빅웃음 범죄 액션!</p>
+                    <h1 class="hero-title">정★보★원</h1>
+                    <p class="hero-sub">극장 절찬 상영중</p>
+                    <div class="hero-actions">
+                        <button class="hero-btn primary">예매하기</button>
+                        <button class="hero-btn ghost">상세정보</button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-image-box">
+                        <img src="/Member/img/poster.jpg" alt="포스터">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 박스오피스 / 무비차트 -->
+        <section class="home-section">
+            <div class="section-header">
+                <div>
+                    <h2>🎬 박스오피스</h2>
+                    <p class="section-sub">오늘 가장 많이 보고 있는 영화</p>
+                </div>
+                <a href="#" class="section-more">더 많은 영화 보기 ▸</a>
+            </div>
+
+            <div id="movieGrid" class="movie-grid">
+                <!-- 일단 테스트용 하드코딩 데이터 -->
+				<article class="movie-card">
+				    <div class="movie-poster"
+				         style="background-image:url('/Member/img/movie1.jpg')"></div>						 
+				    <div class="movie-info">
+				        <h3 class="movie-title">주토피아2</h3>						
+				        <p class="movie-meta">애니메이션 · 전체 관람가</p>						
+				        <button class="movie-btn">예매</button>						
+				    </div>
+				</article>
+                <article class="movie-card">
+                    <div class="movie-poster"
+                        style="background-image:url('/Member/img/movie2.jpg')"></div>
+                    <div class="movie-info">
+                        <h3 class="movie-title">극장판 주술회전: 시부야사변 X 사멸회유</h3>
+                        <p class="movie-meta">애니메이션 · 15세 관람가</p>
+                        <button class="movie-btn">예매</button>
+                    </div>
+                </article>
+                <article class="movie-card">
+                    <div class="movie-poster"
+                        style="background-image:url('/Member/img/movie3.jpg')"></div>
+                    <div class="movie-info">
+                        <h3 class="movie-title">윗집 사람들</h3>
+                        <p class="movie-meta">드라마, 코미디 · 청소년 관람불가</p>
+                        <button class="movie-btn">예매</button>
+                    </div>
+                </article>
+                <article class="movie-card">
+                    <div class="movie-poster"
+                        style="background-image:url('/Member/img/poster.jpg')"></div>
+                    <div class="movie-info">
+                        <h3 class="movie-title">정보원</h3>
+                        <p class="movie-meta">코미디, 범죄 · 15세 관람가</p>
+                        <button class="movie-btn">예매</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- 메인 전용 JS (헤더 상태 관리 포함) -->
+	<script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
+</body>
+</html>

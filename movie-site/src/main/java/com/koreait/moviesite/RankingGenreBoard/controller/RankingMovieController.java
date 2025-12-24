@@ -1,19 +1,22 @@
 package com.koreait.moviesite.RankingGenreBoard.controller;
 
 import com.koreait.moviesite.RankingGenreBoard.service.GenreService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class RankingMovieController {
 
     private final GenreService genreService;
+
+    // ✅ Lombok 없이 생성자 주입
+    public RankingMovieController(GenreService genreService) {
+        this.genreService = genreService;
+    }
 
     // ✅ 한 페이지에 20개 고정
     private static final int PAGE_SIZE = 20;

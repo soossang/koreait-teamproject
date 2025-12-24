@@ -1,5 +1,6 @@
 package com.koreait.moviesite.DetailpageReserve.domain;
 
+import com.koreait.moviesite.Member.entity.MemberEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,6 +12,14 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Screening screening;
+
+    /**
+     * (가능하면 B) 예매를 로그인한 회원 계정과 연결하기 위한 FK
+     * - 비회원 예매/기존 데이터 호환을 위해 nullable
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private MemberEntity member;
 
     private String name;       // 예매자 이름
     private String phone;      // 연락처
@@ -38,9 +47,14 @@ public class Reservation {
         this.reservedAt = LocalDateTime.now();
     }
 
+    public void assignMember(MemberEntity member) {
+        this.member = member;
+    }
+
     // === getter ===
     public Long getId() { return id; }
     public Screening getScreening() { return screening; }
+    public MemberEntity getMember() { return member; }
     public String getReservationNumber() { return reservationNumber; }
     public String getName() { return name; }
     public String getPhone() { return phone; }

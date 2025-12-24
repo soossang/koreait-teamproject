@@ -11,8 +11,4 @@ public class RankingPageController {
     public String ranking() {
         return "RankingGenreboard/ranking"; // ✅ ranking.html로 매핑
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git

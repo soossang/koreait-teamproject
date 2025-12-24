@@ -20,8 +20,6 @@ public class AuthPageController {
     public String mypage() {
         return "forward:/Member/mypage.html";
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
+
+

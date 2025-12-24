@@ -1,26 +1,22 @@
 package com.koreait.moviesite.RankingGenreBoard.service;
 
 import com.koreait.moviesite.RankingGenreBoard.dao.BoxOfficeAlltimeRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class GenreService {
 
     private final BoxOfficeAlltimeRepository repo;
-<<<<<<< HEAD
-=======
-    
+
+    // ✅ Lombok 없이 생성자 주입
     public GenreService(BoxOfficeAlltimeRepository repo) {
-    	this.repo = repo;
+        this.repo = repo;
     }
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 
     public List<String> titles(String genre, int limit, String dir) {
         String g = (genre == null) ? "" : genre.trim();

@@ -27,14 +27,14 @@ public class AdminMemberController {
         if (authMember.role() != MemberRole.ADMIN) {
             return ResponseEntity.status(403).build();
         }
-        List<MemberProfileResponse> members = adminMemberService.getAllMembers();
-        return ResponseEntity.ok(members);
+        return ResponseEntity.ok(adminMemberService.getAllMembers());
     }
 
+    // 활성 상태 변경
     @PatchMapping("/{id}")
     public ResponseEntity<MemberProfileResponse> updateMember(
             @RequestAttribute("authMember") AuthenticatedMember authMember,
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody AdminUpdateMemberRequest request
     ) {
         if (authMember.role() != MemberRole.ADMIN) {
@@ -42,5 +42,18 @@ public class AdminMemberController {
         }
         MemberProfileResponse updated = adminMemberService.updateMember(id, request);
         return ResponseEntity.ok(updated);
+    }
+
+    // 회원 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMember(
+            @RequestAttribute("authMember") AuthenticatedMember authMember,
+            @PathVariable("id") Long id
+    ) {
+        if (authMember.role() != MemberRole.ADMIN) {
+            return ResponseEntity.status(403).build();
+        }
+        adminMemberService.deleteMember(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -76,4 +76,17 @@ public class ReservationController {
         model.addAttribute("reservation", reservation);
         return "DetailpageReserve/reservation/complete";
     }
+
+    /**
+     * (A+B) /api/reservations (fetch)로 예매 생성 후, reservationNumber로 완료 페이지를 보여주기 위한 엔드포인트
+     */
+    @GetMapping("/complete/{reservationNumber}")
+    public String completeByReservationNumber(
+            @PathVariable("reservationNumber") String reservationNumber,
+            Model model
+    ) {
+        Reservation reservation = reservationService.getByReservationNumber(reservationNumber);
+        model.addAttribute("reservation", reservation);
+        return "DetailpageReserve/reservation/complete";
+    }
 }

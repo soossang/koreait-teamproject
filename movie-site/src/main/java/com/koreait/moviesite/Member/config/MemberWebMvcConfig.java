@@ -20,7 +20,7 @@ public class MemberWebMvcConfig implements WebMvcConfigurer {
                         "/api/member/**",
                         "/api/reservations/**",
                         "/api/screenings/**",
-                        "/api/admin/member/**"
+                        "/api/admin/**"
                 )
                 .excludePathPatterns(
                         "/api/auth/**"

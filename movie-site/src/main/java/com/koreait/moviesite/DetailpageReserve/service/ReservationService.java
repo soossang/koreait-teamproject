@@ -4,6 +4,9 @@ import com.koreait.moviesite.DetailpageReserve.domain.Reservation;
 import com.koreait.moviesite.DetailpageReserve.domain.Screening;
 import com.koreait.moviesite.DetailpageReserve.repository.ReservationRepository;
 import com.koreait.moviesite.DetailpageReserve.repository.ScreeningRepository;
+import com.koreait.moviesite.Member.dao.MemberRepository;
+import com.koreait.moviesite.Member.entity.MemberEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +19,17 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ScreeningRepository screeningRepository;
+    private final MemberRepository memberRepository;
 
     private static final String RESERVATION_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private final SecureRandom secureRandom = new SecureRandom();
 
     public ReservationService(ReservationRepository reservationRepository,
-                              ScreeningRepository screeningRepository) {
+                              ScreeningRepository screeningRepository,
+                              MemberRepository memberRepository) {
         this.reservationRepository = reservationRepository;
         this.screeningRepository = screeningRepository;
+        this.memberRepository = memberRepository;
     }
     
     @Transactional(readOnly = true)
@@ -79,12 +85,47 @@ public class ReservationService {
 
         String reservationNumber = generateUniqueReservationNumber(10);
 
+        String normalizedPhone = normalizePhone(phone);
         Reservation reservation =
-                new Reservation(screening, reservationNumber, name, phone, count, seats);
+                new Reservation(screening, reservationNumber, name, normalizedPhone, count, seats);
         return reservationRepository.save(reservation);
     }
 
+    /**
+     * (A + B) 로그인한 회원이 예매할 때는 예매 정보를 member_id로 연결하고,
+     * 연락처는 회원 정보의 phone으로 강제(가능하면)하여 "아이디별 예매 조회"가 안정적으로 되게 한다.
+     */
+    @Transactional
+    public Reservation reserveForMember(Long memberId,
+                                        Long screeningId,
+                                        String name,
+                                        String phone,
+                                        int count,
+                                        String seats) {
+
+        MemberEntity member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다. id=" + memberId));
+
+        // 회원 정보의 phone이 있으면 그 값을 우선 사용(강제)
+        String memberPhone = normalizePhone(member.getPhone());
+        String finalPhone = (memberPhone != null && !memberPhone.isBlank())
+                ? memberPhone
+                : normalizePhone(phone);
+
+        // 이름은 입력값이 있으면 사용, 없으면 회원 이름으로 fallback
+        String finalName = (name != null && !name.isBlank()) ? name : member.getName();
+
+        Reservation reservation = reserve(screeningId, finalName, finalPhone, count, seats);
+        reservation.assignMember(member);
+        return reservation;
+    }
+
     @Transactional(readOnly = true)
+    public List<Reservation> findAll(Sort sort) {
+        return reservationRepository.findAll(sort);
+    }
+
+@Transactional(readOnly = true)
     public Reservation getByReservationNumber(String reservationNumber) {
         return reservationRepository.findByReservationNumber(reservationNumber)
                 .orElseThrow(() -> new IllegalArgumentException("예매 정보를 찾을 수 없습니다. 예매번호=" + reservationNumber));
@@ -125,7 +166,15 @@ public class ReservationService {
             }
         }
 
-        reservation.updateInfo(name, phone, reservedCount, seats);
+        // (A) 연락처는 저장/비교 안정성을 위해 항상 정규화
+        String normalizedPhone = normalizePhone(phone);
+
+        // (B) member로 연결된 예매는 회원 phone으로 강제 (계정별 조회 일관성 유지)
+        if (reservation.getMember() != null) {
+            normalizedPhone = normalizePhone(reservation.getMember().getPhone());
+        }
+
+        reservation.updateInfo(name, normalizedPhone, reservedCount, seats);
         return reservation;
     }
 
@@ -166,6 +215,8 @@ private String generateUniqueReservationNumber(int length) {
     public List<Reservation> findByPhoneVariants(String phone) {
         if (phone == null || phone.isBlank()) return List.of();
 
+        phone = phone.trim();
+
         Set<String> variants = new LinkedHashSet<>();
         variants.add(phone);
 
@@ -180,6 +231,19 @@ private String generateUniqueReservationNumber(int length) {
         if (variants.isEmpty()) return List.of();
 
         return reservationRepository.findByPhoneInOrderByReservedAtDesc(new ArrayList<>(variants));
+    }
+
+    /** (B) member_id로 예매 조회 */
+    @Transactional(readOnly = true)
+    public List<Reservation> findByMemberId(Long memberId) {
+        if (memberId == null) return List.of();
+        return reservationRepository.findByMemberIdOrderByReservedAtDesc(memberId);
+    }
+
+    private String normalizePhone(String phone) {
+        if (phone == null) return null;
+        String digits = phone.replaceAll("\\D", "");
+        return digits.isBlank() ? null : digits;
     }
 
     private String digitsOnly(String s) {

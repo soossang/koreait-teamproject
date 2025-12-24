@@ -1,17 +1,26 @@
 package com.koreait.moviesite.RankingGenreBoard.service;
 
+import com.koreait.moviesite.RankingGenreBoard.dao.BoardCommentRepository;
+import com.koreait.moviesite.RankingGenreBoard.repository.BoardPostRepository;
+import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
+import com.koreait.moviesite.RankingGenreBoard.entity.BoardComment;
+import com.koreait.moviesite.RankingGenreBoard.entity.BoardPost;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+<<<<<<< HEAD
+=======
 import com.koreait.moviesite.RankingGenreBoard.dao.BoardCommentRepository;
 import com.koreait.moviesite.RankingGenreBoard.dto.BoardDtos;
 import com.koreait.moviesite.RankingGenreBoard.entity.BoardComment;
 import com.koreait.moviesite.RankingGenreBoard.entity.BoardPost;
 import com.koreait.moviesite.RankingGenreBoard.repository.BoardPostRepository;
 
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -32,7 +41,13 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public BoardDtos.PostResponse get(Long id, boolean increaseView) {
+<<<<<<< HEAD
+        BoardPost post = postRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("post not found: " + id));
+
+=======
         BoardPost post = postRepo.findById(id).orElseThrow();
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
         if (increaseView) {
             post.setViewCount(post.getViewCount() + 1);
         }
@@ -42,15 +57,20 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Long create(BoardDtos.PostCreateRequest req) {
         BoardPost p = new BoardPost();
+
+        // ✅ BoardDtos.*Request 는 record 이므로 accessor 메서드는 getXxx()가 아니라 xxx() 입니다.
         p.setTitle(req.title());
         p.setContent(req.content());
         p.setAuthor(req.author());
+
         return postRepo.save(p).getId();
     }
 
     @Override
     public void update(Long id, BoardDtos.PostUpdateRequest req) {
-        BoardPost p = postRepo.findById(id).orElseThrow();
+        BoardPost p = postRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("post not found: " + id));
+
         p.setTitle(req.title());
         p.setContent(req.content());
         postRepo.save(p);
@@ -58,14 +78,19 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void delete(Long id) {
+<<<<<<< HEAD
+=======
         // FK(board_comment.post_id) 때문에 댓글 먼저 삭제
         commentRepo.deleteByPost_Id(id);
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
         postRepo.deleteById(id);
     }
 
     @Override
     public Long addComment(Long postId, BoardDtos.CommentCreateRequest req) {
-        BoardPost p = postRepo.findById(postId).orElseThrow();
+        BoardPost p = postRepo.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("post not found: " + postId));
+
         BoardComment c = new BoardComment();
         c.setPost(p);
         c.setAuthor(req.author());
@@ -74,6 +99,22 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private BoardDtos.PostResponse toPostResponse(BoardPost p) {
+<<<<<<< HEAD
+        List<BoardDtos.CommentResponse> comments =
+                (p.getId() == null) ? java.util.Collections.emptyList()
+                        : commentRepo.findAll().stream()
+                            .filter(c -> c.getPost() != null
+                                    && c.getPost().getId() != null
+                                    && c.getPost().getId().equals(p.getId()))
+                            .map(c -> new BoardDtos.CommentResponse(
+                                    c.getId(), c.getAuthor(), c.getContent(), c.getCreatedAt()
+                            ))
+                            .collect(Collectors.toList());
+
+        return new BoardDtos.PostResponse(
+                p.getId(), p.getTitle(), p.getContent(), p.getAuthor(),
+                p.getCreatedAt(), p.getUpdatedAt(), p.getViewCount(), comments
+=======
         List<BoardDtos.CommentResponse> comments = p.getId() == null ? List.of()
                 : commentRepo.findByPost_IdOrderByIdAsc(p.getId()).stream()
                 .map(c -> new BoardDtos.CommentResponse(
@@ -90,6 +131,7 @@ public class BoardServiceImpl implements BoardService {
                 p.getUpdatedAt(),
                 p.getViewCount(),
                 comments
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
         );
     }
 }

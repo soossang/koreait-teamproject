@@ -54,12 +54,28 @@
       <a href="/board" class="active">게시판</a>
     </nav>
 
+<<<<<<< HEAD
+            <!-- 로그인 / 회원가입 영역 -->
+            <div class="auth-nav">
+                <a href="/login" data-role="login">로그인</a>
+                <a href="/signup" data-role="signup">회원가입</a>
+                <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+            </div>
+        </div>
+    </header>
+  <div class="container">
+    <div class="toolbar" style="margin-top:12px;">
+      <button id="writeBtn">글쓰기</button>
+      <span id="status" class="muted" style="margin-left:8px;"></span>
+=======
     <div class="auth-nav">
       <!-- ✅ 상대경로 → 절대경로로 수정 (중요) -->
       <a href="/login" data-role="login">로그인</a>
       <a href="/signup" data-role="signup">회원가입</a>
       <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
       <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
     </div>
   </div>
 </header>
@@ -73,6 +89,12 @@
           th:text="${totalPages > 0 ? totalElements + '건 · ' + currentPage + '/' + totalPages + '페이지' : '0건'}"></span>
   </div>
 
+<<<<<<< HEAD
+  <script defer src="/RankingGenreboard/js/board.js"></script>
+<script th:src="@{/Member/js/index.js}"></script>
+    <div id="siteFooter"></div>
+    <script src="/common/footer.js" defer></script>
+=======
   <!-- 목록 테이블 -->
   <table class="table" aria-label="게시글 목록" th:if="${posts != null and !#lists.isEmpty(posts)}">
     <thead>
@@ -127,5 +149,6 @@
   </div>
 </div>
 
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 </body>
 </html>

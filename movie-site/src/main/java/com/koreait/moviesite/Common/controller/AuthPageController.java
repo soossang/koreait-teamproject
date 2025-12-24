@@ -22,3 +22,7 @@ public class AuthPageController {
     }
 }
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git

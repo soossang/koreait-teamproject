@@ -22,6 +22,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     boolean existsByReservationNumber(String reservationNumber);
 
 
-    // 마이페이지 예매번호 찾기 (휴대폰 번호로 조회)
-    List<Reservation> findByPhoneInOrderByReservedAtDesc(List<String> phones);
+    // (B) 마이페이지 예매번호 찾기: 계정(member_id)으로 먼저 조회
+    @Query("select r from Reservation r where r.member.id = :memberId order by r.reservedAt desc")
+    List<Reservation> findByMemberIdOrderByReservedAtDesc(@Param("memberId") Long memberId);
+
+    // (A 보완) 휴대폰 번호로 조회 (기존 데이터/비회원 예매 fallback)
+    // - trim(r.phone) 적용: DB에 공백이 섞여 저장된 케이스도 잡아주기
+    @Query("select r from Reservation r where trim(r.phone) in :phones order by r.reservedAt desc")
+    List<Reservation> findByPhoneInOrderByReservedAtDesc(@Param("phones") List<String> phones);
 }

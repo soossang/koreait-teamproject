@@ -2,16 +2,24 @@ package com.koreait.moviesite.RankingGenreBoard.service;
 
 import com.koreait.moviesite.RankingGenreBoard.dao.BoxOfficeAlltimeRepository;
 import com.koreait.moviesite.RankingGenreBoard.dto.BoxOfficeSummary;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class AlltimeService {
+<<<<<<< HEAD
+
+    private final BoxOfficeAlltimeRepository repo;
+
+    // ✅ Lombok 없이 생성자 주입
+    public AlltimeService(BoxOfficeAlltimeRepository repo) {
+        this.repo = repo;
+    }
+=======
     private final BoxOfficeAlltimeRepository repo;    
+>>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
 
     public Page<BoxOfficeSummary> page(int page, int size, String sortBy, String dir) {
         int p = Math.max(page, 1) - 1;            // 1-based → 0-based
@@ -24,9 +32,10 @@ public class AlltimeService {
             case "screen" -> "screenCnt";
             default       -> "audiAcc"; // 기본: 관객수
         };
-        Sort.Direction direction = "asc".equalsIgnoreCase(dir) ? Sort.Direction.ASC : Sort.Direction.DESC;
 
+        Sort.Direction direction = "asc".equalsIgnoreCase(dir) ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(p, s, Sort.by(direction, field));
+
         return repo.findAllProjectedBy(pageable);
     }
 }

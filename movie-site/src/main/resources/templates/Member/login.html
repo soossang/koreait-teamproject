@@ -58,8 +58,15 @@
     			아직 회원이 아니신가요?
     			<a href="/signup" th:href="@{/signup}">회원가입</a>
   			</div>
+		</section>
+	</main>
 
-  <script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
-  <script src="/Member/js/auth.js" th:src="@{/Member/js/auth.js}" defer></script>
+	<!-- ✅ 공통 Footer (페이지 맨 아래) -->
+	<div id="siteFooter"></div>
+	<script src="/common/footer.js" defer></script>
+
+	<script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
+	<script src="/Member/js/auth.js" th:src="@{/Member/js/auth.js}" defer></script>
+
 </body>
 </html>

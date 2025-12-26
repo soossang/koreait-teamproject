@@ -145,15 +145,6 @@
         th:object="${form}"
         enctype="multipart/form-data">
 
-<<<<<<< HEAD
-  <div style="margin-top:10px;">
-    <button type="submit">등록</button>
-    <a th:href="@{/board}">취소</a>
-  </div>
-</form>
-    <div id="siteFooter"></div>
-    <script src="/common/footer.js" defer></script>
-=======
     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
     <!-- ✅ 서버로 “시도/제외사유” 전달(상세페이지 배너용) -->
@@ -368,6 +359,7 @@
 })();
 </script>
 
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
+<div id="siteFooter"></div>
+<script src="/common/footer.js" defer></script>
 </body>
 </html>

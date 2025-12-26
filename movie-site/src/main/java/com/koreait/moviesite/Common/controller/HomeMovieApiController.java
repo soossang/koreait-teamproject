@@ -23,9 +23,7 @@ public class HomeMovieApiController {
             @RequestParam(name = "id", defaultValue = "1") Long id
     ) {
         Movie m = movieRepository.findById(id).orElse(null);
-        if (m == null) {
-            return ResponseEntity.notFound().build();
-        }
+        if (m == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(MovieDto.from(m));
     }
 
@@ -38,7 +36,7 @@ public class HomeMovieApiController {
                 ? Arrays.asList(2L, 3L, 4L, 5L, 6L)
                 : ids;
 
-        // findAllById는 순서를 보장하지 않으므로, map으로 정렬
+        // findAllById는 순서를 보장하지 않으므로 map으로 정렬
         Map<Long, Movie> map = new HashMap<>();
         for (Movie m : movieRepository.findAllById(order)) {
             map.put(m.getId(), m);

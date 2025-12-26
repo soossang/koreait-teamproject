@@ -16,42 +16,9 @@
 </head>
 
 <body>
-<<<<<<< HEAD
-
-=======
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
   <!-- Film Box 공통 헤더 -->
-<<<<<<< HEAD
   <div th:replace="fragments/header :: header('movies')"></div>
 
-=======
-	<header class="header">
-	        <div class="header-inner">
-	            <!-- 로고 전체를 홈 링크로 (Member 메인으로 이동) -->
-	            <a href="/" class="logo">
-	                <div class="logo-mark">FB</div>
-	                Film Box
-	            </a>
-	
-	            <!-- 상단 메뉴 -->
-	            <nav class="main-nav">
-	                <a href="/">홈</a>
-	                <a href="/movies" class="active">영화/예매</a>
-	                <a href="/ranking">흥행영화순위</a>
-	                <a href="/genre">장르</a>
-	                <a href="/board">게시판</a>
-	            </nav>
-	
-	            <!-- 로그인 / 회원가입 영역 -->
-	            <div class="auth-nav">
-	                <a href="/login" data-role="login">로그인</a>
-	                <a href="/signup" data-role="signup">회원가입</a>
-	                <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
-	                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
-	            </div>
-	        </div>
-	</header>
->>>>>>> branch 'practice' of https://github.com/soossang/koreait-teamproject.git
   <main class="movies-page">
     <header class="movies-header">
       <h1 class="page-title">영화</h1>
@@ -85,20 +52,21 @@
             </span>
           </div>
 
-          <div class="movie-actions">         
-             <a class="btn btn-primary" th:href="@{|/movies/${movie.id}|}">상세</a>         
+          <div class="movie-actions">
+            <a class="btn btn-primary" th:href="@{|/movies/${movie.id}|}">상세</a>
           </div>
         </div>
       </article>
     </section>
 
-    <!-- ✅ 3번째 캡쳐처럼 하단 더보기 -->
+    <!-- ✅ 하단 더보기 -->
     <div class="loadmore-wrap" th:if="${!#lists.isEmpty(movies)}">
       <button type="button" class="loadmore-btn" id="loadMoreBtn">더보기</button>
       <p class="loadmore-hint" id="loadMoreHint" aria-live="polite"></p>
     </div>
   </main>
-    <div id="siteFooter"></div>
-    <script src="/common/footer.js" defer></script>
+
+  <div id="siteFooter"></div>
+  <script src="/common/footer.js" defer></script>
 </body>
 </html>

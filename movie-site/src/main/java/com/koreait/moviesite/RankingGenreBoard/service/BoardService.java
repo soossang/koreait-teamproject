@@ -21,6 +21,10 @@ public interface BoardService {
     void delete(Long id);
 
     Long addComment(Long postId, BoardDtos.CommentCreateRequest req);
+    
+    void updateComment(Long postId, Long commentId, String loginId, String content);
+    
+    void deleteComment(Long postId, Long commentId, String loginId);
 
     // ======================================================
     // ✅ 컨트롤러 편의 메서드 (default)

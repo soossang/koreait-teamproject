@@ -53,16 +53,26 @@ public class BoardController {
         int size = 10;
 
         Page<BoardDtos.PostResponse> postsPage = boardService.list(
-                PageRequest.of(safePage - 1, size, Sort.by(Sort.Direction.DESC, "id"))
-        );
+        		PageRequest.of(
+        			    safePage - 1,
+        			    size,
+        			    Sort.by(Sort.Direction.DESC, "createdAt")
+        			        .and(Sort.by(Sort.Direction.DESC, "id"))
+        			)
+        		);
+
 
         model.addAttribute("posts", postsPage.getContent());
         model.addAttribute("currentPage", safePage);
         model.addAttribute("totalPages", postsPage.getTotalPages());
         model.addAttribute("totalElements", postsPage.getTotalElements());
 
+        // ✅ 추가
+        model.addAttribute("pageSize", size);
+
         return "RankingGenreboard/board";
     }
+
 
     // ======================
     // 상세
@@ -451,4 +461,110 @@ public class BoardController {
         public String getContent() { return content; }
         public void setContent(String content) { this.content = content; }
     }
+
+    // ======================
+    // Comment
+    // ======================
+    /**
+     * ✅ 댓글 등록
+     * - 화면에서 댓글 입력 UI는 로그인한 경우만 노출
+     * - 직접 POST를 때려도(예: 개발자도구) 서버에서 한 번 더 차단
+     */
+    @PostMapping("/{id}/comment")
+    public String addComment(@PathVariable("id") Long postId,
+                             @RequestParam("content") String content,
+                             @RequestParam(name = "page", defaultValue = "1") int backPage,
+                             HttpSession session,
+                             RedirectAttributes ra) {
+
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null || loginId.isBlank()) {
+            ra.addFlashAttribute("postActionError", "댓글을 작성하려면 로그인해야 해요.");
+            return "redirect:/board/" + postId + "?page=" + backPage;
+        }
+
+        String trimmed = content == null ? "" : content.trim();
+        if (trimmed.isEmpty()) {
+            ra.addFlashAttribute("postActionError", "댓글 내용이 비어있어요.");
+            return "redirect:/board/" + postId + "?page=" + backPage;
+        }
+
+        // (선택) 너무 긴 댓글 방지 — DB 컬럼 길이에 맞춰 조절
+        if (trimmed.length() > 500) {
+            trimmed = trimmed.substring(0, 500);
+        }
+
+        try {
+            boardService.addComment(postId, new BoardDtos.CommentCreateRequest(loginId, trimmed));
+            ra.addFlashAttribute("postActionSuccess", "댓글이 등록됐어요.");
+        } catch (Exception e) {
+            log.error("addComment failed. postId={}, loginId={}", postId, loginId, e);
+            ra.addFlashAttribute("postActionError", "댓글 등록 중 오류가 발생했어요.");
+        }
+
+        return "redirect:/board/" + postId + "?page=" + backPage;
+    }
+
+
+    // ✅ 댓글 수정 (내 댓글만)
+    @PostMapping("/{id}/comment/{commentId}/edit")
+    public String editComment(@PathVariable("id") Long postId,
+                              @PathVariable("commentId") Long commentId,
+                              @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                              @RequestParam("content") String content,
+                              HttpSession session,
+                              RedirectAttributes redirectAttributes) {
+
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null || loginId.isBlank()) {
+            redirectAttributes.addFlashAttribute("commentError", "로그인 후 댓글을 수정할 수 있어요.");
+            return "redirect:/board/" + postId + "?page=" + page;
+        }
+
+        String trimmed = content == null ? "" : content.trim();
+        if (trimmed.isEmpty()) {
+            redirectAttributes.addFlashAttribute("commentError", "댓글 내용이 비어있어요.");
+            return "redirect:/board/" + postId + "?page=" + page;
+        }
+        if (trimmed.length() > 500) {
+            redirectAttributes.addFlashAttribute("commentError", "댓글은 최대 500자까지 가능해요.");
+            return "redirect:/board/" + postId + "?page=" + page;
+        }
+
+        try {
+            boardService.updateComment(postId, commentId, loginId, trimmed);
+            redirectAttributes.addFlashAttribute("commentSuccess", "댓글이 수정됐어요.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("commentError",
+                    "댓글 수정에 실패했어요. (내 댓글만 수정 가능)");
+        }
+
+        return "redirect:/board/" + postId + "?page=" + page;
+    }
+
+    // ✅ 댓글 삭제 (내 댓글만)
+    @PostMapping("/{id}/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable("id") Long postId,
+                                @PathVariable("commentId") Long commentId,
+                                @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+
+        String loginId = (String) session.getAttribute("loginId");
+        if (loginId == null || loginId.isBlank()) {
+            redirectAttributes.addFlashAttribute("commentError", "로그인 후 댓글을 삭제할 수 있어요.");
+            return "redirect:/board/" + postId + "?page=" + page;
+        }
+
+        try {
+            boardService.deleteComment(postId, commentId, loginId);
+            redirectAttributes.addFlashAttribute("commentSuccess", "댓글이 삭제됐어요.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("commentError",
+                    "댓글 삭제에 실패했어요. (내 댓글만 삭제 가능)");
+        }
+
+        return "redirect:/board/" + postId + "?page=" + page;
+    }
+
 }

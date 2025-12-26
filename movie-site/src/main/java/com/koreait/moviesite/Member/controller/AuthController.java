@@ -2,6 +2,7 @@ package com.koreait.moviesite.Member.controller;
 
 import com.koreait.moviesite.Member.dto.LoginRequest;
 import com.koreait.moviesite.Member.dto.LoginResponse;
+import com.koreait.moviesite.Member.dto.SignupRequest;
 import com.koreait.moviesite.Member.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,7 +39,22 @@ public class AuthController {
                 .body(res);
     }
 
-    @PostMapping("/logout")
+    
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
+        try {
+            authService.signup(request);
+            return ResponseEntity.status(201).body(Map.of("message", "회원가입이 완료되었습니다."));
+        } catch (IllegalArgumentException ex) {
+            // 중복/유효성 에러
+            return ResponseEntity.badRequest().body(Map.of("message", ex.getMessage()));
+        } catch (IllegalStateException ex) {
+            // 충돌(예: 중복)
+            return ResponseEntity.status(409).body(Map.of("message", ex.getMessage()));
+        }
+    }
+
+@PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();

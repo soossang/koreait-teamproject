@@ -11,22 +11,160 @@
 
   <style>
     .post-wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }
-    .post-card { border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 18px; background: rgba(255,255,255,.04); }
+    .post-card {border: 1px solid #334155; border-radius: 14px; padding: 18px; background: var(--card, #111827); }
     .post-head { display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; }
     .post-title { font-size: 22px; font-weight: 800; margin: 0 0 10px; }
     .post-meta { display:flex; gap:14px; flex-wrap:wrap; color: rgba(255,255,255,.65); font-size: 13px; margin-bottom: 14px; }
     .post-content { white-space: pre-wrap; line-height: 1.6; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.10); }
 
-    .actions-right { display:flex; gap: 8px; flex-wrap:wrap; justify-content:flex-end; }
-    .btn-link {
-      display:inline-flex; align-items:center; justify-content:center;
-      padding: 8px 12px; border-radius: 10px;
-      border:1px solid rgba(255,255,255,.18);
-      text-decoration:none; color:#fff;
-      background: rgba(255,255,255,.06);
-      cursor:pointer;
+    /* ===== 댓글 ===== */
+    .comments { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.12); }
+    .comments-header { display:flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .comments-title { font-size: 16px; font-weight: 900; }
+    .comments-count { font-size: 12px; color: rgba(255,255,255,.65); }
+    .comment-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .comment-item { border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.04); border-radius: 12px; padding: 10px 12px; }
+    .comment-meta { display:flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+    .comment-author { font-weight: 800; }
+    .comment-date { font-size: 12px; color: rgba(255,255,255,.55); }
+
+      /* ✅ 댓글 수정/삭제 버튼 */
+      .comment-right{
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+      .comment-actions{
+        display:flex;
+        align-items:center;
+        gap:8px;
+      }
+      .comment-delete-form{ display:inline; margin:0; }
+      .cbtn{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        padding:6px 10px;
+        font-size:12px;
+        font-weight:700;
+        border-radius:10px;
+        border:1px solid rgba(255,255,255,.18);
+        background:rgba(255,255,255,.08);
+        color:#fff;
+        cursor:pointer;
+        user-select:none;
+      }
+      .cbtn:hover{ filter:brightness(1.1); }
+      .cbtn-edit{
+        border-color:rgba(0, 255, 170, .50);
+        background:rgba(0, 255, 170, .14);
+      }
+      .cbtn-delete{
+        border-color:rgba(255, 90, 90, .55);
+        background:rgba(255, 90, 90, .16);
+      }
+      .cbtn-save{
+        border-color:rgba(0, 255, 170, .55);
+        background:rgba(0, 255, 170, .18);
+      }
+      .cbtn-cancel{
+        border-color:rgba(255,255,255,.22);
+        background:rgba(255,255,255,.10);
+      }
+
+      /* ✅ 인라인 수정 모드 */
+      .comment-edit-wrap{ display:none; margin-top:10px; }
+      .comment-item.is-editing .comment-content{ display:none; }
+      .comment-item.is-editing .comment-edit-wrap{ display:block; }
+      .comment-item.is-editing .comment-actions .cbtn-edit{ display:none; }
+
+      .comment-edit-form textarea{
+        width:100%;
+        min-height:80px;
+        resize:vertical;
+        border-radius:14px;
+        border:1px solid rgba(255,255,255,.12);
+        background:rgba(255,255,255,.06);
+        color:#fff;
+        padding:12px 14px;
+        outline:none;
+      }
+      .comment-edit-actions{
+        display:flex;
+        gap:10px;
+        justify-content:flex-end;
+        margin-top:10px;
+      }
+
+    .comment-content { white-space: pre-wrap; line-height: 1.55; color: rgba(255,255,255,.92); }
+    .comment-empty { color: rgba(255,255,255,.55); font-size: 13px; padding: 10px 0; }
+    .comment-form-wrap { margin-top: 12px; }
+    .comment-form textarea { width: 100%; min-height: 90px; resize: vertical; border-radius: 12px; border: 1px solid rgba(255,255,255,.14); background: rgba(0,0,0,.25); color: rgba(255,255,255,.92); padding: 10px 12px; outline: none; }
+    .comment-form textarea:focus { border-color: rgba(0,255,170,.65); box-shadow: 0 0 0 3px rgba(0,255,170,.12); }
+    .comment-form-actions { display:flex; justify-content: flex-end; margin-top: 10px; }
+    .comment-login-hint { margin-top: 12px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03); color: rgba(255,255,255,.78); }
+    .comment-login-hint a { color: #00ffaa; font-weight: 800; }
+
+    /* ✅ 여기부터가 이번 요청의 핵심 수정 */
+    .actions-right {
+      display:flex;
+      align-items:center;
+      gap: 12px;              /* 버튼 사이 간격 */
+      flex-wrap:nowrap;       /* ✅ 줄바꿈 금지 → 세로로 떨어지는 문제 해결 */
+      justify-content:flex-end;
+      flex-shrink:0;          /* ✅ 왼쪽이 길어져도 버튼 영역이 찌그러지지 않게 */
     }
-    .btn-danger { border-color: rgba(255,90,90,.35); background: rgba(255,90,90,.10); }
+    .actions-right form { margin:0; }
+    .actions-right .btn-link { min-width: 72px; } /* ✅ 버튼 가로 크기 통일 */
+    /* 버튼 공통 */
+    .btn-link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border:1px solid rgba(255,255,255,.18);
+      text-decoration:none;
+      color:#fff;
+      background: rgba(255,255,255,.08);
+      cursor:pointer;
+      user-select:none;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1;
+      height: 34px;
+      white-space: nowrap;
+    }
+     .actions-right .btn-edit{
+      border-color: rgba(46,224,174,.55);
+      background: rgba(46,224,174,.14);
+      color: rgba(255,255,255,.92);
+    }
+    .actions-right .btn-edit:hover{
+      background: rgba(46,224,174,.20);
+      border-color: rgba(46,224,174,.78);
+    }
+
+    /* ✅ 삭제 버튼 빨간색 강하게(회색처럼 안 보이게) */
+    .actions-right .btn-delete{
+        border-color: rgba(255, 80, 80, .85);
+        background: rgba(255, 80, 80, .24);
+        color:#fff;
+      }
+    .actions-right .btn-delete:hover{
+        background: rgba(255, 80, 80, .34);
+        border-color: rgba(255, 80, 80, 1);
+        filter:none;
+      }
+
+    /* 혹시 다른 곳에서 btn-danger를 쓰는 경우도 동일하게 빨간색 유지 */
+    .btn-danger{
+      border-color: rgba(255,80,80,.85);
+      background: rgba(255,80,80,.24);
+      color:#fff;
+    }
+    .btn-danger:hover{ background: rgba(255,80,80,.34); border-color: rgba(255,80,80,1); }
+    .btn-danger:active{ background: rgba(255,80,80,.44); }
 
     .banner { margin: 0 0 14px; border-radius: 12px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); }
     .banner strong { display:block; font-size: 13px; margin-bottom: 6px; }
@@ -303,11 +441,12 @@
         </div>
       </div>
 
+      <!-- ✅ 상단 수정/삭제 버튼 (크기 동일 + 색상 적용) -->
       <div class="actions-right" th:if="${isOwner}">
-        <a class="btn-link" th:href="@{/board/{id}/edit(id=${post.id}, page=${backPage})}">수정</a>
-        <form th:action="@{/board/{id}/delete(id=${post.id})}" method="post" style="margin:0;">
+        <a class="btn-link btn-edit" th:href="@{/board/{id}/edit(id=${post.id}, page=${backPage})}">수정</a>
+        <form th:action="@{/board/{id}/delete(id=${post.id})}" method="post">
           <input type="hidden" name="page" th:value="${backPage}" />
-          <button type="submit" class="btn-link btn-danger"
+          <button type="submit" class="btn-link btn-delete"
                   onclick="return confirm('정말 삭제할까요? 삭제하면 복구할 수 없어요.');">삭제</button>
         </form>
       </div>
@@ -342,7 +481,7 @@
 
                 <div class="slider-caption">
                   <div th:text="${name}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">image</div>
-                  <div class="slider-counter" th:text="${(st.index + 1)} + ' / ' + ${cnt}">1 / 1</div>
+                  <div class="slider-counter" th:text="|${st.index + 1} / ${cnt}|">1 / 1</div>
                 </div>
               </div>
             </div>
@@ -364,6 +503,82 @@
       </div>
 
       <div class="slider-hint">←/→ 또는 버튼, 모바일은 스와이프로 넘길 수 있어요. 이미지를 클릭하면 크게 보기(포인터 중심 줌/드래그) 됩니다.</div>
+    </div>
+
+    <!-- ✅ Comments (로그인한 회원만 작성 가능) -->
+    <div class="comments">
+      <div class="comments-header">
+        <div class="comments-title">댓글</div>
+        <div class="comments-count"
+             th:text="|${post.comments != null ? #lists.size(post.comments) : 0}개|">0개</div>
+      </div>
+
+      <div class="comment-empty"
+           th:if="${post.comments == null or #lists.isEmpty(post.comments)}">
+        아직 댓글이 없어요.
+      </div>
+
+      <ul class="comment-list">
+        <li class="comment-item" th:each="c : ${post.comments}">
+          <div class="comment-meta">
+            <div class="comment-author" th:text="${c.author}">author</div>
+
+            <div class="comment-right">
+              <div class="comment-date"
+                   th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}">
+                2025-12-26 12:47
+              </div>
+
+              <!-- ✅ 내 댓글일 때만 수정/삭제 노출 -->
+              <div class="comment-actions"
+                   th:if="${session.loginId != null and session.loginId == c.author}">
+                <button type="button" class="cbtn cbtn-edit" data-comment-action="edit">수정</button>
+
+                <form class="comment-delete-form"
+                      th:action="@{/board/{postId}/comment/{commentId}/delete(postId=${post.id}, commentId=${c.id}, page=${backPage})}"
+                      method="post"
+                      onsubmit="return confirm('댓글을 삭제할까요?');">
+                  <button type="submit" class="cbtn cbtn-delete">삭제</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="comment-content" th:text="${c.content}">comment</div>
+
+          <!-- ✅ 인라인 수정 폼 (내 댓글일 때만) -->
+          <div class="comment-edit-wrap"
+               th:if="${session.loginId != null and session.loginId == c.author}">
+            <form class="comment-edit-form"
+                  th:action="@{/board/{postId}/comment/{commentId}/edit(postId=${post.id}, commentId=${c.id}, page=${backPage})}"
+                  method="post">
+              <textarea name="content" maxlength="500" required
+                        th:text="${c.content}"></textarea>
+
+              <div class="comment-edit-actions">
+                <button type="submit" class="cbtn cbtn-save">저장</button>
+                <button type="button" class="cbtn cbtn-cancel" data-comment-action="cancel">취소</button>
+              </div>
+            </form>
+          </div>
+        </li>
+      </ul>
+
+      <!-- 댓글 작성 폼: 로그인한 경우만 노출 -->
+      <div class="comment-form-wrap" th:if="${session.loginId != null}">
+        <form class="comment-form" th:action="@{/board/{id}/comment(id=${post.id}, page=${backPage})}" method="post">
+          <textarea name="content" maxlength="500" required
+                    placeholder="댓글을 입력하세요 (최대 500자)"></textarea>
+          <div class="comment-form-actions">
+            <button type="submit" class="btn-link">댓글 등록</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 비로그인 안내 -->
+      <div class="comment-login-hint" th:unless="${session.loginId != null}">
+        댓글을 작성하려면 <a href="/login">로그인</a>이 필요합니다.
+      </div>
     </div>
 
     <div class="post-actions">
@@ -622,8 +837,41 @@
     resetTransform();
   });
 
+
+
+  /* =========================
+     ✅ Comment Edit UI (수정/취소 토글)
+     ========================= */
+  const commentsRoot = document.querySelector('.comments');
+  if (commentsRoot) {
+    commentsRoot.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-comment-action]');
+      if (!btn) return;
+
+      const action = btn.getAttribute('data-comment-action');
+      const item = btn.closest('.comment-item');
+      if (!item) return;
+
+      if (action === 'edit') {
+        item.classList.add('is-editing');
+        const ta = item.querySelector('.comment-edit-form textarea');
+        if (ta) {
+          ta.focus();
+          const len = ta.value.length;
+          try { ta.setSelectionRange(len, len); } catch (err) {}
+        }
+      } else if (action === 'cancel') {
+        item.classList.remove('is-editing');
+      }
+    });
+  }
+
 })();
 </script>
+
+<!-- ✅ 공통 Footer -->
+<div id="siteFooter"></div>
+<script src="/common/footer.js" defer></script>
 
 </body>
 </html>

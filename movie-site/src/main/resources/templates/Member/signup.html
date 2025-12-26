@@ -75,7 +75,17 @@
     <a href="/login" th:href="@{/login}">로그인</a>
   </div>
 
-  <script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
-  <script src="/Member/js/auth.js" th:src="@{/Member/js/auth.js}" defer></script>
+        </section>
+    </main>
+
+    <!-- ✅ 공통 Footer (페이지 맨 아래) -->
+    <div id="siteFooter"></div>
+    <script src="/common/footer.js" defer></script>
+
+    <script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
+    <script src="/Member/js/auth.js" th:src="@{/Member/js/auth.js}" defer></script>
+
+    <script src="/Member/js/signup.js" defer></script>
+
 </body>
 </html>

@@ -9,6 +9,10 @@ body {
     font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     background: #050509;
     color: #f9fafb;
+    /* 로그인/회원가입 페이지에서 footer를 화면 하단에 고정하기 위한 레이아웃 */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 a {
@@ -112,7 +116,8 @@ a {
 /* ===== 인증 페이지 레이아웃 ===== */
 
 .auth-page {
-    min-height: calc(100vh - 60px);
+    /* body가 flex-column이므로 main이 남은 공간을 차지하도록 */
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;

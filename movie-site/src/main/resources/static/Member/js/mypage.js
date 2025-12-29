@@ -1,6 +1,24 @@
-// ===== 헤더 로그인 상태 업데이트 =====
-function updateAuthNav() {
-    const token = localStorage.getItem("accessToken");
+// ==============================================================
+// ⚠️ 주의
+//  - 이 프로젝트는 공통 헤더 토글/관리자 메뉴 표시를 /Member/js/index.js 에서 처리합니다.
+//  - 그런데 이 파일에서 updateAuthNav 라는 같은 이름을 쓰면, index.js의 함수를 덮어써서
+//    "관리자" 메뉴가 마이페이지에서만 안 보이는 문제가 생깁니다.
+//  - 그래서 마이페이지 전용 함수는 이름을 바꿔서(로컬) 충돌을 방지합니다.
+// ==============================================================
+
+function getAuthTokenLocal() {
+    return (
+        localStorage.getItem("accessToken") ||
+        localStorage.getItem("token") ||
+        sessionStorage.getItem("accessToken") ||
+        sessionStorage.getItem("token")
+    );
+}
+
+// ===== (fallback용) 헤더 로그인 상태 업데이트 =====
+// index.js가 로드되지 않은 페이지에서만 사용됩니다.
+function updateAuthNavLocal() {
+    const token = getAuthTokenLocal();
 
     const loginLink = document.querySelector('.auth-nav a[data-role="login"]');
     const signupLink = document.querySelector('.auth-nav a[data-role="signup"]');
@@ -21,11 +39,7 @@ function updateAuthNav() {
         logoutLink.style.display = "none";
     }
 
-    logoutLink.onclick = (e) => {
-        e.preventDefault();
-        localStorage.removeItem("accessToken");
-        window.location.href = "/Member/index.html";
-    };
+    // logout 동작은 공통 스크립트(index.js)가 처리합니다.
 }
 
 function redirectToLogin() {
@@ -491,9 +505,14 @@ function renderReservation(r) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    updateAuthNav();
+    // ✅ 공통 헤더 토글(관리자 메뉴 포함)은 index.js의 updateAuthNav를 우선 사용
+    if (typeof window.updateAuthNav === "function") {
+        await window.updateAuthNav();
+    } else {
+        updateAuthNavLocal();
+    }
 
-    const token = localStorage.getItem("accessToken");
+    const token = getAuthTokenLocal();
 
     // 로그인 안했으면 마이페이지 접근 불가
     if (!token) {

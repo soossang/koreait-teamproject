@@ -1,0 +1,345 @@
+/* ===== 리셋 / 기본 ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #050509;
+    color: #f9fafb;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ===== 헤더 ===== */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(5, 5, 9, 0.95);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    backdrop-filter: blur(12px);
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-size: 20px;
+}
+
+.logo-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #e11d48;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
+
+/* 메뉴 / 로그인 / 회원가입 공통 */
+
+.main-nav,
+.auth-nav {
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+}
+
+.auth-nav {
+    gap: 16px;
+    font-size: 13px;
+}
+
+.main-nav a,
+.auth-nav a {
+    position: relative;
+    color: #e5e7eb;
+    padding: 4px 0;
+    font-weight: 400;
+    transition: color 0.18s ease;
+}
+
+/* 밑줄 애니메이션 */
+.main-nav a::after,
+.auth-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0;
+    height: 2px;
+    background: #f97316;
+    transition: width 0.18s ease;
+}
+
+/* hover 시 강조 */
+.main-nav a:hover,
+.auth-nav a:hover {
+    color: #f97316;
+}
+
+.main-nav a:hover::after,
+.auth-nav a:hover::after {
+    width: 100%;
+}
+
+/* active 페이지 표시 */
+.main-nav a.active,
+.auth-nav a.active {
+    color: #f97316;
+}
+
+.main-nav a.active::after,
+.auth-nav a.active::after {
+    width: 100%;
+}
+
+/* ===== 메인 레이아웃 ===== */
+
+.page {
+    padding-bottom: 60px;
+}
+
+/* 히어로 배너 (롯데 느낌) */
+.hero-banner {
+    background: linear-gradient(180deg, #f4b000 0%, #f4b000 55%, #050509 100%);
+    padding: 40px 0 70px;
+}
+
+.hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr);
+    align-items: center;
+    gap: 34px;
+}
+
+.hero-text {
+    color: #111827;
+}
+
+.hero-tag {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.hero-title {
+    font-size: 54px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+}
+
+.hero-sub {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.hero-actions {
+    margin-top: 28px;
+    display: flex;
+    gap: 12px;
+}
+
+.hero-btn {
+    border-radius: 999px;
+    padding: 11px 22px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.hero-btn.primary {
+    background: #111827;
+    color: #f9fafb;
+}
+
+.hero-btn.primary:hover {
+    background: #020617;
+}
+
+.hero-btn.ghost {
+    background: transparent;
+    color: #111827;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+}
+
+.hero-btn.ghost:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.hero-image {
+    justify-self: end;
+}
+
+.hero-image-box {
+    width: 320px;
+    height: 440px;
+    border-radius: 20px;
+    background: radial-gradient(circle at top, #111827 0%, #020617 60%);
+    box-shadow: 0 32px 60px rgba(15, 23, 42, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e5e7eb;
+    font-size: 15px;
+    overflow: hidden;
+}
+
+.hero-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ===== 섹션 공통 ===== */
+
+.home-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 18px;
+}
+
+.section-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.section-sub {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 4px;
+}
+
+.section-more {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.section-more:hover {
+    color: #e5e7eb;
+}
+
+/* ===== 영화 카드 그리드 ===== */
+
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 18px;
+}
+
+.movie-card {
+    background: radial-gradient(circle at top, #1f2937 0%, #020617 70%);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    box-shadow: 0 18px 32px rgba(15, 23, 42, 0.75);
+    cursor: pointer;
+    transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+}
+
+.movie-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 40px rgba(15, 23, 42, 0.9);
+}
+
+.movie-poster {
+    width: 100%;
+    height: 260px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 12px 12px 0 0;
+}
+
+
+.movie-info {
+    padding: 11px 13px 13px;
+}
+
+.movie-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.movie-meta {
+    font-size: 12px;
+    color: #9ca3af;
+    margin-bottom: 8px;
+}
+
+.movie-btn {
+    width: 100%;
+    border-radius: 999px;
+    border: none;
+    padding: 7px 0;
+    font-size: 13px;
+    font-weight: 600;
+    background: #e11d48;
+    color: #f9fafb;
+}
+
+.movie-btn:hover {
+    background: #be123c;
+}
+
+
+
+/* ===== 반응형 ===== */
+
+@media (max-width: 960px) {
+    .hero-inner {
+        grid-template-columns: minmax(0, 1fr);
+        text-align: center;
+    }
+
+    .hero-image {
+        justify-self: center;
+    }
+
+    .hero-image-box {
+        width: 260px;
+        height: 360px;
+    }
+}
+
+/* ===== 푸터 ===== */

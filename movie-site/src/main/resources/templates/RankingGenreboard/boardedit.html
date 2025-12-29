@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>게시글 수정</title>
+
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <link rel="stylesheet" href="/Member/css/index.css" />
+  <script th:src="@{/Member/js/index.js}" defer></script>
+
+  <style>
+    .wrap { max-width: 980px; margin: 24px auto; padding: 0 12px; }
+    .card { border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 18px; background: rgba(255,255,255,.04); }
+    .h1 { font-size: 22px; font-weight: 900; margin: 0 0 14px; }
+
+    label { display:block; font-weight: 800; margin: 14px 0 8px; }
+    input[type="text"], textarea {
+      width: 100%; box-sizing: border-box;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      color:#e5e7eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      outline: none;
+    }
+    textarea { min-height: 240px; resize: vertical; }
+
+    .hint { margin-top: 8px; opacity: .85; font-size: 13px; line-height: 1.45; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; margin-top: 16px; }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center;
+      padding: 10px 14px; border-radius: 10px;
+      border:1px solid rgba(255,255,255,.18);
+      text-decoration:none; color:#fff;
+      background: rgba(255,255,255,.06);
+      font-weight: 800;
+      cursor:pointer;
+    }
+    .btn:hover { background: rgba(255,255,255,.10); }
+    .btn-primary { background:#111827; border-color:#1f2937; }
+    .btn-primary:hover { background:#0b1220; }
+
+    .section { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.10); }
+    .section h3 { margin: 0 0 10px; font-size: 16px; font-weight: 900; }
+
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+
+    .img-card {
+      position: relative;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,.06);
+      cursor: grab;
+      user-select: none;
+    }
+    .img-card:active { cursor: grabbing; }
+
+    .img-card .drag-handle {
+      position:absolute; top:8px; left:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 12px; font-weight: 900;
+      letter-spacing: .5px;
+      cursor: grab;
+      z-index: 2;
+    }
+
+    .img-card .img-btn {
+      width: 100%;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      display:block;
+      cursor: inherit;
+    }
+
+    .img-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display:block;
+      pointer-events: none;
+    }
+
+    .img-card .meta { padding: 10px; display:flex; flex-direction: column; gap: 8px; }
+    .img-card .name { font-size: 12px; color: rgba(255,255,255,.75); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+    .chk { display:flex; align-items:center; gap: 8px; font-size: 13px; }
+    .chk input { width: 16px; height: 16px; }
+
+    .img-card.is-deleting {
+      opacity: .32;
+      filter: grayscale(1);
+    }
+    .img-card.is-deleting .drag-handle {
+      opacity: .7;
+      cursor: not-allowed;
+    }
+    .img-card.is-deleting::after {
+      content: "삭제 예정";
+      position:absolute;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 900;
+      font-size: 18px;
+      background: rgba(0,0,0,0.35);
+      color: rgba(255,255,255,0.95);
+      z-index: 1;
+      pointer-events:none;
+    }
+
+    .img-card.is-dragging {
+      opacity: .85;
+      outline: 2px dashed rgba(255,255,255,0.45);
+      outline-offset: -8px;
+    }
+
+    .preview-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 10px; }
+    .thumb { position:relative; border-radius: 14px; overflow:hidden; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); }
+    .thumb img { width:100%; height:140px; object-fit:cover; display:block; }
+    .thumb .meta { padding: 8px 10px; font-size: 12px; color: rgba(255,255,255,.78); white-space: nowrap; overflow:hidden; text-overflow: ellipsis; }
+    .thumb .remove {
+      position:absolute; top:8px; right:8px;
+      padding: 6px 8px; border-radius: 999px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 12px; font-weight: 900;
+      cursor:pointer;
+      color:#fff;
+    }
+
+    .error { margin-top: 12px; color:#fecaca; font-size: 13px; white-space: pre-line; display:none; }
+    .stat { margin-top: 10px; font-size: 13px; color: rgba(255,255,255,.78); }
+    .pill { display:inline-block; padding: 3px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.06); }
+
+    .mini { font-size: 12px; opacity: .9; margin-top: 6px; }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark">FB</div>
+      Film Box
+    </a>
+
+    <nav class="main-nav">
+      <a href="/">홈</a>
+      <a href="/movies">영화/예매</a>
+      <a href="/ranking">흥행영화순위</a>
+      <a href="/genre">장르</a>
+      <a href="/board" class="active">게시판</a>
+    </nav>
+
+    <div class="auth-nav">
+      <a href="/login" data-role="login">로그인</a>
+      <a href="/signup" data-role="signup">회원가입</a>
+      <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+      <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="h1">게시글 수정</div>
+
+    <form id="editForm"
+          th:action="@{/board/{id}/edit(id=${postId}, page=${backPage})}"
+          method="post"
+          enctype="multipart/form-data">
+
+      <input type="hidden"
+             th:if="${_csrf != null}"
+             th:name="${_csrf.parameterName}"
+             th:value="${_csrf.token}" />
+
+      <input type="hidden" name="imageOrder" id="imageOrder" value="" />
+
+      <label for="title">제목</label>
+      <input id="title" name="title" type="text" maxlength="200" required
+             th:value="${form.title}" />
+
+      <label for="content">내용</label>
+      <textarea id="content" name="content" required
+                th:text="${form.content}"></textarea>
+
+      <div class="section">
+        <h3>기존 이미지</h3>
+
+        <div class="hint" th:if="${images == null or #lists.isEmpty(images)}">
+          기존 첨부 이미지가 없습니다.
+        </div>
+
+        <div class="hint" th:if="${images != null and !#lists.isEmpty(images)}">
+          ✅ 순서 변경: <b>이미지를 드래그</b>해서 원하는 위치로 옮기면 저장 시 상세 슬라이더 순서에도 반영돼요.<br/>
+          ✅ 삭제: 체크하면 <b>즉시 흐리게</b> 표시되고, 저장하면 실제로 삭제됩니다.
+          <div class="mini">※ 삭제 예정으로 체크된 이미지는 실수 방지를 위해 드래그가 비활성화됩니다.</div>
+        </div>
+
+        <div id="existingGrid" class="grid" th:if="${images != null and !#lists.isEmpty(images)}">
+          <div class="img-card js-existing-card"
+               th:each="img : ${images}"
+               th:attr="data-id=${img.id}"
+               draggable="true"
+               th:with="
+                 raw=${img.url},
+                 src=${raw != null and (#strings.startsWith(raw,'http') or #strings.startsWith(raw,'/')) ? raw : '/' + raw},
+                 name=${img.originalName != null ? img.originalName : 'image'}
+               ">
+
+            <div class="drag-handle" title="드래그로 순서 변경">⠿</div>
+
+            <button type="button" class="img-btn" th:attr="data-open=${src}">
+              <img th:src="${src}" th:alt="${name}" loading="lazy" />
+            </button>
+
+            <div class="meta">
+              <div class="name" th:text="${name}">file</div>
+              <label class="chk">
+                <input type="checkbox" name="deleteImageIds" th:value="${img.id}" class="delChk" />
+                <span>이 이미지 삭제</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat">
+          <span class="pill">최대 5장</span>
+          <span style="margin-left:8px;" id="existingStat" class="pill"
+                th:text="'현재 ' + (${images == null ? 0 : #lists.size(images)}) + '장'">현재 0장</span>
+          <span style="margin-left:8px;" id="deleteStat" class="pill">삭제 선택 0장</span>
+          <span style="margin-left:8px;" id="remainSlot" class="pill">추가 가능 5장</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>신규 이미지 추가</h3>
+        <div class="hint">장당 5MB 이하 · jpg/png/webp/gif/avif · 추가 업로드는 “남은 슬롯”만큼만 저장돼요 🙂</div>
+
+        <input id="images" name="images" type="file" multiple
+               accept=".jpg,.jpeg,.png,.webp,.gif,.avif,image/avif,image/*"
+               style="display:none" />
+
+        <div class="row">
+          <button class="btn" type="button" id="addBtn">이미지 추가</button>
+          <button class="btn btn-primary" type="submit">저장</button>
+          <a class="btn" th:href="@{/board/{id}(id=${postId}, page=${backPage})}">취소</a>
+        </div>
+
+        <div id="errorBox" class="error"></div>
+        <div class="preview-grid" id="previewGrid"></div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const MAX_TOTAL = 5;
+    const MAX_SIZE = 5 * 1024 * 1024;
+
+    const form = document.getElementById('editForm');
+
+    const existingGrid = document.getElementById('existingGrid');
+    const imageOrderInput = document.getElementById('imageOrder');
+
+    const addBtn = document.getElementById('addBtn');
+    const fileInput = document.getElementById('images');
+    const previewGrid = document.getElementById('previewGrid');
+    const errorBox = document.getElementById('errorBox');
+
+    const delChks = Array.from(document.querySelectorAll('.delChk'));
+    const existingCount = delChks.length;
+
+    const deleteStat = document.getElementById('deleteStat');
+    const remainSlot = document.getElementById('remainSlot');
+
+    const dt = new DataTransfer();
+
+    function showError(msg) {
+      if (!msg) { errorBox.style.display = 'none'; errorBox.textContent = ''; return; }
+      errorBox.style.display = 'block';
+      errorBox.textContent = msg;
+    }
+
+    function keyOf(file) { return `${file.name}__${file.size}__${file.lastModified}`; }
+    function currentKeys() { const s = new Set(); for (const f of dt.files) s.add(keyOf(f)); return s; }
+    function safeExtOk(name) { return /\.(jpg|jpeg|png|webp|gif|avif)$/i.test(name || ''); }
+
+    function isAllowedImage(file) {
+      const type = (file.type || '').toLowerCase();
+      const name = (file.name || '').toLowerCase();
+      return type.startsWith('image/') || safeExtOk(name);
+    }
+
+    function deletedCount() { return delChks.filter(c => c.checked).length; }
+
+    function remainingSlots() {
+      const remainExisting = existingCount - deletedCount();
+      return Math.max(0, MAX_TOTAL - remainExisting);
+    }
+
+    function refreshStats() {
+      if (deleteStat) deleteStat.textContent = `삭제 선택 ${deletedCount()}장`;
+      if (remainSlot) remainSlot.textContent = `추가 가능 ${remainingSlots()}장`;
+    }
+
+    function applyDeleteVisual(chk) {
+      const card = chk.closest('.js-existing-card');
+      if (!card) return;
+      card.classList.toggle('is-deleting', chk.checked);
+      card.draggable = !chk.checked;
+    }
+
+    delChks.forEach(chk => {
+      applyDeleteVisual(chk);
+      chk.addEventListener('change', () => {
+        applyDeleteVisual(chk);
+        refreshStats();
+        trimNewFilesToSlots();
+        syncImageOrder();
+      });
+    });
+
+    function existingCards() {
+      if (!existingGrid) return [];
+      return Array.from(existingGrid.querySelectorAll('.js-existing-card'));
+    }
+
+    function syncImageOrder() {
+      if (!imageOrderInput) return;
+      const ids = existingCards().map(c => c.getAttribute('data-id')).filter(Boolean);
+      imageOrderInput.value = ids.join(',');
+    }
+
+    let dragging = null;
+
+    if (existingGrid) {
+      existingGrid.addEventListener('dragstart', (e) => {
+        const card = e.target.closest('.js-existing-card');
+        if (!card) return;
+        if (card.classList.contains('is-deleting')) {
+          e.preventDefault();
+          return;
+        }
+        dragging = card;
+        card.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', card.getAttribute('data-id') || '');
+      });
+
+      existingGrid.addEventListener('dragend', () => {
+        if (dragging) dragging.classList.remove('is-dragging');
+        dragging = null;
+        syncImageOrder();
+      });
+
+      existingGrid.addEventListener('dragover', (e) => {
+        if (!dragging) return;
+        e.preventDefault();
+
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const target = el && el.closest('.js-existing-card');
+        if (!target || target === dragging) return;
+        if (target.classList.contains('is-deleting')) return;
+
+        const rect = target.getBoundingClientRect();
+        const after = (e.clientY > rect.top + rect.height / 2) ||
+                      (e.clientY >= rect.top && e.clientY <= rect.bottom && e.clientX > rect.left + rect.width / 2);
+
+        if (after) {
+          existingGrid.insertBefore(dragging, target.nextSibling);
+        } else {
+          existingGrid.insertBefore(dragging, target);
+        }
+      });
+
+      existingGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.img-btn');
+        if (!btn) return;
+        const url = btn.getAttribute('data-open');
+        if (url) window.open(url, '_blank', 'noopener');
+      });
+    }
+
+    syncImageOrder();
+
+    function renderPreview() {
+      previewGrid.innerHTML = '';
+      const files = Array.from(dt.files || []);
+      if (files.length === 0) return;
+
+      files.forEach((file, idx) => {
+        const div = document.createElement('div');
+        div.className = 'thumb';
+
+        const img = document.createElement('img');
+        const url = URL.createObjectURL(file);
+        img.src = url;
+        img.onload = () => URL.revokeObjectURL(url);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `${idx + 1}. ${file.name}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove';
+        removeBtn.textContent = '✕';
+        removeBtn.addEventListener('click', () => {
+          const next = new DataTransfer();
+          Array.from(dt.files).forEach((f, i) => { if (i !== idx) next.items.add(f); });
+          while (dt.items.length) dt.items.remove(0);
+          Array.from(next.files).forEach(f => dt.items.add(f));
+          fileInput.files = dt.files;
+          renderPreview();
+        });
+
+        div.appendChild(img);
+        div.appendChild(removeBtn);
+        div.appendChild(meta);
+        previewGrid.appendChild(div);
+      });
+    }
+
+    function trimNewFilesToSlots() {
+      const slots = remainingSlots();
+      const files = Array.from(dt.files);
+      if (files.length <= slots) return;
+
+      const keep = files.slice(0, slots);
+      while (dt.items.length) dt.items.remove(0);
+      keep.forEach(f => dt.items.add(f));
+      fileInput.files = dt.files;
+      showError(`추가 가능한 슬롯(${slots}장)을 초과한 파일은 자동으로 제외했어요.`);
+      renderPreview();
+    }
+
+    addBtn && addBtn.addEventListener('click', () => {
+      fileInput.value = '';
+      fileInput.click();
+    });
+
+    fileInput && fileInput.addEventListener('change', () => {
+      showError('');
+      const selected = Array.from(fileInput.files || []);
+      if (selected.length === 0) return;
+
+      const slots = remainingSlots();
+      const keys = currentKeys();
+      const err = [];
+
+      for (const file of selected) {
+        if (dt.files.length >= slots) {
+          err.push(`추가 가능 슬롯(${slots}장) 초과: 더 이상 선택할 수 없어요.`);
+          break;
+        }
+        if (!isAllowedImage(file)) { err.push(`타입 미지원: ${file.name}`); continue; }
+        if (file.size > MAX_SIZE) { err.push(`5MB 초과: ${file.name}`); continue; }
+
+        const k = keyOf(file);
+        if (keys.has(k)) { err.push(`이미 선택됨: ${file.name}`); continue; }
+
+        dt.items.add(file);
+        keys.add(k);
+      }
+
+      fileInput.files = dt.files;
+      if (err.length) showError(err.join('\n'));
+      renderPreview();
+    });
+
+    form && form.addEventListener('submit', () => {
+      fileInput.files = dt.files;
+      syncImageOrder();
+    });
+
+    refreshStats();
+  })();
+</script>
+
+<!-- ✅ 공통 Footer -->
+<div id="siteFooter"></div>
+<script src="/common/footer.js" defer></script>
+
+</body>
+</html>

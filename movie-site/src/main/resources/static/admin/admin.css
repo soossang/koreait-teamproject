@@ -1,0 +1,59 @@
+/* 간단한 관리자 페이지 스타일 (프로젝트 내 다른 CSS와 독립) */
+:root { --bg:#0b1220; --card:#121a2b; --text:#e7eefc; --muted:#a6b2c9; --line:#23314d; --btn:#1b2a4a; --danger:#c93d3d; --ok:#2d8a4a; }
+
+html,body{height:100%;}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+.header{position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);background:rgba(11,18,32,0.9);border-bottom:1px solid var(--line);}
+.header-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:14px 16px;}
+.logo{display:flex;align-items:center;gap:10px;color:var(--text);text-decoration:none;font-weight:700;}
+.logo-mark{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--btn);border:1px solid var(--line);}
+.main-nav{display:flex;gap:10px;flex:1;}
+.main-nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;}
+.main-nav a:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.auth-nav{display:flex;gap:10px;align-items:center;}
+.auth-nav a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;}
+.auth-nav a:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+
+.page{max-width:1120px;margin:0 auto;padding:22px 16px 60px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.35);}
+.card-head{padding:18px 18px 6px;border-bottom:1px solid var(--line);}
+.card-head h1{margin:0;font-size:22px;}
+.card-head .sub{margin:6px 0 0;color:var(--muted);}
+
+.tabs{display:flex;gap:8px;padding:12px 18px;border-bottom:1px solid var(--line);}
+.tab{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 12px;border-radius:12px;cursor:pointer;}
+.tab.active{background:var(--btn);color:var(--text);}
+
+.toolbar{display:flex;gap:10px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line);}
+#searchInput{flex:1;min-width:200px;background:rgba(0,0,0,0.2);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:10px 12px;}
+#refreshBtn{background:var(--btn);border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer;}
+#refreshBtn:hover{filter:brightness(1.08);}
+
+.alert{margin:12px 18px 0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,0.04);color:var(--text);}
+.alert.error{border-color:rgba(201,61,61,0.5);background:rgba(201,61,61,0.12);}
+.alert.ok{border-color:rgba(45,138,74,0.5);background:rgba(45,138,74,0.12);}
+
+.panel{padding:12px 18px 18px;}
+.table{width:100%;border-collapse:collapse;}
+.table th,.table td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left;font-size:14px;vertical-align:middle;}
+.table th{color:var(--muted);font-weight:600;}
+
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted);}
+.badge.admin{color:#ffd27a;border-color:rgba(255,210,122,0.4);}
+.badge.user{color:#9ad0ff;border-color:rgba(154,208,255,0.4);}
+.badge.on{color:#9ff0b6;border-color:rgba(159,240,182,0.4);}
+.badge.off{color:#ff9aa8;border-color:rgba(255,154,168,0.4);}
+
+.btn{background:var(--btn);border:1px solid var(--line);color:var(--text);padding:6px 10px;border-radius:10px;cursor:pointer;font-size:13px;}
+.btn:hover{filter:brightness(1.08);}
+.btn.danger{background:rgba(201,61,61,0.15);border-color:rgba(201,61,61,0.4);}
+.btn.danger:hover{filter:brightness(1.15);}
+.btn.small{padding:5px 8px;}
+
+.mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+@media (max-width: 900px){
+  .main-nav{display:none;}
+  .table{display:block;overflow-x:auto;}
+}

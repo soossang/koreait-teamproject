@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>게시판</title>
+
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <link rel="stylesheet" href="/Member/css/index.css" />
+  <script th:src="@{/Member/js/index.js}" defer></script>
+
+  <!-- ✅ 페이징/테이블 정렬 개선 -->
+  <style>
+    .pager { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top: 14px; }
+    .pg-btn, .pg-num {
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width: 42px; height: 34px; padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.18);
+      text-decoration:none;
+      color: #fff;
+      background: rgba(255,255,255,.05);
+      cursor: pointer;
+      user-select: none;
+    }
+    .pg-num.active {
+      border-color: rgba(99,102,241,.9);
+      background: rgba(99,102,241,.55);
+      font-weight: 800;
+    }
+    .pg-btn.disabled {
+      opacity: .45;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    /* 링크 스타일 */
+    .table a { color:#fff; text-decoration:none; }
+    .table a:hover { text-decoration:underline; }
+
+    /* ✅ 게시판 테이블: 헤더/바디 컬럼 라인 딱 맞추기 */
+    .board-table {
+      width: 100%;
+      table-layout: fixed; /* 핵심: 컬럼 폭 계산을 고정시켜 헤더/바디 정렬 안정화 */
+    }
+
+    .board-table th,
+    .board-table td {
+      vertical-align: middle;
+      padding: 12px 14px;
+      overflow: hidden; /* fixed layout에서 내용이 튀어나오는 것 방지 */
+      text-overflow: ellipsis;
+    }
+
+    /* 헤더/내용 정렬 통일 */
+    .board-table th { text-align: center; }
+    .board-table td { text-align: center; }
+
+    /* 제목 컬럼만 왼쪽 정렬(가독성) */
+    .board-table th:nth-child(2),
+    .board-table td:nth-child(2) { text-align: left; }
+
+    /* 제목은 한 줄 말줄임(다른 컬럼 밀림 방지) */
+    .board-table td:nth-child(2) a {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 작성일은 줄바꿈 방지 */
+    .board-table th:nth-child(5),
+    .board-table td:nth-child(5) {
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark">FB</div>
+      Film Box
+    </a>
+
+    <nav class="main-nav">
+      <a href="/">홈</a>
+      <a href="/movies">영화/예매</a>
+      <a href="/ranking">흥행영화순위</a>
+      <a href="/genre">장르</a>
+      <a href="/board" class="active">게시판</a>
+    </nav>
+
+    <div class="auth-nav">
+      <!-- ✅ 상대경로 → 절대경로로 수정 (중요) -->
+      <a href="/login" data-role="login">로그인</a>
+      <a href="/signup" data-role="signup">회원가입</a>
+      <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+      <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="toolbar" style="margin-top:12px;">
+    <!-- 글쓰기: 컨트롤러에서 로그인 체크하고 아니면 로그인으로 리다이렉트 -->
+    <a class="pg-btn" href="/board/write">글쓰기</a>
+
+    <span class="muted" style="margin-left:8px;"
+          th:text="${totalPages > 0 ? totalElements + '건 · ' + currentPage + '/' + totalPages + '페이지' : '0건'}"></span>
+  </div>
+
+  <!-- ✅ 목록 테이블 (colgroup으로 컬럼 폭 고정) -->
+  <table class="table board-table" aria-label="게시글 목록"
+         th:if="${posts != null and !#lists.isEmpty(posts)}">
+
+    <!-- ✅ 컬럼 폭을 확정하면 헤더/바디가 100% 같은 라인으로 맞음 -->
+    <colgroup>
+      <col style="width:80px;">
+      <col>
+      <col style="width:160px;">
+      <col style="width:120px;">
+      <col style="width:180px;">
+    </colgroup>
+
+    <thead>
+      <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>조회수</th>
+        <th>작성일</th>
+      </tr>
+    </thead>
+
+    <tbody>
+	    <tr th:each="post, stat : ${posts}">
+			<td th:text="${totalElements - ((currentPage - 1) * pageSize + stat.index)}">1</td>
+
+
+
+        <!-- ✅ 제목 클릭 → 상세(/board/{id}) + 현재 페이지 번호 전달 -->
+        <td>
+          <a th:href="@{/board/{id}(id=${post.id}, page=${currentPage})}"
+             th:text="${post.title}">제목</a>
+        </td>
+
+        <td th:text="${post.author}">작성자</td>
+        <td th:text="${post.viewCount}">0</td>
+
+        <!-- createdAt 타입이 LocalDateTime이면 #temporals -->
+        <td th:text="${post.createdAt != null ? #temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm') : ''}">
+          2025-12-19 12:00
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty" th:if="${posts == null or #lists.isEmpty(posts)}">게시글이 없습니다</div>
+
+  <!-- ✅ 페이징 -->
+  <div class="pager" aria-label="페이지네이션" th:if="${totalPages != null and totalPages > 1}">
+    <!-- 이전 -->
+    <span class="pg-btn disabled" th:if="${currentPage == 1}">이전</span>
+    <a class="pg-btn" th:if="${currentPage > 1}" th:href="@{/board(page=${currentPage - 1})}">이전</a>
+
+    <!-- 번호 -->
+    <a class="pg-num"
+       th:each="p : ${#numbers.sequence(1, totalPages)}"
+       th:href="@{/board(page=${p})}"
+       th:text="${p}"
+       th:classappend="${p == currentPage} ? ' active' : ''">1</a>
+
+    <!-- 다음 -->
+    <a class="pg-btn" th:if="${currentPage < totalPages}" th:href="@{/board(page=${currentPage + 1})}">다음</a>
+    <span class="pg-btn disabled" th:if="${currentPage == totalPages}">다음</span>
+  </div>
+</div>
+    <!-- ✅ 공통 Footer -->
+    <div id="siteFooter"></div>
+    <script src="/common/footer.js" defer></script>
+</body>
+</html>

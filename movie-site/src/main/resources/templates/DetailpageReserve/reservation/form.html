@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>좌석 선택 및 예매</title>
+
+    <!-- DetailpageReserve 전용 CSS -->
+    <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
+    <script th:src="@{/DetailpageReserve/js/reserve-auth-guard.js}" defer></script>
+</head>
+<body class="reserve-body" data-require-login="true">
+
+<div class="reserve-page">
+    <h1>좌석 선택 및 예매</h1>
+
+    <!-- 상단 정보 -->
+    <div class="reserve-info">
+        <p>
+            <span class="info-label">영화</span>
+            <span th:text="${screening.movie.title}"></span>
+        </p>
+        <p>
+            <span class="info-label">극장</span>
+            <span th:text="${screening.theaterName}"></span>
+        </p>
+        <p>
+            <span class="info-label">상영 시간</span>
+            <span th:text="${#temporals.format(screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+        <p>
+            <span class="info-label">잔여 좌석</span>
+            <span th:text="${availableSeats}"></span>
+        </p>
+    </div>
+
+    <!-- 예매 폼 -->
+    <form id="reservationForm"
+          th:action="@{|/reserve/${screening.id}|}"
+          method="post"
+          onsubmit="return validateSeats();">
+
+        <div class="form-row">
+            <label>이름</label>
+            <input type="text" id="buyerName" name="name" required/>
+        </div>
+
+        <div class="form-row">
+            <label>연락처</label>
+            <input type="text" id="buyerPhone" name="phone" required/>
+        </div>
+
+        <div class="form-row">
+            <label>인원 수</label>
+            <input type="number" id="count" name="count" min="1"
+                   th:attr="max=${availableSeats}" required/>
+        </div>
+
+        <!-- 좌석 영역 -->
+        <div class="seat-wrapper">
+            <div class="screen-box">
+                <div class="screen">SCREEN</div>
+
+                <div class="seat-grid">
+                    <div th:each="row : ${rows}" class="seat-row">
+                        <div class="row-label" th:text="${row}"></div>
+
+                        <!--
+                          cols 값이 무엇이든(문자열 'col' 등) 화면에는 1..N 숫자 라벨이 나오도록
+                          iteration status(count)를 사용합니다.
+                        -->
+                        <div class="row-seats"
+                             th:each="col, stat : ${cols}"
+                             th:with="seatNo=${stat.count}, seatId=${row + seatNo}">
+                            <button type="button"
+                                    class="seat"
+                                    th:id="${seatId}"
+                                    th:data-seat="${seatId}"
+                                    th:classappend="${#sets.contains(reservedSeats, seatId)} ? ' reserved' : ''"
+                                    th:text="${seatNo}"
+                                    th:disabled="${#sets.contains(reservedSeats, seatId)}">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box available"></div>
+                        <span>선택 가능</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box selected"></div>
+                        <span>선택 좌석</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box reserved"></div>
+                        <span>예약 완료</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 선택된 좌석 hidden -->
+        <input type="hidden" id="selectedSeats" name="selectedSeats"/>
+
+        <!-- (A+B) fetch 예매 시 사용: th:value로 screeningId 주입 -->
+        <input type="hidden" id="screeningId" th:value="${screening.id}"/>
+
+        <div class="actions">
+            <button type="submit" class="btn-primary">예매하기</button>
+        </div>
+
+        <div class="back-link">
+            <a th:href="@{|/movies/${screening.movie.id}|}">영화 상세로 돌아가기</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    const selected = new Set();
+
+    // 예약되지 않은 좌석만 클릭 가능
+    document.querySelectorAll('.seat:not(.reserved)').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const seat = btn.dataset.seat;
+
+            if (selected.has(seat)) {
+                selected.delete(seat);
+                btn.classList.remove('selected');
+            } else {
+                selected.add(seat);
+                btn.classList.add('selected');
+            }
+
+            document.getElementById('selectedSeats').value =
+                Array.from(selected).join(',');
+        });
+    });
+
+    function validateSeats() {
+        const count = parseInt(document.getElementById('count').value || '0', 10);
+        const seats = Array.from(selected);
+
+        if (!count || count <= 0) {
+            alert('인원 수를 입력하세요.');
+            return false;
+        }
+
+        if (seats.length === 0) {
+            alert('좌석을 선택하세요.');
+            return false;
+        }
+
+        if (seats.length !== count) {
+            alert('선택한 좌석 수와 인원 수가 같아야 합니다.');
+            return false;
+        }
+
+
+        document.getElementById('selectedSeats').value = seats.join(',');
+        return true;
+    }
+
+    // ===============================
+    // (A + B) 로그인한 회원 예매 UX 개선
+    // - /api/member/me로 회원 정보 로드
+    // - phone은 회원정보와 일치하도록 자동 입력 + readonly
+    // - 예매 제출은 fetch(/api/reservations)로 보내서 Authorization 헤더 포함
+    // ===============================
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('accessToken');
+        const nameInput = document.getElementById('buyerName');
+        const phoneInput = document.getElementById('buyerPhone');
+        const form = document.getElementById('reservationForm');
+
+        // 토큰이 없으면 기존 form submit로 동작(비회원/예외용)
+        if (!token) return;
+
+        try {
+            const res = await fetch('/api/member/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                const me = await res.json();
+
+                // 이름 자동 입력(비어있을 때만)
+                if (me && me.name && !nameInput.value) {
+                    nameInput.value = me.name;
+                }
+
+                // phone은 계정별 예매 조회 일관성을 위해 강제 일치(가장 중요)
+                if (me && me.phone) {
+                    phoneInput.value = me.phone;
+                    phoneInput.readOnly = true;
+                    phoneInput.title = '회원정보의 휴대폰 번호로 예매가 저장됩니다.';
+                }
+            }
+        } catch (e) {
+            // 네트워크 오류 등: 조용히 무시하고 기존 입력 유지
+        }
+
+        // fetch 제출로 전환: Authorization 헤더를 포함해야 server가 member_id로 연결 가능
+        form.addEventListener('submit', async (e) => {
+            // 좌석 검증 실패면 기존 핸들러가 false 반환하므로 여기까지 안 옴
+            e.preventDefault();
+
+            const screeningId = parseInt(document.getElementById('screeningId').value || '0', 10);
+            const count = parseInt(document.getElementById('count').value || '0', 10);
+            const seats = document.getElementById('selectedSeats').value;
+
+            try {
+                const resp = await fetch('/api/reservations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        screeningId,
+                        name: nameInput.value,
+                        phone: phoneInput.value,
+                        count,
+                        seats
+                    })
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    alert(err.message || '예매 처리 중 오류가 발생했습니다.');
+                    return;
+                }
+
+                const data = await resp.json();
+                if (data && data.reservationNumber) {
+                    // 완료 페이지는 서버 렌더링으로 재사용
+                    window.location.href = '/reserve/complete/' + encodeURIComponent(data.reservationNumber);
+                } else {
+                    alert('예매는 완료되었지만 예매번호를 가져오지 못했습니다. 마이페이지에서 확인해 주세요.');
+                    window.location.href = '/mypage';
+                }
+            } catch (err) {
+                alert('네트워크 오류로 예매를 완료하지 못했습니다.');
+            }
+        });
+    });
+</script>
+    <div id="siteFooter"></div>
+    <script src="/common/footer.js" defer></script>
+</body>
+</html>

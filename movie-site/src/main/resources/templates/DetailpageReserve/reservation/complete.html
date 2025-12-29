@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>예매 완료</title>
+
+    <!-- DetailpageReserve 전용 CSS (예매 페이지 스타일) -->
+    <link rel="stylesheet" th:href="@{/DetailpageReserve/css/style.css}"/>
+</head>
+
+<body class="reserve-body">
+<div class="reserve-page">
+
+    <h1>예매가 완료되었습니다 🎉</h1>
+
+    <div class="reserve-info">
+        <p><span class="info-label">예매 번호</span><span th:text="${reservation.reservationNumber}"></span></p>
+        <p><span class="info-label">영화</span><span th:text="${reservation.screening.movie.title}"></span></p>
+
+        <p><span class="info-label">극장</span><span th:text="${reservation.screening.theaterName}"></span></p>
+        <p><span class="info-label">상영 시간</span>
+            <span th:text="${#temporals.format(reservation.screening.screeningTime, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+
+        <p><span class="info-label">예매자</span><span th:text="${reservation.name}"></span></p>
+        <p><span class="info-label">연락처</span><span th:text="${reservation.phone}"></span></p>
+
+        <p><span class="info-label">예매 인원</span><span th:text="${reservation.reservedCount}"></span>명</p>
+        <p><span class="info-label">좌석</span><span th:text="${reservation.seats}"></span></p>
+
+        <p><span class="info-label">예매 시각</span>
+            <span th:text="${#temporals.format(reservation.reservedAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+    </div>
+
+	   <div class="actions">
+		  <a class="btn-primary" th:href="@{/movies}">영화 목록으로</a>
+		</div>
+
+
+
+
+
+
+    
+
+</div>
+    <div id="siteFooter"></div>
+    <script src="/common/footer.js" defer></script>
+</body>
+</html>

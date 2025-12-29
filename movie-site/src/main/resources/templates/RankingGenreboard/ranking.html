@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>흥행영화순위</title>
+  <link rel="stylesheet" href="/RankingGenreboard/css/app.css" />
+  <link rel="stylesheet" href="/Member/css/index.css">  
+<script th:src="@{/Member/js/index.js}" defer></script>  
+</head>
+<body>
+	<header class="header">
+	        <div class="header-inner">
+	            <!-- 로고 전체를 홈 링크로 (Member 메인으로 이동) -->
+	            <a href="/" class="logo">
+	                <div class="logo-mark">FB</div>
+	                Film Box
+	            </a>
+	
+	            <!-- 상단 메뉴 -->
+	            <nav class="main-nav">
+	                <a href="/">홈</a>
+	                <a href="/movies">영화/예매</a>
+	                <a href="/ranking" class="active">흥행영화순위</a>
+	                <a href="/genre">장르</a>
+	                <a href="/board">게시판</a>
+	            </nav>
+	
+	            <!-- 로그인 / 회원가입 영역 -->
+	            <div class="auth-nav">
+	                <a href="/login" data-role="login">로그인</a>
+	                <a href="/signup" data-role="signup">회원가입</a>
+	                <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+	                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+	            </div>
+	        </div>
+	</header>
+	<div class="kobis-note">
+	  KOBIS 싸이트를 참고했습니다. 역대 박스오피스(공식통계 기준) 관객수 100위까지의 기록들을 기준으로 합니다.
+	</div>
+  <div class="container">
+    <div class="toolbar" style="margin-top:12px;">
+      <label for="sortSelect" class="muted">정렬</label>
+      <select id="sortSelect">
+        <option value="audi" selected>관객수</option>
+        <option value="sales">매출액</option>
+        <option value="open">개봉일</option>
+        <option value="movie">영화명</option>
+        <option value="screen">스크린수</option>
+      </select>
+
+      <label for="dirSelect" class="muted" style="margin-left:10px;">순서</label>
+      <select id="dirSelect">
+        <option value="desc" selected>내림차순</option>
+        <option value="asc">오름차순</option>
+      </select>
+
+      <span id="status" class="muted" style="margin-left:8px;"></span>
+    </div>
+
+    <div id="topGrid" class="grid"></div>
+
+    <!-- 페이지네이션 -->
+    <div class="pager" id="pager" aria-label="페이지네이션"></div>
+
+    <div id="emptyBox" class="empty hidden">데이터가 없습니다</div>
+  </div>
+
+  <script defer src="/RankingGenreboard/js/app.js"></script>
+<script th:src="@{/Member/js/index.js}"></script>
+    <div id="siteFooter"></div>
+    <script src="/common/footer.js" defer></script>
+</body>
+</html>

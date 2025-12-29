@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Film Box</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/Member/css/auth.css" th:href="@{/Member/css/auth.css}" />
+</head>
+
+<body>
+    <!-- 공통 헤더 -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <div class="logo-mark">FB</div>
+                Film Box
+            </a>
+
+			<nav class="main-nav">
+                <a href="/">홈</a>
+                <a href="/movies">영화/예매</a>
+                <a href="/ranking">흥행영화순위</a>
+                <a href="/genre">장르</a>
+                <a href="/board">게시판</a>
+            </nav>
+
+            <div class="auth-nav">
+                <a href="/login" data-role="login" class="active">로그인</a>
+                <a href="/signup" data-role="signup">회원가입</a>
+                <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+                <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-page">
+        <section class="auth-card">
+            <h1 class="auth-title">로그인</h1>
+            <p class="auth-sub">Film Box의 다양한 서비스를 이용해 보세요.</p>
+
+            <form id="loginForm" class="auth-form">
+                <label class="auth-field">
+                    <span>아이디</span>
+                    <input type="text" id="loginId" autocomplete="username" />
+                </label>
+
+                <label class="auth-field">
+                    <span>비밀번호</span>
+                    <input type="password" id="password" autocomplete="current-password" />
+                </label>
+
+                <p id="loginMessage" class="auth-message"></p>
+
+                <button type="submit" class="auth-submit">로그인</button>
+            </form>
+
+             <div class="auth-footer">
+    			아직 회원이 아니신가요?
+    			<a href="/signup" th:href="@{/signup}">회원가입</a>
+  			</div>
+		</section>
+	</main>
+
+	<!-- ✅ 공통 Footer (페이지 맨 아래) -->
+	<div id="siteFooter"></div>
+	<script src="/common/footer.js" defer></script>
+
+	<script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
+	<script src="/Member/js/auth.js" th:src="@{/Member/js/auth.js}" defer></script>
+
+</body>
+</html>

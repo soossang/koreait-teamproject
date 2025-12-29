@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- Film Box 공통 헤더 (Thymeleaf Fragment) -->
+  <!-- 사용 예: <div th:replace="fragments/header :: header('movies')"></div> -->
+  <header class="header" th:fragment="header(activePage)">
+    <div class="header-inner">
+      <!-- 로고 -->
+      <a th:href="@{/}" class="logo">
+        <div class="logo-mark">FB</div>
+        Film Box
+      </a>
+
+      <!-- 상단 메뉴 -->
+      <nav class="main-nav">
+        <a th:href="@{/}"        th:classappend="${activePage}=='home'    ? ' active' : ''">홈</a>
+        <a th:href="@{/movies}"  th:classappend="${activePage}=='movies'  ? ' active' : ''">영화/예매</a>
+        <a th:href="@{/ranking}" th:classappend="${activePage}=='ranking' ? ' active' : ''">흥행영화순위</a>
+        <a th:href="@{/genre}"   th:classappend="${activePage}=='genre'   ? ' active' : ''">장르</a>
+        <a th:href="@{/board}"   th:classappend="${activePage}=='board'   ? ' active' : ''">게시판</a>
+      </nav>
+
+      <!-- 로그인 / 회원가입 영역 -->
+      <div class="auth-nav">
+        <!-- JS(/Member/js/index.js)에서 로그인 상태에 따라 표시/숨김 -->
+        <a href="/login" data-role="login">로그인</a>
+        <a href="/signup" data-role="signup">회원가입</a>
+        <a href="/mypage" data-role="mypage" style="display:none;">마이페이지</a>
+        <a href="/admin" data-role="admin" style="display:none;">관리자</a>
+        <a href="#" data-role="logout" style="display:none;">로그아웃</a>
+      </div>
+    </div>
+  </header>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>영화 목록</title>
+
+  <!-- Film Box 공통 헤더 스타일 -->
+  <link rel="stylesheet" href="/Member/css/index.css" />
+
+  <!-- ✅ 영화 목록 전용 CSS -->
+  <link rel="stylesheet" th:href="@{/DetailpageReserve/css/movies/list.css}" />
+
+  <!-- ✅ 더보기 기능 JS -->
+  <script th:src="@{/DetailpageReserve/js/movies/load-more.js}" defer></script>
+  <script th:src="@{/Member/js/index.js}" defer></script>
+</head>
+
+<body>
+  <!-- Film Box 공통 헤더 -->
+  <div th:replace="fragments/header :: header('movies')"></div>
+
+  <main class="movies-page">
+    <header class="movies-header">
+      <h1 class="page-title">영화</h1>
+      <p class="result-count">
+        <span th:text="${#lists.size(movies)}"></span>개의 영화가 검색되었습니다.
+      </p>
+    </header>
+
+    <div th:if="${#lists.isEmpty(movies)}" class="empty-state">
+      등록된 영화가 없습니다.
+    </div>
+
+    <!-- ✅ 메가박스처럼 카드 그리드 -->
+    <section class="movie-grid" id="movieGrid" th:if="${!#lists.isEmpty(movies)}">
+      <article class="movie-card movie-item"
+               th:each="movie, stat : ${movies}"
+               th:data-index="${stat.index}">
+        <a class="poster" th:href="@{|/movies/${movie.id}|}">
+          <img th:src="${movie.posterUrl}" th:alt="${movie.title}" loading="lazy" />
+        </a>
+
+        <div class="movie-info">
+          <h2 class="movie-title" th:text="${movie.title}"></h2>
+
+          <div class="movie-meta">
+            <span class="badge" th:text="${movie.rating}"></span>
+            <span class="meta-text">
+              <span th:text="${movie.genre}"></span>
+              <span class="dot">·</span>
+              <span th:text="${movie.runningTime}"></span>
+            </span>
+          </div>
+
+          <div class="movie-actions">
+            <a class="btn btn-primary" th:href="@{|/movies/${movie.id}|}">상세</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ✅ 하단 더보기 -->
+    <div class="loadmore-wrap" th:if="${!#lists.isEmpty(movies)}">
+      <button type="button" class="loadmore-btn" id="loadMoreBtn">더보기</button>
+      <p class="loadmore-hint" id="loadMoreHint" aria-live="polite"></p>
+    </div>
+  </main>
+
+  <div id="siteFooter"></div>
+  <script src="/common/footer.js" defer></script>
+</body>
+</html>

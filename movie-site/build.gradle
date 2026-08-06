@@ -5,11 +5,12 @@ plugins {
 }
 
 group = 'com.koreait'
+
 version = '0.0.1-SNAPSHOT'
 description = 'Movie Site Project'
 
 java {
-    toolchain {
+ toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }

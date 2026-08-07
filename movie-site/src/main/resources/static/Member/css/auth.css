@@ -165,6 +165,12 @@ a {
     color: #e5e7eb;
 }
 
+.auth-field small {
+    color: #9ca3af;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
 .auth-field input {
     border-radius: 10px;
     border: 1px solid rgba(148, 163, 184, 0.6);

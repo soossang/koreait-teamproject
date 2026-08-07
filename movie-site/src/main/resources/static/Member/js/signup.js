@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pw2El = document.getElementById("signupPasswordConfirm");
   const emailEl = document.getElementById("signupEmail");
   const phoneEl = document.getElementById("signupPhone");
+  const adminCodeEl = document.getElementById("signupAdminCode");
   const msgEl = document.getElementById("signupMessage");
 
   const showMsg = (text) => {
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const passwordConfirm = (pw2El?.value || "").trim();
     const email = (emailEl?.value || "").trim();
     const phone = (phoneEl?.value || "").trim();
+    const adminCode = (adminCodeEl?.value || "").trim();
 
     if (!loginId) return showMsg("아이디를 입력해주세요.");
     if (!password) return showMsg("비밀번호를 입력해주세요.");
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       password,
       email: email || null,
       phone: phone || null,
+      adminCode: adminCode || null,
     };
 
     try {

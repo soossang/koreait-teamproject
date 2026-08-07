@@ -5,7 +5,9 @@ import com.koreait.moviesite.Member.dto.LoginRequest;
 import com.koreait.moviesite.Member.dto.LoginResponse;
 import com.koreait.moviesite.Member.dto.SignupRequest;
 import com.koreait.moviesite.Member.entity.MemberEntity;
+import com.koreait.moviesite.Member.entity.MemberRole;
 import com.koreait.moviesite.Member.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +17,16 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final String adminRegistrationCode;
 
     public AuthService(MemberRepository memberRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtTokenProvider jwtTokenProvider) {
+                       JwtTokenProvider jwtTokenProvider,
+                       @Value("${app.admin.registration-code:1234}") String adminRegistrationCode) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.adminRegistrationCode = adminRegistrationCode;
     }
 
     public void signup(SignupRequest request) {
@@ -44,13 +49,28 @@ public class AuthService {
             throw new IllegalArgumentException("이미 사용 중인 전화번호입니다.");
         }
 
+        MemberRole signupRole = resolveSignupRole(request.adminCode());
+
         MemberEntity member = new MemberEntity();
         member.setLoginId(request.loginId());
         member.setPassword(passwordEncoder.encode(request.password()));
         member.setEmail(request.email());
         member.setPhone(request.phone());
+        member.setRole(signupRole);
 
         memberRepository.save(member);
+    }
+
+    private MemberRole resolveSignupRole(String adminCode) {
+        if (adminCode == null || adminCode.isBlank()) {
+            return MemberRole.USER;
+        }
+
+        if (!adminRegistrationCode.equals(adminCode.trim())) {
+            throw new IllegalArgumentException("관리자 등록 코드가 올바르지 않습니다.");
+        }
+
+        return MemberRole.ADMIN;
     }
 
     /**

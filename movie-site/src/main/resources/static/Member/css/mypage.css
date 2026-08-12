@@ -148,6 +148,147 @@ a {
     font-size: 14px;
 }
 
+.mypage-box p + p {
+    margin-top: 8px;
+}
+
+.profile-summary {
+    position: relative;
+}
+
+.profile-summary .mypage-box {
+    min-height: 94px;
+    padding-right: 170px;
+}
+
+.account-edit-actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+.account-edit-toggle,
+.account-cancel-btn,
+.account-submit-btn {
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.18s ease, filter 0.18s ease, background 0.18s ease;
+}
+
+.account-edit-toggle {
+    height: 36px;
+    border: 1px solid rgba(255, 77, 184, 0.72);
+    background: linear-gradient(135deg, rgba(255, 45, 150, 0.2), rgba(255, 90, 107, 0.14));
+    color: #f9fafb;
+    box-shadow: 0 8px 22px rgba(236, 72, 153, 0.16);
+}
+
+.account-edit-panel {
+    margin-top: 14px;
+    padding: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 16px;
+    background: rgba(2, 6, 23, 0.48);
+}
+
+.account-edit-panel[hidden] {
+    display: none;
+}
+
+.account-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.account-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: #d1d5db;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.account-field em {
+    margin-left: 4px;
+    color: #fb7185;
+    font-size: 11px;
+    font-style: normal;
+}
+
+.account-field input {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    border-radius: 12px;
+    outline: none;
+    background: rgba(15, 23, 42, 0.55);
+    color: #f9fafb;
+}
+
+.account-field input:focus {
+    border-color: rgba(236, 72, 153, 0.8);
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.14);
+}
+
+.account-field input[readonly] {
+    cursor: not-allowed;
+    background: rgba(148, 163, 184, 0.12);
+    color: #9ca3af;
+}
+
+.account-edit-message {
+    min-height: 20px;
+    margin-top: 14px;
+    font-size: 13px;
+}
+
+.account-edit-message.is-error {
+    color: #fb7185;
+}
+
+.account-edit-message.is-success {
+    color: #4ade80;
+}
+
+.account-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.account-cancel-btn {
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: rgba(148, 163, 184, 0.1);
+    color: #e5e7eb;
+}
+
+.account-submit-btn {
+    border: none;
+    background: linear-gradient(135deg, #ff2d96, #ff5a6b);
+    color: #111827;
+    box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
+}
+
+.account-edit-toggle:hover,
+.account-cancel-btn:hover,
+.account-submit-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+.account-submit-btn:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    transform: none;
+}
+
 .divider {
     border: 0;
     border-top: 1px solid rgba(148, 163, 184, 0.25);
@@ -527,3 +668,44 @@ a {
   white-space: nowrap;
 }
 .reserve-use-btn:hover{ filter: brightness(1.08); }
+
+@media (max-width: 640px) {
+  .header-inner {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .main-nav {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .mypage-card {
+    padding: 22px 16px;
+  }
+
+  .account-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-summary .mypage-box {
+    padding-right: 14px;
+    padding-bottom: 68px;
+  }
+
+  .account-edit-actions {
+    top: auto;
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .account-form-actions button {
+    flex: 1;
+  }
+
+  .reserve-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

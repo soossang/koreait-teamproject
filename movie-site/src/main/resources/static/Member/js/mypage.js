@@ -47,6 +47,169 @@ function redirectToLogin() {
     window.location.href = "/login?redirect=" + encodeURIComponent(here);
 }
 
+function escapeHtml(value) {
+    return (value ?? "")
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function renderMemberProfile(member) {
+    const box = document.getElementById("profileBox");
+    if (!box) return;
+
+    box.innerHTML = `
+        <p><b>아이디</b>: ${escapeHtml(member.loginId || "-")}</p>
+        <p><b>이메일</b>: ${escapeHtml(member.email || "-")}</p>
+        <p><b>휴대폰</b>: ${escapeHtml(member.phone || "-")}</p>
+    `;
+}
+
+function setupAccountEditor(token, initialMember) {
+    const toggleButton = document.getElementById("accountEditToggle");
+    const panel = document.getElementById("accountEditPanel");
+    const form = document.getElementById("accountEditForm");
+    const cancelButton = document.getElementById("accountEditCancel");
+    const submitButton = document.getElementById("accountEditSubmit");
+    const message = document.getElementById("accountEditMessage");
+    const loginIdInput = document.getElementById("accountLoginId");
+    const currentPasswordInput = document.getElementById("accountCurrentPassword");
+    const newPasswordInput = document.getElementById("accountNewPassword");
+    const newPasswordConfirmInput = document.getElementById("accountNewPasswordConfirm");
+    const emailInput = document.getElementById("accountEmail");
+    const phoneInput = document.getElementById("accountPhone");
+
+    if (!toggleButton || !panel || !form || !submitButton) return;
+
+    let member = initialMember;
+
+    const showMessage = (text, type = "error") => {
+        if (!message) return;
+        message.textContent = text || "";
+        message.classList.toggle("is-error", Boolean(text) && type === "error");
+        message.classList.toggle("is-success", Boolean(text) && type === "success");
+    };
+
+    const clearPasswords = () => {
+        if (currentPasswordInput) currentPasswordInput.value = "";
+        if (newPasswordInput) newPasswordInput.value = "";
+        if (newPasswordConfirmInput) newPasswordConfirmInput.value = "";
+    };
+
+    const fillForm = () => {
+        if (loginIdInput) loginIdInput.value = member.loginId || "";
+        if (emailInput) emailInput.value = member.email || "";
+        if (phoneInput) phoneInput.value = member.phone || "";
+        clearPasswords();
+        showMessage("");
+    };
+
+    const setPanelOpen = (open) => {
+        panel.hidden = !open;
+        toggleButton.setAttribute("aria-expanded", String(open));
+        toggleButton.textContent = open ? "계정 수정 닫기" : "내 계정 수정";
+        if (open) {
+            fillForm();
+            currentPasswordInput?.focus();
+        }
+    };
+
+    toggleButton.addEventListener("click", () => setPanelOpen(panel.hidden));
+    cancelButton?.addEventListener("click", () => setPanelOpen(false));
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        showMessage("");
+
+        const currentPassword = currentPasswordInput?.value || "";
+        const newPassword = newPasswordInput?.value || "";
+        const newPasswordConfirm = newPasswordConfirmInput?.value || "";
+        const email = emailInput?.value.trim() || "";
+        const phone = phoneInput?.value.trim() || "";
+        const normalizedPhone = phone.replace(/[\s-]/g, "");
+
+        if (!currentPassword) {
+            showMessage("현재 비밀번호를 입력해주세요.");
+            currentPasswordInput?.focus();
+            return;
+        }
+        if (newPassword || newPasswordConfirm) {
+            if (newPassword.length < 4) {
+                showMessage("새 비밀번호는 4자 이상으로 입력해주세요.");
+                newPasswordInput?.focus();
+                return;
+            }
+            if (newPassword !== newPasswordConfirm) {
+                showMessage("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                newPasswordConfirmInput?.focus();
+                return;
+            }
+        }
+        if (!email && !normalizedPhone) {
+            showMessage("이메일 또는 휴대폰 번호 중 하나는 반드시 입력해야 합니다.");
+            emailInput?.focus();
+            return;
+        }
+        if (emailInput && email && !emailInput.checkValidity()) {
+            showMessage("올바른 이메일 형식을 입력해주세요.");
+            emailInput.focus();
+            return;
+        }
+        if (normalizedPhone && !/^\d{10,11}$/.test(normalizedPhone)) {
+            showMessage("휴대폰 번호는 숫자 10~11자리로 입력해주세요.");
+            phoneInput?.focus();
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "변경 중...";
+
+        try {
+            const response = await fetch("/api/member/me/account", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword: newPassword || null,
+                    newPasswordConfirm: newPasswordConfirm || null,
+                    email: email || null,
+                    phone: normalizedPhone || null,
+                }),
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                alert("로그인을 완료한 후에 이용 가능합니다.");
+                redirectToLogin();
+                return;
+            }
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.message || "계정 정보를 변경하지 못했습니다.");
+            }
+
+            member = data;
+            renderMemberProfile(member);
+            if (emailInput) emailInput.value = member.email || "";
+            if (phoneInput) phoneInput.value = member.phone || "";
+            clearPasswords();
+            showMessage("계정 정보가 변경되었습니다.", "success");
+        } catch (error) {
+            console.error(error);
+            showMessage(error.message || "네트워크 오류가 발생했습니다.");
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = "변경완료";
+        }
+    });
+}
+
 function setMsg(message, type) {
     const result = document.getElementById("reservationResult");
     if (!result) return;
@@ -538,11 +701,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             box.innerHTML = "<p>회원 정보를 불러오지 못했습니다.</p>";
         } else {
             const me = await res.json();
-            box.innerHTML = `
-                <p><b>아이디</b>: ${me.loginId || "-"}</p>
-                <p><b>이메일</b>: ${me.email || "-"}</p>
-                <p><b>휴대폰</b>: ${me.phone || "-"}</p>
-            `;
+            renderMemberProfile(me);
+            setupAccountEditor(token, me);
         }
     } catch (e) {
         console.error(e);

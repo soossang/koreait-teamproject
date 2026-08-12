@@ -1,5 +1,6 @@
 package com.koreait.moviesite.Member.controller;
 
+import com.koreait.moviesite.Member.dto.AccountUpdateRequest;
 import com.koreait.moviesite.Member.dto.MemberProfileResponse;
 import com.koreait.moviesite.Member.dto.MemberUpdateRequest;
 import com.koreait.moviesite.Member.dto.PasswordChangeRequest;
@@ -47,6 +48,15 @@ public class MemberController {
     ) {
         memberService.changePassword(authMember.id(), request);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/me/account")
+    public ResponseEntity<MemberProfileResponse> updateAccount(
+            @RequestAttribute("authMember") AuthenticatedMember authMember,
+            @RequestBody AccountUpdateRequest request
+    ) {
+        MemberProfileResponse profile = memberService.updateAccount(authMember.id(), request);
+        return ResponseEntity.ok(profile);
     }
 
     @PostMapping("/me/profile-image")

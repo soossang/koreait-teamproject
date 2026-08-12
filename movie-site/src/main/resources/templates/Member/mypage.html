@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <title>Film Box</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="/Member/css/mypage.css" th:href="@{/Member/css/mypage.css}" />
+  <link rel="stylesheet" href="/Member/css/mypage.css?v=20260810-2"
+        th:href="@{/Member/css/mypage.css(v='20260810-2')}" />
 </head>
 
 <body>
@@ -37,9 +38,60 @@
         <h1 class="mypage-title">마이페이지</h1>
         <p class="mypage-sub">로그인한 회원 정보를 여기에 표시하면 됩니다.</p>
 
-        <div id="profileBox" class="mypage-box">
-            <p>회원 정보를 불러오는 중...</p>
+        <div class="profile-summary">
+            <div id="profileBox" class="mypage-box">
+                <p>회원 정보를 불러오는 중...</p>
+            </div>
+
+            <div class="account-edit-actions">
+                <button id="accountEditToggle" class="account-edit-toggle" type="button"
+                        aria-expanded="false" aria-controls="accountEditPanel">내 계정 수정</button>
+            </div>
         </div>
+
+        <section id="accountEditPanel" class="account-edit-panel" hidden aria-labelledby="accountEditTitle">
+            <h2 id="accountEditTitle" class="section-title">내 계정 수정</h2>
+            <p class="section-sub">아이디는 변경할 수 없습니다. 계정 보호를 위해 현재 비밀번호를 확인합니다.</p>
+
+            <form id="accountEditForm" novalidate>
+                <div class="account-form-grid">
+                    <label class="account-field">
+                        <span>아이디</span>
+                        <input id="accountLoginId" type="text" readonly aria-readonly="true" />
+                    </label>
+                    <label class="account-field">
+                        <span>현재 비밀번호 <em>필수</em></span>
+                        <input id="accountCurrentPassword" type="password" autocomplete="current-password" required />
+                    </label>
+                    <label class="account-field">
+                        <span>비밀번호 변경</span>
+                        <input id="accountNewPassword" type="password" minlength="4"
+                               autocomplete="new-password" placeholder="변경할 때만 입력 (4자 이상)" />
+                    </label>
+                    <label class="account-field">
+                        <span>비밀번호 변경 확인</span>
+                        <input id="accountNewPasswordConfirm" type="password" minlength="4"
+                               autocomplete="new-password" placeholder="새 비밀번호를 다시 입력" />
+                    </label>
+                    <label class="account-field">
+                        <span>이메일</span>
+                        <input id="accountEmail" type="email" autocomplete="email" placeholder="name@example.com" />
+                    </label>
+                    <label class="account-field">
+                        <span>휴대폰 번호</span>
+                        <input id="accountPhone" type="tel" autocomplete="tel" inputmode="numeric"
+                               placeholder="01012345678" />
+                    </label>
+                </div>
+
+                <p id="accountEditMessage" class="account-edit-message" role="status" aria-live="polite"></p>
+
+                <div class="account-form-actions">
+                    <button id="accountEditCancel" class="account-cancel-btn" type="button">취소</button>
+                    <button id="accountEditSubmit" class="account-submit-btn" type="submit">변경완료</button>
+                </div>
+            </form>
+        </section>
 
         <hr class="divider" />
 
@@ -103,7 +155,8 @@
 
 <!-- ✅ 여기만 변경 -->
   <script src="/Member/js/index.js" th:src="@{/Member/js/index.js}" defer></script>
-  <script src="/Member/js/mypage.js" th:src="@{/Member/js/mypage.js}" defer></script>
+  <script src="/Member/js/mypage.js?v=20260810-2"
+          th:src="@{/Member/js/mypage.js(v='20260810-2')}" defer></script>
 
   <!-- ✅ 공통 Footer -->
   <div id="siteFooter"></div>

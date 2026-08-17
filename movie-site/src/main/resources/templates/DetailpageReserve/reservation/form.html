@@ -39,6 +39,8 @@
           method="post"
           onsubmit="return validateSeats();">
 
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
         <div class="form-row">
             <label>이름</label>
             <input type="text" id="buyerName" name="name" required/>

@@ -54,11 +54,31 @@ public class AuthController {
         }
     }
 
-@PostMapping("/logout")
+    @GetMapping("/session-token")
+    public ResponseEntity<?> issueSessionToken(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("loginId") == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "로그인 세션이 만료되었습니다."));
+        }
+
+        try {
+            LoginResponse response = authService.issueTokenForSession(
+                    String.valueOf(session.getAttribute("loginId"))
+            );
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.AUTHORIZATION,
+                            response.getTokenType() + " " + response.getToken())
+                    .body(response);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            session.invalidate();
+            return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
         return ResponseEntity.noContent().build();
     }
 }
-

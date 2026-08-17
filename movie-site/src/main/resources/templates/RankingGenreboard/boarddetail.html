@@ -445,6 +445,7 @@
       <div class="actions-right" th:if="${isOwner}">
         <a class="btn-link btn-edit" th:href="@{/board/{id}/edit(id=${post.id}, page=${backPage})}">수정</a>
         <form th:action="@{/board/{id}/delete(id=${post.id})}" method="post">
+          <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <input type="hidden" name="page" th:value="${backPage}" />
           <button type="submit" class="btn-link btn-delete"
                   onclick="return confirm('정말 삭제할까요? 삭제하면 복구할 수 없어요.');">삭제</button>
@@ -538,6 +539,7 @@
                       th:action="@{/board/{postId}/comment/{commentId}/delete(postId=${post.id}, commentId=${c.id}, page=${backPage})}"
                       method="post"
                       onsubmit="return confirm('댓글을 삭제할까요?');">
+                  <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                   <button type="submit" class="cbtn cbtn-delete">삭제</button>
                 </form>
               </div>
@@ -552,6 +554,7 @@
             <form class="comment-edit-form"
                   th:action="@{/board/{postId}/comment/{commentId}/edit(postId=${post.id}, commentId=${c.id}, page=${backPage})}"
                   method="post">
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
               <textarea name="content" maxlength="500" required
                         th:text="${c.content}"></textarea>
 
@@ -567,6 +570,7 @@
       <!-- 댓글 작성 폼: 로그인한 경우만 노출 -->
       <div class="comment-form-wrap" th:if="${session.loginId != null}">
         <form class="comment-form" th:action="@{/board/{id}/comment(id=${post.id}, page=${backPage})}" method="post">
+          <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <textarea name="content" maxlength="500" required
                     placeholder="댓글을 입력하세요 (최대 500자)"></textarea>
           <div class="comment-form-actions">

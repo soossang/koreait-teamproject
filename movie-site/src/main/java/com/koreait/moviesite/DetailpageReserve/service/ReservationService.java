@@ -40,7 +40,7 @@ public class ReservationService {
         int total = screening.getTotalSeats();
         int reserved = reservationRepository.sumReservedCountByScreeningId(screeningId);
 
-        return total - reserved;
+        return Math.max(total - reserved, 0);
     }
     
 
@@ -49,45 +49,19 @@ public class ReservationService {
     public Reservation reserve(Long screeningId, String name,
                                String phone, int count, String seats) {
 
-        Screening screening = screeningRepository.findById(screeningId)
+        // 같은 상영 회차의 예매를 DB 수준에서 직렬화하여 동시 중복 예매를 막는다.
+        Screening screening = screeningRepository.findByIdForUpdate(screeningId)
                 .orElseThrow(() -> new IllegalArgumentException("상영 정보를 찾을 수 없습니다. id=" + screeningId));
 
-        // 사용자가 선택한 좌석 목록
-        List<String> selectedSeats = Arrays.stream(seats.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
-
-        if (selectedSeats.size() != count) {
-            throw new IllegalStateException("선택한 좌석 수와 인원 수가 다릅니다.");
-        }
-
-        // 이미 예약된 좌석 목록
-        List<Reservation> reservations = reservationRepository.findByScreeningId(screeningId);
-        Set<String> reservedSeats = reservations.stream()
-                .filter(r -> r.getSeats() != null)
-                .flatMap(r -> Arrays.stream(r.getSeats().split(",")))
-                .map(String::trim)
-                .collect(Collectors.toSet());
-
-        // 중복 좌석 체크
-        for (String seat : selectedSeats) {
-            if (reservedSeats.contains(seat)) {
-                throw new IllegalStateException("이미 예약된 좌석이 포함되어 있습니다: " + seat);
-            }
-        }
-
-        // 잔여 좌석 확인 (예약 테이블 기준으로 계산)
-        int availableSeats = getAvailableSeats(screeningId);
-        if (availableSeats < count) {
-            throw new IllegalStateException("잔여 좌석이 부족합니다.");
-        }
+        List<String> selectedSeats = parseAndValidateSeats(seats, count);
+        validateSeatAvailability(screening, selectedSeats, null);
 
         String reservationNumber = generateUniqueReservationNumber(10);
 
         String normalizedPhone = normalizePhone(phone);
         Reservation reservation =
-                new Reservation(screening, reservationNumber, name, normalizedPhone, count, seats);
+                new Reservation(screening, reservationNumber, name, normalizedPhone, count,
+                        String.join(",", selectedSeats));
         return reservationRepository.save(reservation);
     }
 
@@ -140,31 +114,10 @@ public class ReservationService {
 
         Reservation reservation = getByReservationNumber(reservationNumber);
         Long screeningId = reservation.getScreening().getId();
-
-        // 사용자가 선택한 좌석 목록
-        List<String> selectedSeats = Arrays.stream(seats.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
-
-        if (selectedSeats.size() != reservedCount) {
-            throw new IllegalStateException("선택한 좌석 수와 인원 수가 다릅니다.");
-        }
-
-        // 이미 예약된 좌석 목록(본인 예약 제외)
-        List<Reservation> reservations = reservationRepository.findByScreeningId(screeningId);
-        Set<String> reservedSeats = reservations.stream()
-                .filter(r -> !Objects.equals(r.getId(), reservation.getId()))
-                .filter(r -> r.getSeats() != null)
-                .flatMap(r -> Arrays.stream(r.getSeats().split(",")))
-                .map(String::trim)
-                .collect(Collectors.toSet());
-
-        for (String seat : selectedSeats) {
-            if (reservedSeats.contains(seat)) {
-                throw new IllegalStateException("이미 예약된 좌석이 포함되어 있습니다: " + seat);
-            }
-        }
+        Screening screening = screeningRepository.findByIdForUpdate(screeningId)
+                .orElseThrow(() -> new IllegalArgumentException("상영 정보를 찾을 수 없습니다. id=" + screeningId));
+        List<String> selectedSeats = parseAndValidateSeats(seats, reservedCount);
+        validateSeatAvailability(screening, selectedSeats, reservation.getId());
 
         // (A) 연락처는 저장/비교 안정성을 위해 항상 정규화
         String normalizedPhone = normalizePhone(phone);
@@ -174,7 +127,7 @@ public class ReservationService {
             normalizedPhone = normalizePhone(reservation.getMember().getPhone());
         }
 
-        reservation.updateInfo(name, normalizedPhone, reservedCount, seats);
+        reservation.updateInfo(name, normalizedPhone, reservedCount, String.join(",", selectedSeats));
         return reservation;
     }
 
@@ -244,6 +197,63 @@ private String generateUniqueReservationNumber(int length) {
         if (phone == null) return null;
         String digits = phone.replaceAll("\\D", "");
         return digits.isBlank() ? null : digits;
+    }
+
+    private List<String> parseAndValidateSeats(String seats, int count) {
+        if (count <= 0) {
+            throw new IllegalStateException("예매 인원은 1명 이상이어야 합니다.");
+        }
+        if (seats == null || seats.isBlank()) {
+            throw new IllegalStateException("좌석을 선택해 주세요.");
+        }
+
+        List<String> selectedSeats = Arrays.stream(seats.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(s -> s.toUpperCase(Locale.ROOT))
+                .toList();
+
+        if (selectedSeats.size() != count) {
+            throw new IllegalStateException("선택한 좌석 수와 인원 수가 다릅니다.");
+        }
+        if (new HashSet<>(selectedSeats).size() != selectedSeats.size()) {
+            throw new IllegalStateException("같은 좌석을 중복 선택할 수 없습니다.");
+        }
+        if (selectedSeats.stream().anyMatch(seat -> !seat.matches("^[A-Z][1-9][0-9]?$"))) {
+            throw new IllegalStateException("올바르지 않은 좌석 번호가 포함되어 있습니다.");
+        }
+
+        return selectedSeats;
+    }
+
+    private void validateSeatAvailability(Screening screening,
+                                          List<String> selectedSeats,
+                                          Long excludedReservationId) {
+        List<Reservation> reservations = reservationRepository.findByScreeningId(screening.getId());
+
+        List<Reservation> otherReservations = reservations.stream()
+                .filter(r -> !Objects.equals(r.getId(), excludedReservationId))
+                .toList();
+
+        Set<String> reservedSeats = otherReservations.stream()
+                .filter(r -> r.getSeats() != null)
+                .flatMap(r -> Arrays.stream(r.getSeats().split(",")))
+                .map(String::trim)
+                .map(s -> s.toUpperCase(Locale.ROOT))
+                .collect(Collectors.toSet());
+
+        for (String seat : selectedSeats) {
+            if (reservedSeats.contains(seat)) {
+                throw new IllegalStateException("이미 예약된 좌석이 포함되어 있습니다: " + seat);
+            }
+        }
+
+        int reservedByOthers = otherReservations.stream()
+                .mapToInt(Reservation::getReservedCount)
+                .sum();
+        if (screening.getTotalSeats() - reservedByOthers < selectedSeats.size()) {
+            throw new IllegalStateException("잔여 좌석이 부족합니다.");
+        }
     }
 
     private String digitsOnly(String s) {

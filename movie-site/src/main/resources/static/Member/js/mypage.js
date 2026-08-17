@@ -47,6 +47,35 @@ function redirectToLogin() {
     window.location.href = "/login?redirect=" + encodeURIComponent(here);
 }
 
+async function restoreAuthTokenFromSession() {
+    try {
+        const response = await fetch("/api/auth/session-token", {
+            credentials: "include",
+        });
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const token = data.token || data.accessToken || null;
+        if (!token) return null;
+
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem("token", token);
+        if (data.loginId) localStorage.setItem("loginId", data.loginId);
+        if (data.role) localStorage.setItem("role", data.role);
+        return token;
+    } catch (error) {
+        console.warn("로그인 세션으로 토큰을 복구하지 못했습니다.", error);
+        return null;
+    }
+}
+
+function fetchMyProfile(token) {
+    return fetch("/api/member/me", {
+        headers: { Authorization: "Bearer " + token },
+        credentials: "include",
+    });
+}
+
 function escapeHtml(value) {
     return (value ?? "")
         .toString()
@@ -668,30 +697,36 @@ function renderReservation(r) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // ✅ 공통 헤더 토글(관리자 메뉴 포함)은 index.js의 updateAuthNav를 우선 사용
-    if (typeof window.updateAuthNav === "function") {
-        await window.updateAuthNav();
-    } else {
-        updateAuthNavLocal();
-    }
+    // 공통 헤더 갱신보다 먼저 토큰을 확보한다. 헤더와 프로필이 동시에
+    // 인증 API를 호출하며 토큰 저장소를 변경하는 경쟁 조건을 방지한다.
+    let token = getAuthTokenLocal();
 
-    const token = getAuthTokenLocal();
-
-    // 로그인 안했으면 마이페이지 접근 불가
+    // 브라우저 토큰이 없더라도 로그인 세션이 살아 있으면 자동 복구한다.
     if (!token) {
-        alert("로그인을 완료한 후에 이용 가능합니다.");
-        redirectToLogin();
-        return;
+        token = await restoreAuthTokenFromSession();
+        if (!token) {
+            alert("로그인을 완료한 후에 이용 가능합니다.");
+            redirectToLogin();
+            return;
+        }
     }
 
     // ===== 프로필 =====
     const box = document.getElementById("profileBox");
     try {
-        const res = await fetch("/api/member/me", {
-            headers: { Authorization: "Bearer " + token },
-        });
+        let res = await fetchMyProfile(token);
 
-        if (res.status === 401 || res.status === 403) {
+        if ([400, 401, 403, 404].includes(res.status)) {
+            // JWT 키 교체 또는 토큰 만료 시 서버 로그인 세션으로 한 번 재발급한다.
+            const restoredToken = await restoreAuthTokenFromSession();
+            if (restoredToken) {
+                token = restoredToken;
+                res = await fetchMyProfile(token);
+            }
+        }
+
+        if ([400, 401, 403, 404].includes(res.status)) {
+            if (typeof window.clearAuthStorage === "function") window.clearAuthStorage();
             alert("로그인을 완료한 후에 이용 가능합니다.");
             redirectToLogin();
             return;
@@ -703,6 +738,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             const me = await res.json();
             renderMemberProfile(me);
             setupAccountEditor(token, me);
+
+            // 회원정보 조회가 성공한 뒤 헤더의 로그인/관리자 UI를 갱신한다.
+            if (typeof window.updateAuthNav === "function") {
+                await window.updateAuthNav();
+            } else {
+                updateAuthNavLocal();
+            }
         }
     } catch (e) {
         console.error(e);

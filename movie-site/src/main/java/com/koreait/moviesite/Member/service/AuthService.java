@@ -22,7 +22,7 @@ public class AuthService {
     public AuthService(MemberRepository memberRepository,
                        PasswordEncoder passwordEncoder,
                        JwtTokenProvider jwtTokenProvider,
-                       @Value("${app.admin.registration-code:1234}") String adminRegistrationCode) {
+                       @Value("${app.admin.registration-code:}") String adminRegistrationCode) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -64,6 +64,10 @@ public class AuthService {
     private MemberRole resolveSignupRole(String adminCode) {
         if (adminCode == null || adminCode.isBlank()) {
             return MemberRole.USER;
+        }
+
+        if (adminRegistrationCode == null || adminRegistrationCode.isBlank()) {
+            throw new IllegalArgumentException("관리자 회원가입이 비활성화되어 있습니다.");
         }
 
         if (!adminRegistrationCode.equals(adminCode.trim())) {
@@ -108,10 +112,28 @@ public class AuthService {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        String token = jwtTokenProvider.generateToken(member);
-        long expiresIn = jwtTokenProvider.getValidityInSeconds(); // :contentReference[oaicite:7]{index=7}
+        return createLoginResponse(member);
+    }
 
-        // ✅ LoginResponse는 5개 생성자만 있음 :contentReference[oaicite:8]{index=8}
+    public LoginResponse issueTokenForSession(String loginId) {
+        if (loginId == null || loginId.isBlank()) {
+            throw new IllegalArgumentException("로그인 세션이 없습니다.");
+        }
+
+        MemberEntity member = memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+        if (!member.isActive()) {
+            throw new IllegalStateException("비활성화된 계정입니다.");
+        }
+
+        return createLoginResponse(member);
+    }
+
+    private LoginResponse createLoginResponse(MemberEntity member) {
+        String token = jwtTokenProvider.generateToken(member);
+        long expiresIn = jwtTokenProvider.getValidityInSeconds();
+
         return new LoginResponse(
                 "Bearer",
                 token,
